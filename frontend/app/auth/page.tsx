@@ -1,0 +1,276 @@
+'use client';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { 
+  ShieldCheck, Lock, Mail, User, Building2, 
+  ArrowRight, Sparkles, CheckCircle2, AlertCircle, Loader2 
+} from 'lucide-react';
+import { useAuth } from '@/lib/auth-context';
+
+export default function AuthPage() {
+  const router = useRouter();
+  const { user, login, register, demoLogin, logout } = useAuth();
+
+  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      if (mode === 'login') {
+        await login(email, password);
+      } else {
+        await register(email, password, fullName, companyName);
+      }
+      router.push('/product/new');
+    } catch (err: any) {
+      setError(err?.message || 'Authentication failed. Please check your credentials.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      await demoLogin();
+      router.push('/product/new');
+    } catch (err: any) {
+      setError('Failed to initiate demo session.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // If already logged in, show user profile card
+  if (user) {
+    return (
+      <div className="min-h-screen portal-bg py-16 px-4 font-sans text-white flex items-center justify-center relative overflow-hidden">
+        <div className="max-w-md w-full bg-[#0B1426]/90 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 shadow-2xl space-y-6 relative z-10 text-center animate-slide-up">
+          <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-2 border border-emerald-500/30">
+            <CheckCircle2 size={32} />
+          </div>
+          <div className="space-y-1">
+            <h2 className="text-xl font-bold text-white">Active Session</h2>
+            <p className="text-xs text-slate-400">You are logged into NiyamVeda Compliance Portal</p>
+          </div>
+
+          <div className="bg-[#070D1B] border border-slate-800/80 rounded-xl p-4 text-left text-xs space-y-2.5">
+            <div>
+              <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">Full Name</span>
+              <p className="font-semibold text-white text-sm">{user.full_name}</p>
+            </div>
+            <div>
+              <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">Email Address</span>
+              <p className="font-medium text-slate-300">{user.email}</p>
+            </div>
+            <div>
+              <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">Enterprise / MSME</span>
+              <p className="font-medium text-slate-300">{user.company_name}</p>
+            </div>
+            <div>
+              <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">Role</span>
+              <span className="inline-block text-[10px] font-bold px-2 py-0.5 rounded bg-orange-500/10 text-[#FF9933] border border-orange-500/20">
+                {user.role}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3 pt-2">
+            <Link
+              href="/product/new"
+              className="bg-[#FF7828] hover:bg-[#E05E10] text-white text-xs font-bold py-3 px-4 rounded-lg shadow-md transition-all flex items-center justify-center gap-2"
+            >
+              Start Product Analysis <ArrowRight size={14} />
+            </Link>
+            <button
+              onClick={logout}
+              className="border border-slate-700 hover:bg-slate-800/50 text-slate-400 hover:text-white text-xs font-semibold py-2.5 px-4 rounded-lg transition-all"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen portal-bg py-12 px-4 sm:px-6 font-sans text-white flex items-center justify-center relative overflow-hidden">
+      
+      {/* Background Mandala & Glow Motif */}
+      <div className="absolute top-0 right-0 w-80 h-80 bg-[#FF7828]/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="max-w-md w-full space-y-6 relative z-10 animate-slide-up">
+        
+        {/* Header Branding */}
+        <div className="text-center space-y-2">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#FF7828] to-[#E05E10] flex items-center justify-center text-white mx-auto shadow-lg shadow-orange-500/30">
+            <ShieldCheck size={26} />
+          </div>
+          <h1 className="text-2xl font-extrabold text-white tracking-tight">
+            NiyamVeda <span className="text-[#FF9933] font-normal">(नियमवेद)</span>
+          </h1>
+          <p className="text-xs text-slate-400 max-w-sm mx-auto">
+            Secure BIS Compliance Intelligence Portal for Indian MSMEs
+          </p>
+        </div>
+
+        {/* 1-Click Demo Login Box (For Judges & Reviewers) */}
+        <div className="bg-gradient-to-r from-orange-950/40 via-amber-950/30 to-[#0B1426] border border-orange-500/30 rounded-xl p-4 shadow-lg text-center space-y-2 card-interactive">
+          <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-[#FF9933]">
+            <Sparkles size={14} />
+            <span>Instant Evaluation Mode</span>
+          </div>
+          <p className="text-[11px] text-slate-300">
+            Sign in with 1-click as <strong className="text-white">Rajesh Kumar Sharma</strong> (Water Purifier MSME)
+          </p>
+          <button
+            onClick={handleDemoLogin}
+            disabled={loading}
+            className="w-full mt-2 bg-gradient-to-r from-[#FF7828] to-[#FF9933] hover:from-[#E05E10] hover:to-[#FF7828] text-white text-xs font-bold py-2.5 px-4 rounded-lg shadow-md transition-all flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
+          >
+            {loading ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
+            <span>1-Click Demo Sign In</span>
+          </button>
+        </div>
+
+        {/* Main Auth Form Container */}
+        <div className="bg-[#0B1426]/90 backdrop-blur-xl border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6 card-interactive">
+          
+          {/* Mode Switch Tabs */}
+          <div className="flex items-center bg-[#070D1B] p-1 rounded-lg border border-slate-800">
+            <button
+              type="button"
+              onClick={() => { setMode('login'); setError(null); }}
+              className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${
+                mode === 'login'
+                  ? 'bg-[#FF7828] text-white shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Sign In
+            </button>
+            <button
+              type="button"
+              onClick={() => { setMode('register'); setError(null); }}
+              className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${
+                mode === 'register'
+                  ? 'bg-[#FF7828] text-white shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Create Account
+            </button>
+          </div>
+
+          {error && (
+            <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-xs text-red-400">
+              <AlertCircle size={15} className="flex-shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {mode === 'register' && (
+              <>
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">
+                    Full Name <span className="text-[#FF7828]">*</span>
+                  </label>
+                  <div className="relative">
+                    <User size={15} className="absolute left-3 top-2.5 text-slate-500" />
+                    <input
+                      type="text"
+                      required
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="e.g. Rajesh Kumar Sharma"
+                      className="w-full bg-[#070D1B] border border-slate-700 rounded-lg pl-9 pr-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#FF7828]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1">
+                    MSME / Enterprise Name
+                  </label>
+                  <div className="relative">
+                    <Building2 size={15} className="absolute left-3 top-2.5 text-slate-500" />
+                    <input
+                      type="text"
+                      value={companyName}
+                      onChange={(e) => setCompanyName(e.target.value)}
+                      placeholder="e.g. Apex PureWater Innovations Pvt. Ltd."
+                      className="w-full bg-[#070D1B] border border-slate-700 rounded-lg pl-9 pr-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#FF7828]"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            <div>
+              <label className="block text-xs font-bold text-slate-300 mb-1">
+                Email Address <span className="text-[#FF7828]">*</span>
+              </label>
+              <div className="relative">
+                <Mail size={15} className="absolute left-3 top-2.5 text-slate-500" />
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@company.com"
+                  className="w-full bg-[#070D1B] border border-slate-700 rounded-lg pl-9 pr-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#FF7828]"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-300 mb-1">
+                Password <span className="text-[#FF7828]">*</span>
+              </label>
+              <div className="relative">
+                <Lock size={15} className="absolute left-3 top-2.5 text-slate-500" />
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full bg-[#070D1B] border border-slate-700 rounded-lg pl-9 pr-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#FF7828]"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#070D1B] hover:bg-[#121c33] border border-slate-700 hover:border-slate-500 text-white text-xs font-bold py-2.5 px-4 rounded-lg transition-all flex items-center justify-center gap-2 mt-2"
+            >
+              {loading ? 'Processing...' : (
+                <>
+                  {mode === 'login' ? 'Sign In to Portal' : 'Create MSME Account'}
+                  <ArrowRight size={14} />
+                </>
+              )}
+            </button>
+          </form>
+
+        </div>
+
+      </div>
+    </div>
+  );
+}
