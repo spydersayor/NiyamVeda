@@ -440,8 +440,18 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   }
 
   // Resilient fallback logic for Vercel demo testing
-  if (path.includes('/api/products/demo-purifier-001') || path === '/api/products') {
-    if (path === '/api/products') return [DEMO_PRODUCT] as unknown as T;
+  if (path === '/api/products') {
+    if (options?.method === 'POST') {
+      const parsedBody = options.body ? JSON.parse(options.body as string) : {};
+      return {
+        ...DEMO_PRODUCT,
+        id: `prod-${Date.now()}`,
+        ...parsedBody,
+      } as unknown as T;
+    }
+    return [DEMO_PRODUCT] as unknown as T;
+  }
+  if (path.startsWith('/api/products/')) {
     return DEMO_PRODUCT as unknown as T;
   }
   if (path.includes('/api/analyze')) {

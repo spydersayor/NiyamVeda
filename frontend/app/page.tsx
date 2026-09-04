@@ -16,15 +16,30 @@ export default function LandingPage() {
       <div className="absolute top-40 left-10 w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-[500px] h-[300px] bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none" />
 
-      {/* ─── Hero Section (Exact to Reference Image 2) ─── */}
-      <section className="max-w-7xl mx-auto px-6 sm:px-10 pt-10 pb-12 relative z-10">
+      {/* Hero Background Artwork */}
+      <div className="absolute top-0 right-0 left-0 h-[860px] pointer-events-none select-none z-0 overflow-hidden">
+        <Image
+          src="/images/landing_hero_bg.jpg"
+          alt="NiyamVeda Indian Heritage & BIS Compliance"
+          fill
+          priority
+          className="object-cover object-right md:object-center opacity-90"
+          sizes="100vw"
+        />
+        {/* Soft edge & readability gradients */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#070D1B]/50 via-[#070D1B]/20 to-[#070D1B]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#070D1B] via-[#070D1B]/75 to-transparent w-full lg:w-3/5" />
+      </div>
+
+      {/* ─── Hero Section ─── */}
+      <section className="max-w-7xl mx-auto px-6 sm:px-10 pt-12 pb-12 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-center">
           
           {/* Left Hero Content (7 cols) */}
           <div className="lg:col-span-7 space-y-5 animate-slide-up">
             
-            {/* Top Pill Tag (Screen 2 Exact) */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0C1B36] border border-[#1E355B] text-xs font-semibold text-slate-300 shadow-sm">
+            {/* Top Pill Tag */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0C1B36]/90 border border-[#1E355B] text-xs font-semibold text-slate-300 shadow-sm backdrop-blur-md">
               <ShieldCheck size={14} className="text-blue-400 flex-shrink-0" />
               <span>AI-ASSISTED</span>
               <span className="text-slate-600 font-bold">•</span>
@@ -34,14 +49,14 @@ export default function LandingPage() {
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-extrabold leading-[1.12] tracking-tight text-white">
+            <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-extrabold leading-[1.12] tracking-tight text-white drop-shadow-sm">
               Understand Your<br />
               Product&apos;s<br />
               <span className="text-[#FF7828]">BIS</span> Compliance Pathway
             </h1>
 
             {/* Subtext */}
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-lg font-normal">
+            <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-lg font-normal drop-shadow-sm">
               Structured product analysis. Rule-based evaluation.<br />
               Authoritative evidence. Clear next steps.
             </p>
@@ -57,7 +72,7 @@ export default function LandingPage() {
               
               <Link 
                 href="/product/demo-purifier-001/confirm"
-                className="border border-[#1E355B] hover:border-slate-500 bg-[#0C172E] hover:bg-[#12203F] text-slate-200 font-semibold text-sm px-5 py-3 rounded-lg transition-all duration-200 flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
+                className="border border-[#1E355B] hover:border-slate-500 bg-[#0C172E]/90 hover:bg-[#12203F] text-slate-200 font-semibold text-sm px-5 py-3 rounded-lg transition-all duration-200 flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] backdrop-blur-sm"
               >
                 <div className="w-5 h-5 rounded-full bg-slate-800 flex items-center justify-center text-[#FF9933]">
                   <Play size={10} fill="#FF9933" />
@@ -66,35 +81,24 @@ export default function LandingPage() {
               </Link>
             </div>
 
-          </div>
-
-          {/* Right Hero Graphic: Exact India Gate Artwork with Tricolor & Badge (5 cols) */}
-          <div className="lg:col-span-5 relative flex flex-col items-center justify-center">
-            
-            {/* Glowing Backdrop */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#070D1B] via-transparent to-transparent z-10 pointer-events-none" />
-            
-            <div className="relative w-full max-w-[480px] h-[320px] sm:h-[350px] flex items-center justify-center animate-float">
-              {/* Image from user provided exact graphic */}
-              <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl border border-slate-800/60 bg-[#0A1224]/50">
-                <Image
-                  src="/images/india_gate_hero_exact.png"
-                  alt="India Gate BIS Compliance Pathway"
-                  fill
-                  className="object-cover object-center"
-                  priority
-                />
-              </div>
-            </div>
-
-            {/* Built for Indian MSMEs & Startups Pill (Bottom Right of Image 2) */}
-            <div className="w-full flex justify-end mt-2 pr-2">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-950/40 border border-emerald-500/40 text-[11px] font-bold text-emerald-400 shadow-sm backdrop-blur-sm">
+            {/* Mobile MSME Pill */}
+            <div className="lg:hidden pt-1">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#0A1224]/80 border border-emerald-500/40 text-[11px] font-bold text-emerald-400 shadow-sm backdrop-blur-md">
                 <Check size={13} className="text-emerald-400 stroke-[3]" />
                 <span>Built for Indian MSMEs &amp; Startups</span>
               </div>
             </div>
 
+          </div>
+
+          {/* Right Hero Space: Unobstructed view of India Gate from background with MSME Badge */}
+          <div className="lg:col-span-5 relative hidden lg:flex flex-col justify-end items-end h-[340px] pointer-events-none">
+            <div className="pointer-events-auto">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0A1224]/85 border border-emerald-500/40 text-xs font-bold text-emerald-400 shadow-xl backdrop-blur-md">
+                <Check size={14} className="text-emerald-400 stroke-[3]" />
+                <span>Built for Indian MSMEs &amp; Startups</span>
+              </div>
+            </div>
           </div>
 
         </div>

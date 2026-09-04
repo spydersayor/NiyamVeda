@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { 
@@ -19,11 +19,7 @@ export default function WhatIfSimulationPage() {
   const [simResult, setSimResult] = useState<SimulationResult | null>(null);
   const [simulating, setSimulating] = useState(false);
 
-  useEffect(() => {
-    runSimulation(material, voltage, intendedUse);
-  }, [productId]);
-
-  const runSimulation = async (mat: string, volt: string, app: string) => {
+  const runSimulation = useCallback(async (mat: string, volt: string, app: string) => {
     setSimulating(true);
     try {
       const res = await api.simulate({
@@ -38,7 +34,12 @@ export default function WhatIfSimulationPage() {
     } finally {
       setSimulating(false);
     }
-  };
+  }, [productId]);
+
+  useEffect(() => {
+    runSimulation(material, voltage, intendedUse);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productId, runSimulation]);
 
   const handleSimulate = (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,0 +1,2 @@
+/* Re-export globals.css to support both singular ('./global.css') and plural ('./globals.css') imports */
+@import './globals.css';

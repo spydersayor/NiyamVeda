@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B132B" />
+      <stop offset="100%" stop-color="#060C1A" />
+    </linearGradient>
+    <linearGradient id="saffron" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF9933" />
+      <stop offset="100%" stop-color="#FF5722" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#FF7828" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  
+  <!-- Rounded Base Tile -->
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <rect width="62" height="62" x="1" y="1" rx="13" fill="none" stroke="#1E355B" stroke-width="1.5"/>
+
+  <!-- NiyamVeda Guiding Compass / Compliance Star -->
+  <g filter="url(#glow)">
+    <!-- Primary Star -->
+    <path d="M32 8 L37.5 26.5 L56 32 L37.5 37.5 L32 56 L26.5 37.5 L8 32 L26.5 26.5 Z" fill="url(#saffron)" />
+    <!-- Center Clarity Ring & Core -->
+    <circle cx="32" cy="32" r="6" fill="#0B132B" />
+    <circle cx="32" cy="32" r="4" fill="#FFFFFF" />
+  </g>
+</svg>
