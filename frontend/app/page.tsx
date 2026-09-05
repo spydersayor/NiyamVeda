@@ -71,7 +71,7 @@ export default function LandingPage() {
               </Link>
               
               <Link 
-                href="/product/demo-purifier-001/confirm"
+                href="/how-it-works"
                 className="border border-[#1E355B] hover:border-slate-500 bg-[#0C172E]/90 hover:bg-[#12203F] text-slate-200 font-semibold text-sm px-5 py-3 rounded-lg transition-all duration-200 flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] backdrop-blur-sm"
               >
                 <div className="w-5 h-5 rounded-full bg-slate-800 flex items-center justify-center text-[#FF9933]">
@@ -200,6 +200,17 @@ export default function LandingPage() {
               </div>
             </div>
 
+          </div>
+
+          {/* Explore How It Works Button */}
+          <div className="flex justify-center mt-6">
+            <Link
+              href="/how-it-works"
+              className="inline-flex items-center gap-2 bg-[#0C172E] hover:bg-[#12203F] border border-orange-500/30 hover:border-orange-500/60 text-[#FF9933] hover:text-white text-xs font-bold px-5 py-2.5 rounded-lg transition-all shadow-md group"
+            >
+              <span>Explore How It Works</span>
+              <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+            </Link>
           </div>
         </div>
 

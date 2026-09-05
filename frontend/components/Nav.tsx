@@ -31,14 +31,35 @@ export default function Nav() {
         </Link>
 
         {/* Center Nav Links */}
-        <div className="hidden md:flex items-center gap-7 text-xs font-medium text-slate-300">
-          <Link href="/#how-it-works" className="hover:text-white transition-colors">
+        <div className="hidden md:flex items-center gap-7 text-xs font-medium">
+          <Link 
+            href="/how-it-works" 
+            className={`transition-colors ${
+              pathname === '/how-it-works' 
+                ? 'text-[#FF9933] font-semibold' 
+                : 'text-slate-300 hover:text-white'
+            }`}
+          >
             How It Works
           </Link>
-          <Link href="/sources" className="hover:text-white transition-colors">
+          <Link 
+            href="/sources" 
+            className={`transition-colors ${
+              pathname === '/sources' 
+                ? 'text-[#FF9933] font-semibold' 
+                : 'text-slate-300 hover:text-white'
+            }`}
+          >
             Sources
           </Link>
-          <Link href="/#about" className="hover:text-white transition-colors">
+          <Link 
+            href="/about" 
+            className={`transition-colors ${
+              pathname === '/about' 
+                ? 'text-[#FF9933] font-semibold' 
+                : 'text-slate-300 hover:text-white'
+            }`}
+          >
             About Us
           </Link>
         </div>
