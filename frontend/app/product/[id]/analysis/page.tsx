@@ -4,10 +4,11 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { 
   Check, ChevronRight, ArrowRight, X, ExternalLink, 
-  Clock, AlertCircle, Info, ShieldCheck, HelpCircle 
+  Clock, AlertCircle, Info, ShieldCheck, HelpCircle, Sparkles 
 } from 'lucide-react';
 import { api, type AnalysisResult, type RuleEvaluationResult } from '@/lib/api';
 import ProductSidebar from '@/components/ProductSidebar';
+import AssistantDrawer from '@/components/AssistantDrawer';
 
 export default function CompliancePathwayDashboard() {
   const params = useParams();
@@ -121,7 +122,213 @@ export default function CompliancePathwayDashboard() {
             </div>
           )}
 
-          {/* ─── Your Compliance Pathway (Screen 4 Main Card) ─── */}
+          {/* ─── 1. Analysis Summary Section (UX Improvement 5) ─── */}
+          <div className="bg-[#0B1426]/90 backdrop-blur-md border border-slate-800 rounded-xl p-6 space-y-3 shadow-xl animate-slide-up">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#FF9933] uppercase tracking-wider">
+                <ShieldCheck size={16} />
+                <span>Executive Compliance Summary</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/assistant?product_id=${productId}`}
+                  className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#FF7828]/15 hover:bg-[#FF7828]/25 border border-[#FF7828]/40 text-[#FF9933] text-[11px] font-bold transition-colors"
+                  title="Ask conversational assistant with this product context"
+                >
+                  <Sparkles size={11} />
+                  <span>Ask Copilot</span>
+                </Link>
+                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                  {result?.checklist_completion_percent ?? 0}% Ready
+                </span>
+              </div>
+            </div>
+            
+            <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-normal">
+              {result?.ai_synthesis_summary || (
+                'Product facts evaluated against published Bureau of Indian Standards (BIS) and mandatory Quality Control Orders (QCO).'
+              )}
+            </p>
+
+            <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px]">
+              <span className="px-2.5 py-1 rounded bg-[#102242] border border-[#1E3865] text-blue-300 font-semibold">
+                {result?.relevant_standards_count ?? result?.standards?.length ?? 0} Mandatory Standards Identified
+              </span>
+              <span className="px-2.5 py-1 rounded bg-[#102242] border border-[#1E3865] text-blue-300 font-semibold">
+                {result?.key_requirements_count ?? result?.requirements?.length ?? 0} Statutory Requirements
+              </span>
+              {result?.attention_needed_count !== undefined && result.attention_needed_count > 0 && (
+                <span className="px-2.5 py-1 rounded bg-amber-950/60 border border-amber-800/80 text-amber-300 font-semibold">
+                  {result.attention_needed_count} Items Requiring Attention
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* ─── 2. What Needs Your Attention? Section (UX Improvement 5) ─── */}
+          <div className="bg-[#0B1426]/90 backdrop-blur-md border border-slate-800 rounded-xl p-6 space-y-4 shadow-xl">
+            <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
+              <div>
+                <h2 className="text-sm sm:text-base font-bold text-white tracking-tight flex items-center gap-2">
+                  <AlertCircle size={17} className="text-amber-400 flex-shrink-0" />
+                  <span>What Needs Your Attention?</span>
+                </h2>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  High-priority items identified from your product facts requiring lab verification or testing action.
+                </p>
+              </div>
+              <span className={`text-xs font-bold px-2.5 py-0.5 rounded ${
+                (result?.attention_needed_count ?? 0) > 0
+                  ? 'bg-amber-950 text-amber-300 border border-amber-800'
+                  : 'bg-emerald-950 text-emerald-300 border border-emerald-800'
+              }`}>
+                {(result?.attention_needed_count ?? 0) > 0 ? `${result?.attention_needed_count} Action Items` : 'All Clear'}
+              </span>
+            </div>
+
+            {/* List Attention Items or Show All Clear */}
+            {(() => {
+              const pendingReqs = (result?.requirements || []).filter(
+                r => r.status === 'REVIEW_REQUIRED' || r.status === 'REVIEW' || r.status === 'NEEDS_INFORMATION'
+              );
+              const severeRisks = (result?.risks || []).filter(
+                rk => rk.severity === 'HIGH' || rk.severity === 'MEDIUM'
+              );
+              const hasItems = pendingReqs.length > 0 || severeRisks.length > 0 || result?.safe_abstention?.activated;
+
+              if (!hasItems) {
+                return (
+                  <div className="bg-[#070D1B] border border-slate-800 rounded-lg p-4 text-xs text-slate-300 flex items-center gap-3">
+                    <Check size={18} className="text-emerald-400 flex-shrink-0" />
+                    <span>
+                      All identified compliance criteria are satisfied based on current product parameters. No critical laboratory flags pending.
+                    </span>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="space-y-3">
+                  {/* Safe Abstention Warning if Active */}
+                  {result?.safe_abstention?.activated && (
+                    <div className="bg-rose-950/40 border border-rose-800/70 rounded-lg p-3.5 space-y-1">
+                      <div className="flex items-center gap-2 text-xs font-bold text-rose-300">
+                        <span className="w-2 h-2 rounded-full bg-rose-400" />
+                        <span>Incomplete Parameters for Deterministic Standard Mapping</span>
+                      </div>
+                      <p className="text-[11px] text-rose-200/90 leading-relaxed">
+                        {result.safe_abstention.abstention_reason}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Pending Lab / Engineering Requirements */}
+                  {pendingReqs.map(req => (
+                    <div key={req.id} className="bg-[#070D1B] border border-amber-900/40 rounded-lg p-3.5 space-y-1.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-bold text-white">
+                          {req.source}: {req.requirement}
+                        </span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800/80 uppercase">
+                          Action Required
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-300 leading-relaxed">
+                        {req.why_it_applies}
+                      </p>
+                      <p className="text-[11px] text-[#FF9933] font-semibold pt-0.5">
+                        Category: {req.category} • Status: {req.status}
+                      </p>
+                    </div>
+                  ))}
+
+                  {/* Significant Compliance Risks */}
+                  {severeRisks.map(rk => (
+                    <div key={rk.id} className="bg-[#070D1B] border border-red-950/60 rounded-lg p-3.5 space-y-1.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-bold text-white">
+                          {rk.risk}
+                        </span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${
+                          rk.severity === 'HIGH' 
+                            ? 'bg-red-950 text-red-300 border border-red-800' 
+                            : 'bg-amber-950 text-amber-300 border border-amber-800'
+                        }`}>
+                          {rk.severity} Risk
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-300 leading-relaxed">
+                        {rk.why_it_matters}
+                      </p>
+                      <p className="text-[11px] text-emerald-400 font-semibold pt-0.5">
+                        Mitigation: {rk.suggested_action}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* ─── 3. Why Does This Apply? Section (UX Improvement 5) ─── */}
+          {result?.evaluated_rules && result.evaluated_rules.length > 0 && (
+            <div className="bg-[#0B1426]/90 backdrop-blur-md border border-slate-800 rounded-xl p-6 space-y-4 shadow-xl">
+              <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                <div>
+                  <h2 className="text-sm sm:text-base font-bold text-white tracking-tight flex items-center gap-2">
+                    <Info size={17} className="text-blue-400 flex-shrink-0" />
+                    <span>Why Do These Standards Apply?</span>
+                  </h2>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Physical engineering facts that triggered specific Indian Standards without AI hallucination.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowRuleModal(true)}
+                  className="text-xs text-[#FF9933] hover:text-[#FF7828] font-semibold flex items-center gap-1 transition-colors"
+                >
+                  Full Modal View <ChevronRight size={14} />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {result.evaluated_rules.slice(0, 4).map((rule) => (
+                  <div
+                    key={rule.rule_id}
+                    onClick={() => {
+                      setSelectedRule(rule);
+                      setShowRuleModal(true);
+                    }}
+                    className="bg-[#070D1B] border border-slate-800 hover:border-[#FF7828]/50 rounded-lg p-3.5 space-y-2 cursor-pointer transition-all hover:-translate-y-0.5 group"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800/60 font-mono">
+                        {rule.rule_id}
+                      </span>
+                      <span className="text-[10px] font-bold text-slate-400 group-hover:text-[#FF9933] transition-colors flex items-center gap-1">
+                        Inspect <ChevronRight size={12} />
+                      </span>
+                    </div>
+
+                    <h3 className="text-xs font-bold text-white group-hover:text-[#FF9933] transition-colors leading-snug">
+                      {rule.rule_name}
+                    </h3>
+
+                    <div className="text-[11px] text-slate-400 leading-relaxed border-t border-slate-800/60 pt-1.5">
+                      <span className="text-slate-500 font-semibold">Clause: </span>
+                      <span className="text-slate-300 font-mono">{rule.clause_reference}</span>
+                    </div>
+
+                    <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
+                      {rule.supporting_evidence_excerpt}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ─── 4. Your Compliance Pathway (Existing Screen 4 Main Card) ─── */}
           <div className="bg-[#0B1426]/90 backdrop-blur-md border border-slate-800 rounded-xl p-6 sm:p-7 space-y-5 shadow-2xl animate-slide-up">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold text-white tracking-tight">
@@ -445,6 +652,9 @@ export default function CompliancePathwayDashboard() {
           </div>
         </div>
       )}
+
+      {/* Floating Regulatory Assistant Copilot Drawer */}
+      <AssistantDrawer productId={productId} productName={result?.product_name} />
 
     </div>
   );

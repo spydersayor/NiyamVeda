@@ -31,6 +31,8 @@ export default function ProductInputPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [extractedNotice, setExtractedNotice] = useState<string | null>(null);
+  const [extractedFacts, setExtractedFacts] = useState<Record<string, any> | null>(null);
+  const [factVerified, setFactVerified] = useState(false);
 
   // Initial list matching Screen 2 specification
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFileItem[]>([
@@ -84,6 +86,8 @@ export default function ProductInputPage() {
 
         if (res.extracted_facts && Object.keys(res.extracted_facts).length > 0) {
           const ef = res.extracted_facts;
+          setExtractedFacts(ef);
+          setFactVerified(false);
           setForm(prev => ({
             ...prev,
             operating_voltage: ef.operating_voltage || prev.operating_voltage,
@@ -93,10 +97,7 @@ export default function ProductInputPage() {
             intended_use: ef.intended_use || prev.intended_use,
             category: ef.category || prev.category,
           }));
-          const summaryParts = Object.entries(ef)
-            .map(([k, v]) => `${k.replace(/_/g, ' ')}: ${v}`)
-            .join(' | ');
-          setExtractedNotice(`Auto-extracted parameters from "${res.filename}": ${summaryParts}`);
+          setExtractedNotice(`Document "${res.filename}" processed. Please verify extracted parameters below.`);
         }
       } catch (err: any) {
         setUploadedFiles(prev => prev.filter(item => item.id !== tempId));
@@ -367,6 +368,95 @@ export default function ProductInputPage() {
               </div>
 
             </div>
+
+            {/* ─── PDF Fact Verification Review Panel (UX Requirement 4) ─── */}
+            {extractedFacts && (
+              <div className="mt-6 bg-amber-50 border-2 border-amber-400/90 rounded-xl p-5 sm:p-6 space-y-4 animate-slide-up shadow-lg">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-200 pb-3">
+                  <div className="flex items-center gap-2 text-amber-950 font-bold text-sm">
+                    <CheckCircle2 size={19} className="text-amber-600 flex-shrink-0" />
+                    <span>PDF Fact Verification</span>
+                  </div>
+                  <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded bg-amber-200/90 text-amber-900 uppercase tracking-wide w-fit">
+                    Extracted from Datasheet
+                  </span>
+                </div>
+
+                <div className="p-3 bg-white/90 border border-amber-300 rounded-lg text-xs font-semibold text-amber-950 leading-relaxed">
+                  ⚠️ Please verify the information extracted from your document before proceeding to compliance analysis. You can adjust any parameter below.
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+                  <div>
+                    <label className="font-bold text-slate-800 block mb-1">Operating Voltage</label>
+                    <input
+                      type="text"
+                      value={form.operating_voltage || ''}
+                      onChange={(e) => set('operating_voltage', e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-bold text-slate-800 block mb-1">Power Consumption</label>
+                    <input
+                      type="text"
+                      value={form.power_consumption || ''}
+                      onChange={(e) => set('power_consumption', e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-bold text-slate-800 block mb-1">Storage / Fluid Capacity</label>
+                    <input
+                      type="text"
+                      value={form.water_storage_capacity || ''}
+                      onChange={(e) => set('water_storage_capacity', e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                    />
+                  </div>
+                  <div className="sm:col-span-2 lg:col-span-3">
+                    <label className="font-bold text-slate-800 block mb-1">Material Composition</label>
+                    <input
+                      type="text"
+                      value={form.material_composition || ''}
+                      onChange={(e) => set('material_composition', e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                    />
+                  </div>
+                  <div className="sm:col-span-2 lg:col-span-3">
+                    <label className="font-bold text-slate-800 block mb-1">Intended Application / Use</label>
+                    <input
+                      type="text"
+                      value={form.intended_use || ''}
+                      onChange={(e) => set('intended_use', e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFactVerified(true);
+                      setExtractedFacts(null);
+                    }}
+                    className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-5 py-2.5 rounded-md shadow-md flex items-center gap-2 transition-all hover:scale-[1.01]"
+                  >
+                    <Check size={15} /> Confirm &amp; Save Verified Facts
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {factVerified && (
+              <div className="mt-4 bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-xl p-4 text-xs flex items-center gap-3 animate-fade-in shadow-sm">
+                <CheckCircle2 size={18} className="text-emerald-600 flex-shrink-0" />
+                <span className="font-semibold">
+                  Extracted parameters verified and successfully applied to product profile.
+                </span>
+              </div>
+            )}
 
             {/* ─── Bottom Actions Bar (Screen 2 Bottom) ─── */}
             <div className="flex items-center justify-between border-t border-slate-200 mt-8 pt-5">

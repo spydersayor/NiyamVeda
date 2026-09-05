@@ -6,29 +6,32 @@ import {
   Milestone, Play, Shield, Users, Check, Box,
   FileCheck2, Gavel
 } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n-context';
 
 export default function LandingPage() {
+  const { t } = useTranslation();
+
   return (
-    <div className="min-h-screen bg-[#070D1B] text-white relative overflow-hidden font-sans">
+    <div className="landing-page min-h-screen bg-[#070D1B] text-white relative overflow-hidden font-sans">
       
       {/* Subtle Ambient Background Gradients */}
-      <div className="absolute top-0 right-0 w-[550px] h-[550px] bg-[#FF7828]/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-40 left-10 w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[500px] h-[300px] bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="landing-ambient-orange absolute top-0 right-0 w-[550px] h-[550px] bg-[#FF7828]/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="landing-ambient-blue absolute top-40 left-10 w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="landing-ambient-emerald absolute bottom-0 right-1/4 w-[500px] h-[300px] bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none" />
 
       {/* Hero Background Artwork */}
-      <div className="absolute top-0 right-0 left-0 h-[860px] pointer-events-none select-none z-0 overflow-hidden">
+      <div className="landing-hero-art absolute top-0 right-0 left-0 h-[860px] pointer-events-none select-none z-0 overflow-hidden">
         <Image
           src="/images/landing_hero_bg.jpg"
           alt="NiyamVeda Indian Heritage & BIS Compliance"
           fill
           priority
-          className="object-cover object-right md:object-center opacity-90"
+          className="landing-hero-image object-cover object-right md:object-center opacity-90"
           sizes="100vw"
         />
         {/* Soft edge & readability gradients */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#070D1B]/50 via-[#070D1B]/20 to-[#070D1B]" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#070D1B] via-[#070D1B]/75 to-transparent w-full lg:w-3/5" />
+        <div className="landing-hero-overlay-v absolute inset-0 bg-gradient-to-b from-[#070D1B]/50 via-[#070D1B]/20 to-[#070D1B]" />
+        <div className="landing-hero-overlay-h absolute inset-0 bg-gradient-to-r from-[#070D1B] via-[#070D1B]/75 to-transparent w-full lg:w-3/5" />
       </div>
 
       {/* ─── Hero Section ─── */}
@@ -41,24 +44,23 @@ export default function LandingPage() {
             {/* Top Pill Tag */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0C1B36]/90 border border-[#1E355B] text-xs font-semibold text-slate-300 shadow-sm backdrop-blur-md">
               <ShieldCheck size={14} className="text-blue-400 flex-shrink-0" />
-              <span>AI-ASSISTED</span>
+              <span>{t('hero_badge_ai')}</span>
               <span className="text-slate-600 font-bold">•</span>
-              <span>RULE BASED</span>
+              <span>{t('hero_badge_rule')}</span>
               <span className="text-slate-600 font-bold">•</span>
-              <span>SOURCE TRACEABLE</span>
+              <span>{t('hero_badge_source')}</span>
             </div>
 
             {/* Main Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-extrabold leading-[1.12] tracking-tight text-white drop-shadow-sm">
-              Understand Your<br />
-              Product&apos;s<br />
-              <span className="text-[#FF7828]">BIS</span> Compliance Pathway
+              {t('hero_title_prefix')}<br />
+              {t('hero_title_middle')}<br />
+              <span className="text-[#FF7828]">BIS</span> {t('hero_title_suffix')}
             </h1>
 
             {/* Subtext */}
             <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-lg font-normal drop-shadow-sm">
-              Structured product analysis. Rule-based evaluation.<br />
-              Authoritative evidence. Clear next steps.
+              {t('hero_subtext')}
             </p>
 
             {/* CTA Buttons */}
@@ -67,7 +69,7 @@ export default function LandingPage() {
                 href="/product/new"
                 className="bg-[#FF7828] hover:bg-[#E05E10] text-white font-bold text-sm px-6 py-3 rounded-lg transition-all duration-200 shadow-lg shadow-orange-500/25 flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
               >
-                Analyse a Product <ArrowRight size={16} />
+                {t('btn_analyse_product')} <ArrowRight size={16} />
               </Link>
               
               <Link 
@@ -77,7 +79,7 @@ export default function LandingPage() {
                 <div className="w-5 h-5 rounded-full bg-slate-800 flex items-center justify-center text-[#FF9933]">
                   <Play size={10} fill="#FF9933" />
                 </div>
-                Explore How It Works
+                {t('btn_explore_how_it_works')}
               </Link>
             </div>
 
@@ -85,7 +87,7 @@ export default function LandingPage() {
             <div className="lg:hidden pt-1">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#0A1224]/80 border border-emerald-500/40 text-[11px] font-bold text-emerald-400 shadow-sm backdrop-blur-md">
                 <Check size={13} className="text-emerald-400 stroke-[3]" />
-                <span>Built for Indian MSMEs &amp; Startups</span>
+                <span>{t('badge_msme')}</span>
               </div>
             </div>
 
@@ -96,7 +98,7 @@ export default function LandingPage() {
             <div className="pointer-events-auto">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0A1224]/85 border border-emerald-500/40 text-xs font-bold text-emerald-400 shadow-xl backdrop-blur-md">
                 <Check size={14} className="text-emerald-400 stroke-[3]" />
-                <span>Built for Indian MSMEs &amp; Startups</span>
+                <span>{t('badge_msme')}</span>
               </div>
             </div>
           </div>
@@ -111,7 +113,7 @@ export default function LandingPage() {
             <div className="h-[1px] bg-slate-800 w-16 sm:w-36" />
             <div className="w-1.5 h-1.5 rounded-full bg-[#FF7828]" />
             <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-300 whitespace-nowrap">
-              NIYAMVEDA WORKS IN 4 SIMPLE STEPS
+              {t('steps_heading')}
             </p>
             <div className="w-1.5 h-1.5 rounded-full bg-[#FF7828]" />
             <div className="h-[1px] bg-slate-800 w-16 sm:w-36" />
@@ -132,10 +134,10 @@ export default function LandingPage() {
               </div>
               <div>
                 <h3 className="text-sm font-bold text-white mb-1 group-hover:text-[#FF9933] transition-colors">
-                  Define Product
+                  {t('step_1_title')}
                 </h3>
                 <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                  Share product details in simple steps.
+                  {t('step_1_desc')}
                 </p>
               </div>
             </div>
@@ -152,10 +154,10 @@ export default function LandingPage() {
               </div>
               <div>
                 <h3 className="text-sm font-bold text-white mb-1 group-hover:text-[#FF9933] transition-colors">
-                  Evaluate Rules
+                  {t('step_2_title')}
                 </h3>
                 <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                  Deterministic engine checks applicable rules.
+                  {t('step_2_desc')}
                 </p>
               </div>
             </div>
@@ -172,10 +174,10 @@ export default function LandingPage() {
               </div>
               <div>
                 <h3 className="text-sm font-bold text-white mb-1 group-hover:text-[#FF9933] transition-colors">
-                  Review Evidence
+                  {t('step_3_title')}
                 </h3>
                 <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                  We fetch official sources and standards.
+                  {t('step_3_desc')}
                 </p>
               </div>
             </div>
@@ -192,10 +194,10 @@ export default function LandingPage() {
               </div>
               <div>
                 <h3 className="text-sm font-bold text-white mb-1 group-hover:text-[#FF9933] transition-colors">
-                  Build Pathway
+                  {t('step_4_title')}
                 </h3>
                 <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                  Get requirements, tests and next actions.
+                  {t('step_4_desc')}
                 </p>
               </div>
             </div>
@@ -208,7 +210,7 @@ export default function LandingPage() {
               href="/how-it-works"
               className="inline-flex items-center gap-2 bg-[#0C172E] hover:bg-[#12203F] border border-orange-500/30 hover:border-orange-500/60 text-[#FF9933] hover:text-white text-xs font-bold px-5 py-2.5 rounded-lg transition-all shadow-md group"
             >
-              <span>Explore How It Works</span>
+              <span>{t('btn_explore_how_it_works')}</span>
               <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
             </Link>
           </div>
@@ -223,7 +225,7 @@ export default function LandingPage() {
               <div className="text-[#FF7828]">
                 <ShieldCheck size={18} />
               </div>
-              <span className="text-xs font-bold text-slate-200">Evidence Driven</span>
+              <span className="text-xs font-bold text-slate-200">{t('badge_evidence')}</span>
             </div>
 
             {/* Badge 2: Source Traceable */}
@@ -231,7 +233,7 @@ export default function LandingPage() {
               <div className="text-[#FF7828]">
                 <FileCheck2 size={18} />
               </div>
-              <span className="text-xs font-bold text-slate-200">Source Traceable</span>
+              <span className="text-xs font-bold text-slate-200">{t('badge_source_traceable')}</span>
             </div>
 
             {/* Badge 3: Rule Based */}
@@ -239,7 +241,7 @@ export default function LandingPage() {
               <div className="text-[#FF7828]">
                 <Gavel size={18} />
               </div>
-              <span className="text-xs font-bold text-slate-200">Rule Based</span>
+              <span className="text-xs font-bold text-slate-200">{t('badge_rule_based')}</span>
             </div>
 
             {/* Badge 4: MSME Friendly */}
@@ -247,7 +249,7 @@ export default function LandingPage() {
               <div className="text-[#FF7828]">
                 <Users size={18} />
               </div>
-              <span className="text-xs font-bold text-slate-200">MSME Friendly</span>
+              <span className="text-xs font-bold text-slate-200">{t('badge_msme_friendly')}</span>
             </div>
 
           </div>

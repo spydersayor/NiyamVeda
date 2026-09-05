@@ -195,32 +195,63 @@ export default function WhatIfSimulationPage() {
             </div>
 
             {/* Column 3: Simulation Result (After Change) */}
-            <div className="bg-white/95 backdrop-blur-sm border-2 border-[#FF7828]/60 rounded-xl p-5 space-y-4 shadow-xl card-interactive relative">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-[#FF7828] border-b border-orange-200 pb-2 mb-3">
-                Simulation Result <span className="text-[10px] font-normal text-slate-500">(After Change)</span>
-              </h2>
+            <div className="bg-white/95 backdrop-blur-sm border-2 border-[#FF7828] rounded-xl p-5 space-y-4 shadow-xl card-interactive relative">
+              <div className="flex items-center justify-between border-b border-orange-200 pb-2 mb-3">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-[#FF7828]">
+                  Simulation Result <span className="text-[10px] font-normal text-slate-500">(After Change)</span>
+                </h2>
+                {simResult?.standards_diff && (
+                  <div className="flex items-center gap-1.5 text-[10px] font-bold">
+                    {(simResult.standards_diff.added?.length ?? 0) > 0 && (
+                      <span className="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
+                        +{simResult.standards_diff.added.length}
+                      </span>
+                    )}
+                    {(simResult.standards_diff.removed?.length ?? 0) > 0 && (
+                      <span className="px-1.5 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-300">
+                        -{simResult.standards_diff.removed.length}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
 
               <div className="space-y-4 text-xs">
                 <div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                    Applicable Standards
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
+                    Applicable Standards Diff
                   </span>
-                  {/* Retained Standards */}
-                  {(simResult?.standards_diff?.retained || []).map((s: string) => (
-                    <p key={s} className="font-bold text-slate-800 mt-0.5">{s}</p>
-                  ))}
+                  
                   {/* Added Standards */}
                   {(simResult?.standards_diff?.added || []).map((s: string) => (
-                    <p key={s} className="font-extrabold text-[#FF7828] mt-0.5 flex items-center gap-1">
-                      + {s}
-                    </p>
+                    <div key={s} className="bg-emerald-50 border border-emerald-200 text-emerald-900 rounded p-1.5 text-xs font-bold mb-1.5 flex items-center justify-between">
+                      <span className="truncate">{s}</span>
+                      <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.2 rounded bg-emerald-200 text-emerald-900 flex-shrink-0 ml-1">
+                        + Added
+                      </span>
+                    </div>
                   ))}
+
+                  {/* Retained Standards */}
+                  {(simResult?.standards_diff?.retained || []).map((s: string) => (
+                    <div key={s} className="bg-slate-50 border border-slate-200 text-slate-800 rounded p-1.5 text-xs font-semibold mb-1.5 flex items-center justify-between">
+                      <span className="truncate">{s}</span>
+                      <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded bg-slate-200 text-slate-700 flex-shrink-0 ml-1">
+                        Unchanged
+                      </span>
+                    </div>
+                  ))}
+
                   {/* Removed Standards */}
                   {(simResult?.standards_diff?.removed || []).map((s: string) => (
-                    <p key={s} className="text-rose-600 line-through text-[11px] mt-0.5 flex items-center gap-1">
-                      - {s}
-                    </p>
+                    <div key={s} className="bg-rose-50 border border-rose-200 text-rose-700 rounded p-1.5 text-[11px] mb-1.5 flex items-center justify-between line-through opacity-75">
+                      <span className="truncate">{s}</span>
+                      <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded bg-rose-200 text-rose-800 no-underline flex-shrink-0 ml-1">
+                        - Removed
+                      </span>
+                    </div>
                   ))}
+
                   {(!simResult?.standards_diff?.added?.length && !simResult?.standards_diff?.retained?.length) && (
                     <p className="text-slate-500 italic">No standards applicable after change</p>
                   )}
@@ -231,10 +262,12 @@ export default function WhatIfSimulationPage() {
                     Tests Required
                   </span>
                   {(simResult?.tests_diff?.retained || []).map((t: string) => (
-                    <p key={t} className="font-bold text-slate-800 mt-0.5">{t}</p>
+                    <p key={t} className="font-semibold text-slate-800 mt-0.5">• {t}</p>
                   ))}
                   {(simResult?.tests_diff?.added || []).map((t: string) => (
-                    <p key={t} className="font-extrabold text-[#FF7828] mt-0.5">+ {t}</p>
+                    <p key={t} className="font-bold text-[#FF7828] mt-0.5 flex items-center gap-1">
+                      <span className="text-emerald-600 font-extrabold">+</span> {t}
+                    </p>
                   ))}
                 </div>
 
@@ -242,19 +275,19 @@ export default function WhatIfSimulationPage() {
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
                     Certification Route
                   </span>
-                  <p className="font-extrabold text-slate-900">
+                  <div className="p-2 rounded bg-slate-100 border border-slate-200 font-extrabold text-slate-900 text-xs">
                     {simResult?.certification_route || 'Scheme I (ISI Mark)'}
-                  </p>
+                  </div>
                 </div>
 
                 {simResult?.deterministic_provenance && simResult.deterministic_provenance.length > 0 && (
-                  <div className="pt-2 border-t border-slate-200 space-y-1">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
-                      Deterministic Impact
+                  <div className="pt-2 border-t border-slate-200 space-y-1.5 bg-orange-50/50 p-2.5 rounded-lg border border-orange-100">
+                    <span className="text-[10px] font-bold text-orange-900 uppercase tracking-wider block">
+                      Deterministic Impact &amp; Rationale
                     </span>
                     {simResult.deterministic_provenance.map((prov: string, i: number) => (
-                      <p key={i} className="text-[10px] text-slate-600 leading-tight">
-                        • {prov}
+                      <p key={i} className="text-[11px] text-slate-700 leading-snug">
+                        {prov}
                       </p>
                     ))}
                   </div>

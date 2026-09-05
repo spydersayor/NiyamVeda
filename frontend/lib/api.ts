@@ -166,6 +166,32 @@ export interface SimulationResult {
   disclaimer: string;
 }
 
+export interface AssistantCitation {
+  source_id: string;
+  title: string;
+  clause: string;
+  authority: string;
+  verification_status: string;
+  official_url?: string;
+}
+
+export interface AssistantChatRequest {
+  message: string;
+  product_id?: string;
+  language?: string;
+  history?: Array<{ role: string; content: string }>;
+}
+
+export interface AssistantChatResponse {
+  response: string;
+  suggested_queries: string[];
+  citations: AssistantCitation[];
+  safe_abstention: boolean;
+  abstention_reason?: string;
+  grounded_in_corpus: boolean;
+  disclaimer: string;
+}
+
 // ─── Curated Fallback Data for Vercel Static/Serverless Preview ─────────────
 
 const DEMO_PRODUCT: Product = {
@@ -540,6 +566,29 @@ export const api = {
   // Simulation
   simulate: (req: SimulationRequest) =>
     apiFetch<SimulationResult>('/api/simulation', { method: 'POST', body: JSON.stringify(req) }),
+
+  // Conversational Assistant
+  chatAssistant: (req: AssistantChatRequest) =>
+    apiFetch<AssistantChatResponse>('/api/assistant/chat', {
+      method: 'POST',
+      body: JSON.stringify(req),
+    }).catch(() => ({
+      // IMPORTANT: The frontend must never invent BIS/regulatory answers when
+      // the authoritative backend assistant is unavailable.
+      response:
+        req.language === 'hi'
+          ? 'NiyamVeda का regulatory assistant इस समय उपलब्ध नहीं है। पर्याप्त सत्यापित जानकारी के बिना मैं BIS standard, clause या compliance requirement का अनुमान नहीं लगाऊँगा। कृपया थोड़ी देर बाद पुनः प्रयास करें।'
+          : req.language === 'bn'
+            ? 'NiyamVeda-এর regulatory assistant এই মুহূর্তে উপলব্ধ নয়। পর্যাপ্ত যাচাইকৃত তথ্য ছাড়া আমি কোনো BIS standard, clause বা compliance requirement অনুমান করব না। অনুগ্রহ করে কিছুক্ষণ পরে আবার চেষ্টা করুন।'
+            : 'NiyamVeda’s regulatory assistant is temporarily unavailable. Without sufficient verified evidence, I will not guess or invent a BIS standard, clause, certification requirement, or compliance conclusion. Please try again shortly.',
+      suggested_queries: [],
+      citations: [],
+      safe_abstention: true,
+      abstention_reason: 'Authoritative assistant backend is unavailable.',
+      grounded_in_corpus: false,
+      disclaimer:
+        'NiyamVeda provides source-grounded regulatory information from its indexed knowledge corpus. It does not constitute official BIS certification, legal advice, or a guarantee of conformity.',
+    })),
 
   // Authentication
   login: (data: { email: string; password: string }) =>

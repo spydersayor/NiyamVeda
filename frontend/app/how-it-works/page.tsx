@@ -27,11 +27,11 @@ export default function HowItWorksPage() {
     },
     {
       step: 3,
-      title: 'Extract & Structure Product Parameters',
-      category: 'Normalization',
+      title: 'Fact Verification & Structuring',
+      category: 'Verification',
       icon: Cpu,
-      description: 'Raw product characteristics are normalized into structured engineering parameters and boolean flags.',
-      detail: 'Parameters such as is_electrical, has_heating_element, food_contact, and material classifications are extracted to form a deterministic product fact profile.'
+      description: 'Review and verify automatically extracted technical facts (voltage, power, materials, food-contact) before compliance rules are applied.',
+      detail: 'Parameters such as is_electrical, has_heating_element, food_contact, and material classifications are verified to form a deterministic product fact profile.'
     },
     {
       step: 4,
@@ -133,6 +133,30 @@ export default function HowItWorksPage() {
                 <Play size={12} fill="currentColor" /> View Live Analysis Demo
               </Link>
             </div>
+          </div>
+        </div>
+
+        {/* Visual Linear Pipeline Sequence (Requirement 3) */}
+        <div className="bg-[#0A1224] border border-slate-800 rounded-xl p-4 shadow-md">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
+            Compliance Engine Dataflow
+          </span>
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-semibold scrollbar-thin">
+            <span className="px-2.5 py-1 rounded bg-[#102242] text-blue-300 border border-[#1E3865] whitespace-nowrap">1. Product Details</span>
+            <span className="text-slate-500">→</span>
+            <span className="px-2.5 py-1 rounded bg-[#102242] text-blue-300 border border-[#1E3865] whitespace-nowrap">2. PDF</span>
+            <span className="text-slate-500">→</span>
+            <span className="px-2.5 py-1 rounded bg-amber-950/80 text-amber-300 border border-amber-800/80 whitespace-nowrap">3. Fact Verification</span>
+            <span className="text-slate-500">→</span>
+            <span className="px-2.5 py-1 rounded bg-[#102242] text-blue-300 border border-[#1E3865] whitespace-nowrap">4. Rules</span>
+            <span className="text-slate-500">→</span>
+            <span className="px-2.5 py-1 rounded bg-[#102242] text-blue-300 border border-[#1E3865] whitespace-nowrap">5. Standards</span>
+            <span className="text-slate-500">→</span>
+            <span className="px-2.5 py-1 rounded bg-[#102242] text-blue-300 border border-[#1E3865] whitespace-nowrap">6. Requirements</span>
+            <span className="text-slate-500">→</span>
+            <span className="px-2.5 py-1 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800/80 whitespace-nowrap">7. Analysis</span>
+            <span className="text-slate-500">→</span>
+            <span className="px-2.5 py-1 rounded bg-[#FF7828]/20 text-[#FF9933] border border-orange-500/30 whitespace-nowrap">8. What-If</span>
           </div>
         </div>
 

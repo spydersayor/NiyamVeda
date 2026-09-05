@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import Nav from '@/components/Nav';
 import { AuthProvider } from '@/lib/auth-context';
+import { ThemeProvider } from '@/lib/theme-context';
+import { I18nProvider } from '@/lib/i18n-context';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,12 +22,40 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${inter.className} bg-[#0B132B] min-h-screen text-white`}>
-        <AuthProvider>
-          <Nav />
-          <main>{children}</main>
-        </AuthProvider>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const storedTheme = localStorage.getItem('niyamveda_theme');
+                if (storedTheme === 'light') {
+                  document.documentElement.classList.add('light');
+                  document.documentElement.classList.remove('dark');
+                } else if (storedTheme === 'dark') {
+                  document.documentElement.classList.add('dark');
+                  document.documentElement.classList.remove('light');
+                } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+                  document.documentElement.classList.add('light');
+                  document.documentElement.classList.remove('dark');
+                } else {
+                  document.documentElement.classList.add('dark');
+                  document.documentElement.classList.remove('light');
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
+      </head>
+      <body className={`${inter.className} min-h-screen transition-colors duration-200`}>
+        <ThemeProvider>
+          <I18nProvider>
+            <AuthProvider>
+              <Nav />
+              <main>{children}</main>
+            </AuthProvider>
+          </I18nProvider>
+        </ThemeProvider>
         {/* Disclaimer Footer */}
         <footer className="border-t border-[#1E293B] bg-[#060C1A] py-6 px-6 mt-8">
           <div className="max-w-7xl mx-auto space-y-4">
