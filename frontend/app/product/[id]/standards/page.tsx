@@ -21,41 +21,8 @@ export default function RelevantStandardsPage() {
       .catch(() => {});
   }, [productId]);
 
-  const standards = result?.standards || [
-    {
-      standard_identifier: 'IS 302 (Part 1): 2008',
-      title: 'Safety of Household and Similar Electrical Appliances',
-      relevance_summary: 'Relevant to: Electrical insulation, construction & general safety',
-      verification_status: 'VERIFIED_OFFICIAL',
-      source_id: 'SRC-BIS-0302-1',
-      clause_reference: 'Clause 22.1 & Clause 30.2',
-      evidence_excerpt: 'Appliances shall be constructed so that their electrical insulation does not break down during normal operation.',
-      document_source: 'Bureau of Indian Standards',
-      official_url: 'https://standardsbis.bsbedge.com',
-    },
-    {
-      standard_identifier: 'IS 16240: 2015',
-      title: 'Reverse Osmosis Water Purification System for Drinking Purposes',
-      relevance_summary: 'Relevant to: RO system performance & safety',
-      verification_status: 'NEEDS_REVIEW',
-      source_id: 'SRC-BIS-16240',
-      clause_reference: 'Clause 5.2 - Pure Water Recovery',
-      evidence_excerpt: 'Minimum 90% TDS reduction required with safe pure water recovery ratio.',
-      document_source: 'Bureau of Indian Standards',
-      official_url: 'https://www.services.bis.gov.in',
-    },
-    {
-      standard_identifier: 'IS 13428: 2017',
-      title: 'Plastic Waste Management',
-      relevance_summary: 'Relevant to: Plastic housing recyclability & labeling',
-      verification_status: 'POTENTIALLY_APPLICABLE',
-      source_id: 'SRC-BIS-13428',
-      clause_reference: 'Clause 6 - Packaging Materials',
-      evidence_excerpt: 'Standardized polymer identification resin codes required for non-metallic enclosures.',
-      document_source: 'Bureau of Indian Standards',
-      official_url: 'https://www.services.bis.gov.in',
-    },
-  ];
+  const standards = result?.standards ?? [];
+  const isAbstaining = result?.safe_abstention?.activated || (result && standards.length === 0);
 
   return (
     <div className="flex min-h-screen portal-bg font-sans text-slate-800">
@@ -76,6 +43,29 @@ export default function RelevantStandardsPage() {
 
           {/* ─── Standards Cards (Screen 7 Exact) ─── */}
           <div className="space-y-4">
+            {isAbstaining && (
+              <div className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-xl p-8 text-center space-y-3 shadow-lg">
+                <div className="w-12 h-12 mx-auto rounded-full bg-amber-50 text-amber-600 flex items-center justify-center">
+                  <AlertCircle size={24} />
+                </div>
+                <h2 className="text-base font-bold text-slate-800">
+                  Insufficient Evidence to Determine Applicable Standard
+                </h2>
+                <p className="text-xs text-slate-600 max-w-lg mx-auto leading-relaxed">
+                  {result?.safe_abstention?.abstention_reason || 
+                    "No published Indian Standards (BIS) or statutory Quality Control Orders matched the supplied technical parameters."}
+                </p>
+                <div className="pt-2">
+                  <Link
+                    href={`/product/${productId}/analysis`}
+                    className="text-xs text-[#FF7828] font-bold hover:underline"
+                  >
+                    &larr; Return to Compliance Pathway
+                  </Link>
+                </div>
+              </div>
+            )}
+
             {standards.map((std) => (
               <div 
                 key={std.standard_identifier}

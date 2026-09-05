@@ -80,6 +80,39 @@ SOURCE_REGISTRY: Dict[str, SourceRegistryItem] = {
         version="First Revision (2010)",
         effective_date="15 Jul 2010",
         verification_status="VERIFIED_OFFICIAL"
+    ),
+    "SRC-BIS-0302-2-15": SourceRegistryItem(
+        source_id="SRC-BIS-0302-2-15",
+        authority="Bureau of Indian Standards",
+        document_name="IS 302 (Part 2/Sec 15): 2009 - Safety of Household Electrical Appliances: Particular Requirements for Appliances for Heating Liquids",
+        document_type="Indian Standard (Mandatory)",
+        official_url="https://standardsbis.bsbedge.com",
+        applicable_domain="Electric Kettles, Water Boilers, Liquid Heating Appliances, Thermal Cut-out",
+        version="Third Revision (2009)",
+        effective_date="01 Jan 2010",
+        verification_status="VERIFIED_OFFICIAL"
+    ),
+    "SRC-BIS-06911": SourceRegistryItem(
+        source_id="SRC-BIS-06911",
+        authority="Bureau of Indian Standards",
+        document_name="IS 6911: 2017 - Stainless Steel Plate, Sheet and Strip - Specification",
+        document_type="Indian Standard (Mandatory / QCO)",
+        official_url="https://www.services.bis.gov.in",
+        applicable_domain="Stainless Steel Vessels, Food Grade SS304/SS316, Metal Leaching & Chemical Composition",
+        version="Second Revision (2017)",
+        effective_date="15 Mar 2018",
+        verification_status="VERIFIED_OFFICIAL"
+    ),
+    "SRC-BIS-14756": SourceRegistryItem(
+        source_id="SRC-BIS-14756",
+        authority="Bureau of Indian Standards",
+        document_name="IS 14756: 2022 - Stainless Steel Cooking Utensils - Specification",
+        document_type="Indian Standard (Mandatory)",
+        official_url="https://www.services.bis.gov.in",
+        applicable_domain="Cookware, Kitchen Utensils, Non-electrical Food Contact Stainless Steel",
+        version="First Revision (2022)",
+        effective_date="01 Jun 2022",
+        verification_status="VERIFIED_OFFICIAL"
     )
 }
 

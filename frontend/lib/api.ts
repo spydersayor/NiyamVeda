@@ -423,7 +423,7 @@ const DEMO_SOURCES: SourceRegistryItem[] = [
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3500);
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
 
     const res = await fetch(`${API_BASE}${path}`, {
       headers: { 'Content-Type': 'application/json', ...options?.headers },
@@ -435,50 +435,58 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
     if (res.ok) {
       return await res.json();
     }
-  } catch (err) {
-    // Gracefully handle offline backend or Vercel preview fallback
-  }
+    
+    // If backend returned a non-OK status (e.g. 404 or 400), inspect body or throw
+    const errorBody = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new Error(errorBody.detail || `API error ${res.status} for ${path}`);
+  } catch (err: any) {
+    // Only use fallback data for explicit demo identifiers or when offline specifically on demo routes
+    const isExplicitDemo = path.includes('demo-purifier-001') || path.includes('demo-analysis-001');
 
-  // Resilient fallback logic for Vercel demo testing
-  if (path === '/api/products') {
-    if (options?.method === 'POST') {
-      const parsedBody = options.body ? JSON.parse(options.body as string) : {};
-      return {
-        ...DEMO_PRODUCT,
-        id: `prod-${Date.now()}`,
-        ...parsedBody,
-      } as unknown as T;
+    if (path === '/api/products') {
+      if (options?.method === 'POST') {
+        const parsedBody = options.body ? JSON.parse(options.body as string) : {};
+        return {
+          ...DEMO_PRODUCT,
+          id: `prod-${Date.now()}`,
+          ...parsedBody,
+        } as unknown as T;
+      }
+      return [DEMO_PRODUCT] as unknown as T;
     }
-    return [DEMO_PRODUCT] as unknown as T;
-  }
-  if (path.startsWith('/api/products/')) {
-    return DEMO_PRODUCT as unknown as T;
-  }
-  if (path.includes('/api/analyze')) {
-    return DEMO_ANALYSIS as unknown as T;
-  }
-  if (path.includes('/api/sources')) {
-    return DEMO_SOURCES as unknown as T;
-  }
-  if (path.includes('/api/simulation')) {
-    return {
-      product_id: "demo-purifier-001",
-      changes_applied: { material: "Polycarbonate → Flame-Retardant ABS", operating_voltage: "230V AC → 110V AC", application: "Domestic Use → Commercial Use" },
-      current_profile: { material: "Polycarbonate", operating_voltage: "230V AC", application: "Domestic Use", standards: ["IS 302 (Part 1): 2008", "IS 16240: 2015"], tests: ["Insulation Test", "RO Performance Test"], certification_route: "CRS under MeitY" },
-      simulated_profile: { material: "Flame-Retardant ABS", operating_voltage: "110V AC", application: "Commercial Use", standards: ["IS 302 (Part 1): 2008", "IS/IEC 60950-1: 2010"], tests: ["Electrical Safety Test", "EMC Test"], certification_route: "CRS + BIS Registration" },
-      standards_diff: { retained: ["IS 302 (Part 1): 2008"], added: ["IS/IEC 60950-1: 2010"], removed: [] },
-      tests_diff: { added: ["Electrical Safety Test", "EMC Test"], retained: ["RO Performance Test"] },
-      certification_route: "CRS + BIS Registration",
-      deterministic_provenance: [
-        "Changed Fact: Application shifted to Commercial -> Triggered IS/IEC 60950-1 (IT & Commercial Equipment Safety) + mandatory EMC testing.",
-        "Changed Fact: Material changed to Flame-Retardant ABS -> Glow-wire flammability risk mitigated; exemption from 850°C needle flame test applied.",
-        "Changed Fact: Operating Voltage reduced to 110V AC -> Retains IS 302 Part 1 (>50V AC threshold remains active); dielectric test modified."
-      ],
-      disclaimer: "Simulation result is for decision support only and not a legal compliance conclusion."
-    } as unknown as T;
-  }
 
-  throw new Error(`API fetch error for ${path}`);
+    if (isExplicitDemo) {
+      if (path.startsWith('/api/products/')) {
+        return DEMO_PRODUCT as unknown as T;
+      }
+      if (path.includes('/api/analyze')) {
+        return DEMO_ANALYSIS as unknown as T;
+      }
+      if (path.includes('/api/simulation')) {
+        return {
+          product_id: "demo-purifier-001",
+          changes_applied: { material: "Polycarbonate → Flame-Retardant ABS", operating_voltage: "230V AC → 110V AC", application: "Domestic Use → Commercial Use" },
+          current_profile: { material: "Polycarbonate", operating_voltage: "230V AC", application: "Domestic Use", standards: ["IS 302 (Part 1): 2008", "IS 16240: 2015"], tests: ["Insulation Test", "RO Performance Test"], certification_route: "CRS under MeitY" },
+          simulated_profile: { material: "Flame-Retardant ABS", operating_voltage: "110V AC", application: "Commercial Use", standards: ["IS 302 (Part 1): 2008", "IS/IEC 60950-1: 2010"], tests: ["Electrical Safety Test", "EMC Test"], certification_route: "CRS + BIS Registration" },
+          standards_diff: { retained: ["IS 302 (Part 1): 2008"], added: ["IS/IEC 60950-1: 2010"], removed: [] },
+          tests_diff: { added: ["Electrical Safety Test", "EMC Test"], retained: ["RO Performance Test"] },
+          certification_route: "CRS + BIS Registration",
+          deterministic_provenance: [
+            "Changed Fact: Application shifted to Commercial -> Triggered IS/IEC 60950-1 (IT & Commercial Equipment Safety) + mandatory EMC testing.",
+            "Changed Fact: Material changed to Flame-Retardant ABS -> Glow-wire flammability risk mitigated; exemption from 850°C needle flame test applied.",
+            "Changed Fact: Operating Voltage reduced to 110V AC -> Retains IS 302 Part 1 (>50V AC threshold remains active); dielectric test modified."
+          ],
+          disclaimer: "Simulation result is for decision support only and not a legal compliance conclusion."
+        } as unknown as T;
+      }
+    }
+
+    if (path.includes('/api/sources')) {
+      return DEMO_SOURCES as unknown as T;
+    }
+
+    throw err instanceof Error ? err : new Error(`API fetch error for ${path}`);
+  }
 }
 
 export const api = {
@@ -504,13 +512,15 @@ export const api = {
         size_kb: number;
         status: string;
         notice: string;
+        extracted_facts?: Record<string, any>;
       };
     } catch {
       return {
         filename: file.name,
         size_kb: Number((file.size / 1024).toFixed(1)),
         status: 'UPLOADED_SUPPORTING_INFO',
-        notice: 'Supporting document uploaded. It provides contextual engineering data but does not constitute an authoritative standard.'
+        notice: 'Supporting document uploaded. It provides contextual engineering data but does not constitute an authoritative standard.',
+        extracted_facts: {}
       };
     }
   },

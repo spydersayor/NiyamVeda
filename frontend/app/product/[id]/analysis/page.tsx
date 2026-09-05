@@ -49,7 +49,9 @@ export default function CompliancePathwayDashboard() {
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                 RELEVANT STANDARDS
               </span>
-              <div className="text-3xl font-extrabold text-white">3</div>
+              <div className="text-3xl font-extrabold text-white">
+                {result?.relevant_standards_count ?? result?.standards?.length ?? 0}
+              </div>
               <span className="text-[11px] text-slate-400 font-medium">Identified</span>
             </div>
 
@@ -57,7 +59,9 @@ export default function CompliancePathwayDashboard() {
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                 KEY REQUIREMENTS
               </span>
-              <div className="text-3xl font-extrabold text-white">14</div>
+              <div className="text-3xl font-extrabold text-white">
+                {result?.key_requirements_count ?? result?.requirements?.length ?? 0}
+              </div>
               <span className="text-[11px] text-slate-400 font-medium">Criteria</span>
             </div>
 
@@ -65,18 +69,57 @@ export default function CompliancePathwayDashboard() {
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                 EVIDENCE CONFIDENCE
               </span>
-              <div className="text-3xl font-extrabold text-emerald-400">High</div>
-              <span className="text-[11px] text-slate-400 font-medium">Strong</span>
+              <div className={`text-3xl font-extrabold ${
+                result?.evidence_confidence === 'High'
+                  ? 'text-emerald-400'
+                  : result?.evidence_confidence === 'Medium'
+                  ? 'text-blue-400'
+                  : result?.evidence_confidence === 'Insufficient Evidence'
+                  ? 'text-rose-400 text-2xl'
+                  : 'text-amber-400'
+              }`}>
+                {result?.evidence_confidence ?? 'Low'}
+              </div>
+              <span className="text-[11px] text-slate-400 font-medium">
+                {result?.evidence_confidence === 'High'
+                  ? 'Strong'
+                  : result?.evidence_confidence === 'Medium'
+                  ? 'Moderate'
+                  : result?.evidence_confidence === 'Insufficient Evidence'
+                  ? 'Abstaining'
+                  : 'Preliminary'}
+              </span>
             </div>
 
             <div className="bg-[#0B1426]/85 backdrop-blur-md border border-slate-800 rounded-xl p-4 text-center card-interactive">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                 ATTENTION NEEDED
               </span>
-              <div className="text-3xl font-extrabold text-amber-400">2</div>
+              <div className="text-3xl font-extrabold text-amber-400">
+                {result?.attention_needed_count ?? 0}
+              </div>
               <span className="text-[11px] text-slate-400 font-medium">Areas</span>
             </div>
           </div>
+
+          {/* ─── Safe Abstention Alert Banner if Activated ─── */}
+          {result?.safe_abstention?.activated && (
+            <div className="bg-rose-950/40 border border-rose-800/80 rounded-xl p-5 text-rose-200 space-y-2">
+              <div className="flex items-center gap-2 font-bold text-sm text-rose-300">
+                <span>Safe Abstention Activated:</span>
+                <span>{result.safe_abstention.product_characteristic || 'Unsupported Product Domain'}</span>
+              </div>
+              <p className="text-xs text-rose-300/90 leading-relaxed">
+                {result.safe_abstention.abstention_reason}
+              </p>
+              {result.safe_abstention.missing_information && result.safe_abstention.missing_information.length > 0 && (
+                <div className="text-xs text-rose-400 pt-1">
+                  <span className="font-semibold">Missing parameters: </span>
+                  {result.safe_abstention.missing_information.join(', ')}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* ─── Your Compliance Pathway (Screen 4 Main Card) ─── */}
           <div className="bg-[#0B1426]/90 backdrop-blur-md border border-slate-800 rounded-xl p-6 sm:p-7 space-y-5 shadow-2xl animate-slide-up">
@@ -84,115 +127,95 @@ export default function CompliancePathwayDashboard() {
               <h2 className="text-lg font-bold text-white tracking-tight">
                 Your Compliance Pathway
               </h2>
-              <button
-                onClick={() => setShowRuleModal(true)}
-                className="text-xs text-[#FF9933] hover:text-[#FF7828] font-semibold flex items-center gap-1 transition-colors"
-              >
-                Inspect Triggered Rule (Screen 5) <ChevronRight size={14} />
-              </button>
+              {result?.evaluated_rules && result.evaluated_rules.length > 0 && (
+                <button
+                  onClick={() => setShowRuleModal(true)}
+                  className="text-xs text-[#FF9933] hover:text-[#FF7828] font-semibold flex items-center gap-1 transition-colors"
+                >
+                  Inspect Triggered Rule (Screen 5) <ChevronRight size={14} />
+                </button>
+              )}
             </div>
 
-            {/* 5 Pathway Step Cards */}
+            {/* Dynamic Pathway Step Cards */}
             <div className="space-y-3">
-              {/* Step 1 */}
-              <div className="bg-[#070D1B] border border-slate-800/90 rounded-lg p-4 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs flex-shrink-0">
-                    <Check size={14} />
+              {(result?.pathway_stages || [
+                {
+                  step: 1,
+                  title: 'Product Category Identified',
+                  description: 'Evaluating category specifications against Indian Standards.',
+                  status: 'COMPLETED' as const
+                },
+                {
+                  step: 2,
+                  title: 'Potential BIS Requirements Identified',
+                  description: 'Deterministic rule evaluation in progress.',
+                  status: 'IN_PROGRESS' as const
+                },
+                {
+                  step: 3,
+                  title: 'Relevant Standards Reviewed',
+                  description: 'Mapping published QCO and gazette mandates.',
+                  status: 'PENDING' as const
+                },
+                {
+                  step: 4,
+                  title: 'Testing / Certification Considerations',
+                  description: 'Determining mandatory testing routes and NABL requirements.',
+                  status: 'PENDING' as const
+                },
+                {
+                  step: 5,
+                  title: 'Recommended Next Actions',
+                  description: 'Actionable steps for compliance readiness.',
+                  status: 'PENDING' as const
+                }
+              ]).map((stage) => {
+                const isCompleted = stage.status === 'COMPLETED';
+                const isInProgress = stage.status === 'IN_PROGRESS';
+                return (
+                  <div
+                    key={stage.step}
+                    className={`bg-[#070D1B] border rounded-lg p-4 flex items-center justify-between gap-4 ${
+                      isInProgress ? 'border-[#FF7828]/40' : 'border-slate-800/90'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3.5">
+                      <div
+                        className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0 ${
+                          isCompleted
+                            ? 'bg-emerald-500/20 text-emerald-400'
+                            : isInProgress
+                            ? 'bg-[#FF7828] text-white shadow-md shadow-orange-500/30'
+                            : 'border border-slate-700 text-slate-500 bg-transparent'
+                        }`}
+                      >
+                        {isCompleted ? <Check size={14} /> : stage.step}
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-white leading-tight">
+                          {stage.title}
+                        </h3>
+                        <p className="text-xs text-slate-400 mt-0.5">
+                          {stage.description}
+                        </p>
+                      </div>
+                    </div>
+                    <span
+                      className={`text-xs font-semibold flex-shrink-0 flex items-center gap-1 ${
+                        isCompleted
+                          ? 'text-emerald-400'
+                          : isInProgress
+                          ? 'text-[#FF7828]'
+                          : 'text-slate-500'
+                      }`}
+                    >
+                      {isCompleted && <Check size={12} />}
+                      {isCompleted ? 'Completed' : isInProgress ? 'In Progress' : 'Pending'}
+                    </span>
                   </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-white leading-tight">
-                      Product Category Identified
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      Your product falls under Household Electrical Appliance (Water Filter).
-                    </p>
-                  </div>
-                </div>
-                <span className="text-xs font-semibold text-emerald-400 flex-shrink-0 flex items-center gap-1">
-                  <Check size={12} /> Completed
-                </span>
-              </div>
-
-              {/* Step 2 */}
-              <div className="bg-[#070D1B] border border-slate-800/90 rounded-lg p-4 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs flex-shrink-0">
-                    <Check size={14} />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-white leading-tight">
-                      Potential BIS Requirements Identified
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      Deterministic engine found applicable rules for this category.
-                    </p>
-                  </div>
-                </div>
-                <span className="text-xs font-semibold text-emerald-400 flex-shrink-0 flex items-center gap-1">
-                  <Check size={12} /> Completed
-                </span>
-              </div>
-
-              {/* Step 3 */}
-              <div className="bg-[#070D1B] border border-slate-800/90 rounded-lg p-4 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs flex-shrink-0">
-                    <Check size={14} />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-white leading-tight">
-                      Relevant Standards Reviewed
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      3 relevant BIS standards and regulatory sources retrieved.
-                    </p>
-                  </div>
-                </div>
-                <span className="text-xs font-semibold text-emerald-400 flex-shrink-0 flex items-center gap-1">
-                  <Check size={12} /> Completed
-                </span>
-              </div>
-
-              {/* Step 4 */}
-              <div className="bg-[#070D1B] border border-[#FF7828]/40 rounded-lg p-4 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-7 h-7 rounded-full bg-[#FF7828] text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
-                    4
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-white leading-tight">
-                      Testing / Certification Considerations
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      Testing and certification requirements evaluated.
-                    </p>
-                  </div>
-                </div>
-                <span className="text-xs font-semibold text-[#FF7828] flex-shrink-0 flex items-center gap-1">
-                  &rarr; In Progress
-                </span>
-              </div>
-
-              {/* Step 5 */}
-              <div className="bg-[#070D1B] border border-slate-800/60 rounded-lg p-4 flex items-center justify-between gap-4 opacity-70">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center font-bold text-xs flex-shrink-0">
-                    5
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-300 leading-tight">
-                      Recommended Next Actions
-                    </h3>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      Documents, gaps and next steps for compliance.
-                    </p>
-                  </div>
-                </div>
-                <span className="text-xs font-semibold text-slate-500 flex-shrink-0">
-                  Pending
-                </span>
-              </div>
+                );
+              })}
             </div>
 
             {/* Bottom Button (Screen 4 Bottom Right) */}
@@ -236,7 +259,11 @@ export default function CompliancePathwayDashboard() {
                   PRODUCT FACT
                 </span>
                 <p className="text-xs font-bold text-slate-900 mt-0.5">
-                  Operating Voltage: 230V AC
+                  {activeRule?.input_facts
+                    ? Object.entries(activeRule.input_facts)
+                        .map(([k, v]) => `${k.replace(/_/g, ' ')}: ${v}`)
+                        .join(' | ')
+                    : 'Validated engineering characteristics'}
                 </p>
               </div>
 
@@ -248,14 +275,14 @@ export default function CompliancePathwayDashboard() {
                     RULE EVALUATED
                   </span>
                   <span className="text-[9px] font-bold px-2 py-0.5 bg-slate-100 text-slate-700 rounded border border-slate-300">
-                    DETERMINISTIC RULE
+                    {activeRule?.origin_badge || 'DETERMINISTIC RULE'}
                   </span>
                 </div>
                 <p className="text-xs font-bold text-slate-900 mt-0.5">
-                  RULE-BIS-014
+                  {activeRule?.rule_id || 'RULE-BIS-EVALUATED'}
                 </p>
                 <p className="text-xs text-slate-600 mt-0.5">
-                  Household electrical appliance operating above the specified voltage threshold.
+                  {activeRule?.rule_name || 'Applicable regulatory compliance rule'}
                 </p>
               </div>
 
@@ -267,14 +294,14 @@ export default function CompliancePathwayDashboard() {
                     RULE CONDITION
                   </span>
                   <span className="text-[9px] font-bold px-2 py-0.5 bg-slate-100 text-slate-700 rounded border border-slate-300">
-                    DETERMINISTIC RULE
+                    {activeRule?.verification_status || 'VERIFIED OFFICIAL'}
                   </span>
                 </div>
                 <p className="text-xs font-bold text-slate-900 mt-0.5">
-                  IS 302 (Part 1): 2008 – Clause 22.1
+                  {activeRule?.clause_reference || 'Clause reference from Indian Standard'}
                 </p>
                 <p className="text-xs text-slate-600 mt-0.5 italic">
-                  Appliances shall be constructed so that their electrical insulation does not break down during normal operation.
+                  {activeRule?.supporting_evidence_excerpt || activeRule?.rule_logic}
                 </p>
               </div>
 
@@ -286,11 +313,11 @@ export default function CompliancePathwayDashboard() {
                     RESULT
                   </span>
                   <span className="text-[9px] font-bold px-2 py-0.5 bg-purple-50 text-purple-700 rounded border border-purple-200">
-                    AI SYNTHESIS
+                    DETERMINISTIC ENGINE
                   </span>
                 </div>
                 <p className="text-xs text-slate-700 mt-0.5 leading-relaxed">
-                  This rule was triggered because the operating voltage (230V AC) falls within the condition defined in the rule.
+                  {activeRule?.result_explanation || 'Rule condition satisfied based on structured product facts.'}
                 </p>
               </div>
 

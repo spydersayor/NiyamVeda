@@ -161,23 +161,35 @@ export default function WhatIfSimulationPage() {
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
                     Applicable Standards
                   </span>
-                  <p className="font-bold text-slate-800">IS 302 (Part 1): 2008</p>
-                  <p className="font-bold text-slate-800 mt-0.5">IS 16240: 2015</p>
+                  {(simResult?.current_profile?.standards && simResult.current_profile.standards.length > 0) ? (
+                    simResult.current_profile.standards.map((s: string) => (
+                      <p key={s} className="font-bold text-slate-800 mt-0.5">{s}</p>
+                    ))
+                  ) : (
+                    <p className="text-slate-500 italic">No standards currently triggered</p>
+                  )}
                 </div>
 
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
                     Key Tests
                   </span>
-                  <p className="text-slate-700 font-medium">Insulation Test</p>
-                  <p className="text-slate-700 font-medium mt-0.5">RO Performance Test</p>
+                  {(simResult?.current_profile?.tests && simResult.current_profile.tests.length > 0) ? (
+                    simResult.current_profile.tests.map((t: string) => (
+                      <p key={t} className="text-slate-700 font-medium mt-0.5">{t}</p>
+                    ))
+                  ) : (
+                    <p className="text-slate-500 italic">Standard inspection</p>
+                  )}
                 </div>
 
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
                     Certification Route
                   </span>
-                  <p className="font-bold text-slate-900">CRS under MeitY</p>
+                  <p className="font-bold text-slate-900">
+                    {simResult?.current_profile?.certification_route || 'Scheme I (ISI Mark)'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -193,18 +205,37 @@ export default function WhatIfSimulationPage() {
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
                     Applicable Standards
                   </span>
-                  <p className="font-bold text-slate-800">IS 302 (Part 1): 2008</p>
-                  <p className="font-extrabold text-[#FF7828] mt-0.5 flex items-center gap-1">
-                    + IS 60950-1: 2010
-                  </p>
+                  {/* Retained Standards */}
+                  {(simResult?.standards_diff?.retained || []).map((s: string) => (
+                    <p key={s} className="font-bold text-slate-800 mt-0.5">{s}</p>
+                  ))}
+                  {/* Added Standards */}
+                  {(simResult?.standards_diff?.added || []).map((s: string) => (
+                    <p key={s} className="font-extrabold text-[#FF7828] mt-0.5 flex items-center gap-1">
+                      + {s}
+                    </p>
+                  ))}
+                  {/* Removed Standards */}
+                  {(simResult?.standards_diff?.removed || []).map((s: string) => (
+                    <p key={s} className="text-rose-600 line-through text-[11px] mt-0.5 flex items-center gap-1">
+                      - {s}
+                    </p>
+                  ))}
+                  {(!simResult?.standards_diff?.added?.length && !simResult?.standards_diff?.retained?.length) && (
+                    <p className="text-slate-500 italic">No standards applicable after change</p>
+                  )}
                 </div>
 
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                    New Tests
+                    Tests Required
                   </span>
-                  <p className="font-bold text-slate-800">Electrical Safety Test</p>
-                  <p className="font-extrabold text-[#FF7828] mt-0.5">EMC Test</p>
+                  {(simResult?.tests_diff?.retained || []).map((t: string) => (
+                    <p key={t} className="font-bold text-slate-800 mt-0.5">{t}</p>
+                  ))}
+                  {(simResult?.tests_diff?.added || []).map((t: string) => (
+                    <p key={t} className="font-extrabold text-[#FF7828] mt-0.5">+ {t}</p>
+                  ))}
                 </div>
 
                 <div>
@@ -212,9 +243,22 @@ export default function WhatIfSimulationPage() {
                     Certification Route
                   </span>
                   <p className="font-extrabold text-slate-900">
-                    CRS + BIS Registration
+                    {simResult?.certification_route || 'Scheme I (ISI Mark)'}
                   </p>
                 </div>
+
+                {simResult?.deterministic_provenance && simResult.deterministic_provenance.length > 0 && (
+                  <div className="pt-2 border-t border-slate-200 space-y-1">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                      Deterministic Impact
+                    </span>
+                    {simResult.deterministic_provenance.map((prov: string, i: number) => (
+                      <p key={i} className="text-[10px] text-slate-600 leading-tight">
+                        • {prov}
+                      </p>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 

@@ -26,45 +26,52 @@ export default function ConfirmProductFactsPage() {
     router.push(`/product/${productId}/analysis`);
   };
 
-  // Facts grid (2 columns x 3 rows exactly matching Screen 3)
-  const factsList = [
-    {
-      label: 'PRODUCT CATEGORY',
-      value: product?.category || 'Electrical Household Appliance',
-      badge: 'User Provided',
-      badgeType: 'green',
-    },
-    {
-      label: 'MATERIAL / STRUCTURE',
-      value: product?.material_composition?.split(',')[0] || 'Polycarbonate Housing',
-      badge: 'Extracted from Document',
-      badgeType: 'blue',
-    },
-    {
-      label: 'APPLICATION INTENT',
-      value: product?.intended_use?.split(' ')[0] + ' Consumer Use' || 'Domestic Consumer Use',
-      badge: 'User Provided',
-      badgeType: 'green',
-    },
-    {
-      label: 'OPERATING VOLTAGE',
-      value: product?.operating_voltage || '230V AC, 50Hz',
-      badge: 'User Provided',
-      badgeType: 'green',
-    },
-    {
-      label: 'POWER CONSUMPTION',
-      value: product?.power_consumption || '40W',
-      badge: 'Extracted from Document',
-      badgeType: 'blue',
-    },
-    {
-      label: 'WATER STORAGE CAPACITY',
-      value: product?.water_storage_capacity || '8 Liters',
-      badge: 'User Provided',
-      badgeType: 'green',
-    },
-  ];
+  // Facts grid dynamically assembled from product attributes or stored facts
+  const factsList = product?.facts && product.facts.length > 0
+    ? product.facts.map(f => ({
+        label: f.label || f.key.replace(/_/g, ' ').toUpperCase(),
+        value: f.value,
+        badge: f.origin === 'EXTRACTED_FROM_DOCUMENT' ? 'Extracted from Document' : 'User Provided',
+        badgeType: f.origin === 'EXTRACTED_FROM_DOCUMENT' ? 'blue' : 'green',
+      }))
+    : [
+        {
+          label: 'PRODUCT CATEGORY',
+          value: product?.category || 'General Product',
+          badge: 'User Provided',
+          badgeType: 'green',
+        },
+        {
+          label: 'MATERIAL / STRUCTURE',
+          value: product?.material_composition || 'Not Specified',
+          badge: 'Extracted from Document',
+          badgeType: 'blue',
+        },
+        {
+          label: 'APPLICATION INTENT',
+          value: product?.intended_use || 'General Commercial / Domestic Use',
+          badge: 'User Provided',
+          badgeType: 'green',
+        },
+        {
+          label: 'OPERATING VOLTAGE',
+          value: product?.operating_voltage || 'Non-electrical / Unpowered',
+          badge: 'User Provided',
+          badgeType: 'green',
+        },
+        {
+          label: 'POWER / CAPACITY',
+          value: [product?.power_consumption, product?.water_storage_capacity].filter(Boolean).join(' / ') || 'Standard Specification',
+          badge: 'Extracted from Document',
+          badgeType: 'blue',
+        },
+        {
+          label: 'TECHNICAL CHARACTERISTICS',
+          value: product?.technical_characteristics || 'Compliant with Indian Standard norms',
+          badge: 'User Provided',
+          badgeType: 'green',
+        },
+      ];
 
   return (
     <div className="min-h-screen portal-bg py-10 px-4 sm:px-8 font-sans">

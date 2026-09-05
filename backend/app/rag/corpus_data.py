@@ -132,5 +132,59 @@ EVIDENCE_CORPUS: List[Dict[str, Any]] = [
         "version": "CRO Phase IV",
         "verification_status": "VERIFIED_OFFICIAL",
         "source_url": "https://www.meity.gov.in/esdm/standards"
+    },
+    {
+        "id": "CHK-BIS-302-2-15-19",
+        "source_id": "SRC-BIS-0302-2-15",
+        "title": "IS 302 (Part 2/Sec 15): 2009 - Clause 19",
+        "authority": "Bureau of Indian Standards",
+        "document_type": "Indian Standard (Mandatory)",
+        "clause_number": "Clause 19 - Abnormal Operation & Dry Boil Protection",
+        "chunk_text": (
+            "Appliances for heating liquids shall be constructed so that risk of fire or mechanical damage as a result of "
+            "abnormal operation is obviated. Electric kettles and water boilers must incorporate an automatic thermal cut-out "
+            "or dry-boil protector that de-energizes the heating element if the appliance is operated without water or boiled dry."
+        ),
+        "publication_date": "2009-11-01",
+        "effective_date": "2010-01-01",
+        "version": "Third Revision",
+        "verification_status": "VERIFIED_OFFICIAL",
+        "source_url": "https://standardsbis.bsbedge.com"
+    },
+    {
+        "id": "CHK-BIS-6911-05-1",
+        "source_id": "SRC-BIS-06911",
+        "title": "IS 6911: 2017 - Clause 5.1",
+        "authority": "Bureau of Indian Standards",
+        "document_type": "Indian Standard (Mandatory / QCO)",
+        "clause_number": "Clause 5.1 - Chemical Composition of Food-Grade Stainless Steel",
+        "chunk_text": (
+            "Stainless steel intended for food contact utensils, vessels, and cookware must conform to austenitic grades "
+            "such as SS 304 (Grade X07Cr18Ni9) or SS 316. Chromium content must not be less than 17.5 percent and nickel "
+            "not less than 8.0 percent to ensure corrosion resistance and prevent heavy metal leaching into food or boiling water."
+        ),
+        "publication_date": "2017-10-01",
+        "effective_date": "2018-03-15",
+        "version": "Second Revision",
+        "verification_status": "VERIFIED_OFFICIAL",
+        "source_url": "https://www.services.bis.gov.in"
+    },
+    {
+        "id": "CHK-BIS-14756-04-2",
+        "source_id": "SRC-BIS-14756",
+        "title": "IS 14756: 2022 - Clause 4.2",
+        "authority": "Bureau of Indian Standards",
+        "document_type": "Indian Standard (Mandatory)",
+        "clause_number": "Clause 4.2 - Food Grade Utensil Material Safety",
+        "chunk_text": (
+            "Stainless steel cooking utensils and food containers shall be fabricated from certified food-grade stainless steel "
+            "complying with IS 6911. The articles shall be free from surface cracks, pits, and burrs, and non-metallic handles "
+            "or attachments must withstand thermal cycling up to 150°C without deformation or toxic vapor release."
+        ),
+        "publication_date": "2022-04-01",
+        "effective_date": "2022-06-01",
+        "version": "First Revision",
+        "verification_status": "VERIFIED_OFFICIAL",
+        "source_url": "https://www.services.bis.gov.in"
     }
 ]

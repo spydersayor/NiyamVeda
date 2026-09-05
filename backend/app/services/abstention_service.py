@@ -8,8 +8,6 @@ class SafeAbstentionEngine:
     If not, it SAFELY ABSTAINS and blocks unsupported AI conclusions.
     """
 
-    CRITICAL_FIELDS = ["category", "operating_voltage", "intended_use"]
-
     def evaluate_abstention(
         self,
         product_facts: Dict[str, Any],
@@ -19,12 +17,48 @@ class SafeAbstentionEngine:
     ) -> Tuple[SafeAbstentionDetails, str]:
         """
         Returns:
-            (SafeAbstentionDetails, evidence_confidence: "High" | "Medium" | "Insufficient Evidence")
+            (SafeAbstentionDetails, evidence_confidence: "High" | "Medium" | "Low" | "Insufficient Evidence")
         """
+        category = str(product_facts.get("category", "")).lower()
+        intended_use = str(product_facts.get("intended_use", "")).lower()
+        is_unknown = (
+            category in ["", "unknown", "none", "unspecified"]
+            and intended_use in ["", "unknown", "none", "unspecified"]
+        )
+
+        # Trigger Case 0: Unsupported / unknown product
+        if is_unknown or (matched_rules_count == 0 and authoritative_evidence_count == 0):
+            return (
+                SafeAbstentionDetails(
+                    activated=True,
+                    product_characteristic="Unknown Product Domain",
+                    evidence_search_result="No authoritative regulatory sources or deterministic rules matched.",
+                    system_action="Safe abstention activated to prevent regulatory hallucination.",
+                    abstention_reason="Insufficient information/evidence to determine applicable compliance requirements. The provided parameters do not match any known BIS quality control order or mandatory standards.",
+                    missing_information=["Standardized product category", "Intended use specification", "Material composition"],
+                    recommended_actions=[
+                        {"title": "Specify Category", "desc": "Provide a recognized appliance, utensil, or industrial category."},
+                        {"title": "Define Intended Use", "desc": "Clarify intended consumer, commercial, or industrial application."},
+                        {"title": "Review Available Sources", "desc": "Inspect the Bureau of Indian Standards source directory for applicable domains."}
+                    ]
+                ),
+                "Insufficient Evidence"
+            )
+
+        # Determine critical fields based on electrical status
+        is_electrical = product_facts.get("is_electrical")
+        if is_electrical is None:
+            volt = str(product_facts.get("operating_voltage", "") or "")
+            is_electrical = "electrical" in category or any(v in volt.lower() for v in ["v", "ac", "dc"]) and "non-electrical" not in category
+
+        critical_fields = ["category", "intended_use"]
+        if is_electrical:
+            critical_fields.append("operating_voltage")
+
         missing_fields = []
-        for field in self.CRITICAL_FIELDS:
-            val = product_facts.get(field)
-            if not val or str(val).strip() == "" or str(val).lower() == "none":
+        for field in critical_fields:
+            val = product_facts.get(field) or product_facts.get(f"{field}_raw") or product_facts.get(f"{field}_num")
+            if val is None or (isinstance(val, str) and (val.strip() == "" or val.lower() in ["none", "unspecified", "unknown"])):
                 missing_fields.append(field)
 
         # Trigger Case 1: Missing critical technical information
@@ -35,19 +69,19 @@ class SafeAbstentionEngine:
                     product_characteristic=f"Missing Attributes: {', '.join(missing_fields)}",
                     evidence_search_result="Incomplete product profile prevents deterministic standard mapping.",
                     system_action="Compliance conclusion blocked due to missing critical engineering parameters.",
-                    abstention_reason=f"Operating parameters ({', '.join(missing_fields)}) must be supplied before evaluating BIS applicability.",
+                    abstention_reason=f"Essential operating parameters ({', '.join(missing_fields)}) must be supplied before evaluating BIS applicability.",
                     missing_information=missing_fields,
                     recommended_actions=[
                         {"title": "Add Product Information", "desc": "Provide operating voltage, intended use, and component specs."},
                         {"title": "Refine Product Description", "desc": "Specify exact voltage ratings and power sources."},
-                        {"title": "Review Available Sources", "desc": "Consult general electrical safety guidelines under IS 302."}
+                        {"title": "Review Available Sources", "desc": "Consult general safety guidelines under official BIS standards."}
                     ]
                 ),
                 "Insufficient Evidence"
             )
 
         # Trigger Case 2: Unstandardized / novel feature without published BIS standard
-        # (e.g. UV-LED Sanitization Chamber highlighted in Screen 12 of visual reference)
+        # (e.g. UV-LED Sanitization Chamber)
         if has_unstandardized_component or "uv-led" in str(product_facts.get("material_composition", "")).lower() or "uv-led" in str(product_facts.get("technical_characteristics", "")).lower():
             return (
                 SafeAbstentionDetails(
@@ -64,36 +98,36 @@ class SafeAbstentionEngine:
                         {"title": "Request Expert Review", "desc": "Submit component specifications to BIS technical committee (ETD/CHD) for custom classification."}
                     ]
                 ),
-                "High"  # Main product is High, but specific component triggered Safe Abstention!
+                "High" if matched_rules_count >= 2 else "Medium"
             )
 
-        # Trigger Case 3: Zero authoritative evidence retrieved
-        if authoritative_evidence_count == 0 or matched_rules_count == 0:
+        # Trigger Case 3: Zero rules matched despite having category
+        if matched_rules_count == 0:
             return (
                 SafeAbstentionDetails(
                     activated=True,
-                    product_characteristic="Unknown Product Domain",
-                    evidence_search_result="No authoritative regulatory sources matched.",
-                    system_action="Safe abstention activated to prevent regulatory hallucination.",
-                    abstention_reason="The product facts do not match any published BIS quality control orders (QCO) or compulsory registration schemes.",
-                    missing_information=["Applicable industry category", "Specific Indian tariff code (HSN)"],
+                    product_characteristic="Unregulated Domain",
+                    evidence_search_result="No deterministic BIS compliance rules triggered for the supplied parameters.",
+                    system_action="Safe abstention activated to avoid fabricating compliance standards.",
+                    abstention_reason="Insufficient evidence to determine applicable standard for this specific product profile.",
+                    missing_information=["Applicable industry technical specification"],
                     recommended_actions=[
-                        {"title": "Add Product Information", "desc": "Select a standardized category from the dropdown."},
                         {"title": "Review Available Sources", "desc": "Check the BIS Source Registry list."},
-                        {"title": "Request Expert Review", "desc": "Consult a BIS accredited technical advisor."}
+                        {"title": "Consult BIS Technical Committee", "desc": "Verify if a voluntary Indian Standard exists."}
                     ]
                 ),
                 "Insufficient Evidence"
             )
 
-        # Normal confident operation
+        # Confident operation
+        confidence = "High" if matched_rules_count >= 2 and authoritative_evidence_count >= 2 else "Medium"
         return (
             SafeAbstentionDetails(
                 activated=False,
                 missing_information=[],
                 recommended_actions=[]
             ),
-            "High"
+            confidence
         )
 
 abstention_engine = SafeAbstentionEngine()

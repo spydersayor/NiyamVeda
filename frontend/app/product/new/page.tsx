@@ -30,6 +30,7 @@ export default function ProductInputPage() {
   const [loading, setLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [extractedNotice, setExtractedNotice] = useState<string | null>(null);
 
   // Initial list matching Screen 2 specification
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFileItem[]>([
@@ -80,6 +81,23 @@ export default function ProductInputPage() {
               : item
           )
         );
+
+        if (res.extracted_facts && Object.keys(res.extracted_facts).length > 0) {
+          const ef = res.extracted_facts;
+          setForm(prev => ({
+            ...prev,
+            operating_voltage: ef.operating_voltage || prev.operating_voltage,
+            power_consumption: ef.power_consumption || prev.power_consumption,
+            water_storage_capacity: ef.water_storage_capacity || prev.water_storage_capacity,
+            material_composition: ef.material_composition || prev.material_composition,
+            intended_use: ef.intended_use || prev.intended_use,
+            category: ef.category || prev.category,
+          }));
+          const summaryParts = Object.entries(ef)
+            .map(([k, v]) => `${k.replace(/_/g, ' ')}: ${v}`)
+            .join(' | ');
+          setExtractedNotice(`Auto-extracted parameters from "${res.filename}": ${summaryParts}`);
+        }
       } catch (err: any) {
         setUploadedFiles(prev => prev.filter(item => item.id !== tempId));
         setUploadError(`Failed to upload "${file.name}". Please try again.`);
@@ -149,6 +167,21 @@ export default function ProductInputPage() {
 
         {/* ─── Main White Form Container (Screen 2 Exact White Card) ─── */}
         <div className="bg-white/95 backdrop-blur-md rounded-xl shadow-2xl border border-white/60 p-6 sm:p-8 text-slate-800 animate-slide-up">
+          {extractedNotice && (
+            <div className="mb-6 p-4 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs flex items-center justify-between gap-3 shadow-sm animate-slide-in">
+              <div className="flex items-center gap-2">
+                <span className="font-bold">✓ PDF Parameters Extracted:</span>
+                <span>{extractedNotice}</span>
+              </div>
+              <button 
+                type="button" 
+                onClick={() => setExtractedNotice(null)}
+                className="text-emerald-700 hover:text-emerald-900 font-bold text-sm"
+              >
+                &times;
+              </button>
+            </div>
+          )}
           <form onSubmit={handleContinue}>
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               

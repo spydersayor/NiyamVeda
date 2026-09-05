@@ -20,53 +20,8 @@ export default function RequirementsChecklistPage() {
       .catch(() => {});
   }, [productId]);
 
-  const requirements: ComplianceRequirement[] = result?.requirements || [
-    {
-      id: 'REQ-01',
-      requirement: 'Electrical Insulation',
-      why_it_applies: 'Ensure user safety during normal operation.',
-      source: 'IS 302 (Part 1): 2008',
-      source_id: 'SRC-BIS-0302-1',
-      category: 'TESTING_AND_CERTIFICATION',
-      status: 'READY',
-    },
-    {
-      id: 'REQ-02',
-      requirement: 'Structure & Construction',
-      why_it_applies: 'Ensure appliance is mechanically safe and durable.',
-      source: 'IS 302 (Part 1): 2008',
-      source_id: 'SRC-BIS-0302-1',
-      category: 'PRODUCT_INFORMATION',
-      status: 'READY',
-    },
-    {
-      id: 'REQ-03',
-      requirement: 'Overload Protection',
-      why_it_applies: 'Prevents overheating and fire risk due to electrical faults.',
-      source: 'IS 302 (Part 1): 2008',
-      source_id: 'SRC-BIS-0302-1',
-      category: 'TESTING_AND_CERTIFICATION',
-      status: 'NEEDS_INFORMATION',
-    },
-    {
-      id: 'REQ-04',
-      requirement: 'Water Quality Requirements',
-      why_it_applies: 'Ensures treated water meets safety standards.',
-      source: 'IS 16240: 2015',
-      source_id: 'SRC-BIS-16240',
-      category: 'TESTING_AND_CERTIFICATION',
-      status: 'NEEDS_INFORMATION',
-    },
-    {
-      id: 'REQ-05',
-      requirement: 'Material Safety',
-      why_it_applies: 'Ensures materials are safe for domestic use.',
-      source: 'IS 13428: 2017',
-      source_id: 'SRC-BIS-13428',
-      category: 'DOCUMENTATION',
-      status: 'REVIEW_REQUIRED',
-    },
-  ];
+  const requirements: ComplianceRequirement[] = result?.requirements ?? [];
+  const completionPercent = result?.checklist_completion_percent ?? 0;
 
   return (
     <div className="flex min-h-screen portal-bg font-sans text-slate-800">
@@ -81,9 +36,9 @@ export default function RequirementsChecklistPage() {
               Requirements for Your Product
             </h1>
 
-            {/* + 76% Completed Badge */}
+            {/* Dynamic % Completed Badge */}
             <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-300 flex items-center gap-1.5 shadow-sm">
-              <span className="text-emerald-500 font-extrabold">+</span> 76% Completed
+              <span className="text-emerald-500 font-extrabold">+</span> {completionPercent}% Completed
             </span>
           </div>
 
@@ -100,36 +55,44 @@ export default function RequirementsChecklistPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
-                  {requirements.map((req) => (
-                    <tr key={req.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3.5 px-4 font-bold text-slate-900">
-                        {req.requirement}
-                      </td>
-                      <td className="py-3.5 px-4 text-slate-600 leading-relaxed">
-                        {req.why_it_applies}
-                      </td>
-                      <td className="py-3.5 px-4 font-semibold text-slate-800">
-                        {req.source}
-                      </td>
-                      <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                        {req.status === 'READY' && (
-                          <span className="text-[11px] font-bold px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            Ready
-                          </span>
-                        )}
-                        {req.status === 'NEEDS_INFORMATION' && (
-                          <span className="text-[11px] font-bold px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 border border-amber-200">
-                            Needs Information
-                          </span>
-                        )}
-                        {req.status === 'REVIEW_REQUIRED' && (
-                          <span className="text-[11px] font-bold px-2.5 py-1 rounded-md bg-red-50 text-red-700 border border-red-200">
-                            Review Required
-                          </span>
-                        )}
+                  {requirements.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="py-8 text-center text-slate-500 font-medium">
+                        No compliance requirements established from current evidence.
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    requirements.map((req) => (
+                      <tr key={req.id} className="hover:bg-slate-50/80 transition-colors">
+                        <td className="py-3.5 px-4 font-bold text-slate-900">
+                          {req.requirement}
+                        </td>
+                        <td className="py-3.5 px-4 text-slate-600 leading-relaxed">
+                          {req.why_it_applies}
+                        </td>
+                        <td className="py-3.5 px-4 font-semibold text-slate-800">
+                          {req.source}
+                        </td>
+                        <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                          {req.status === 'READY' && (
+                            <span className="text-[11px] font-bold px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              Ready
+                            </span>
+                          )}
+                          {req.status === 'NEEDS_INFORMATION' && (
+                            <span className="text-[11px] font-bold px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 border border-amber-200">
+                              Needs Information
+                            </span>
+                          )}
+                          {(req.status === 'REVIEW_REQUIRED' || req.status === 'REVIEW') && (
+                            <span className="text-[11px] font-bold px-2.5 py-1 rounded-md bg-red-50 text-red-700 border border-red-200">
+                              Review Required
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

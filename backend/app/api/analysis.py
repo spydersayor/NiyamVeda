@@ -87,6 +87,13 @@ def get_analysis_result(identifier: str):
     if res:
         return res
 
+    # If identifier is an existing product, run dynamic analysis on its actual parameters
+    product = product_repo.get(identifier)
+    if product:
+        res = orchestrator.analyze(product, product_id=product.id)
+        _save_analysis_result(res, product_id=product.id)
+        return res
+
     # Preserve fallback to analyzing demo product ONLY for explicit demo identifiers
     # As required: Do not return demo analysis for arbitrary invalid/nonexistent IDs
     if identifier in ("demo-purifier-001", "demo-analysis-001"):

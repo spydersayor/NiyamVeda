@@ -20,38 +20,7 @@ export default function PotentialComplianceRisksPage() {
       .catch(() => {});
   }, [productId]);
 
-  const risks: ComplianceRisk[] = result?.risks || [
-    {
-      id: 'RISK-01',
-      risk: 'Material Test Failure',
-      severity: 'HIGH',
-      why_it_matters: 'Polycarbonate may fail glow-wire or flame-retardancy tests.',
-      potential_impact: '',
-      suggested_action: 'Consider flame-retardant grade or alternative material.',
-      evidence_strength: 'High',
-      risk_type: 'EVIDENCE_SUPPORTED_RISK',
-    },
-    {
-      id: 'RISK-02',
-      risk: 'Incorrect Product Classification',
-      severity: 'MEDIUM',
-      why_it_matters: 'Misclassification may lead to wrong standard selection.',
-      potential_impact: '',
-      suggested_action: 'Review technical characteristics and intended use.',
-      evidence_strength: 'Medium',
-      risk_type: 'INFORMATION_GAP',
-    },
-    {
-      id: 'RISK-03',
-      risk: 'Incomplete Documentation',
-      severity: 'POTENTIAL',
-      why_it_matters: 'Missing technical documents may delay certification.',
-      potential_impact: '',
-      suggested_action: 'Prepare complete technical file and test reports.',
-      evidence_strength: 'Medium',
-      risk_type: 'INFORMATION_GAP',
-    },
-  ];
+  const risks: ComplianceRisk[] = result?.risks ?? [];
 
   return (
     <div className="flex min-h-screen portal-bg font-sans text-slate-800">
@@ -70,9 +39,19 @@ export default function PotentialComplianceRisksPage() {
             </p>
           </div>
 
-          {/* ─── 3 Risk Cards (Screen 9 Exact) ─── */}
+          {/* ─── Risk Cards (Screen 9 Exact) ─── */}
           <div className="space-y-4">
-            {risks.map((r) => (
+            {risks.length === 0 ? (
+              <div className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-xl p-8 text-center space-y-2 shadow-lg">
+                <h2 className="text-sm font-bold text-slate-800">
+                  No Compliance Risks Established
+                </h2>
+                <p className="text-xs text-slate-500 max-w-md mx-auto">
+                  No significant compliance failure risks or material vulnerabilities were established from the available evidence.
+                </p>
+              </div>
+            ) : (
+              risks.map((r) => (
               <div
                 key={r.id}
                 className="bg-white/95 backdrop-blur-sm border border-white/60 rounded-xl p-5 shadow-lg card-interactive flex flex-col sm:flex-row sm:items-center justify-between gap-4"
@@ -123,7 +102,7 @@ export default function PotentialComplianceRisksPage() {
                   </span>
                 </div>
               </div>
-            ))}
+            )))}
           </div>
 
           {/* ─── Bottom Navigation Link (Screen 9 Exact) ─── */}

@@ -158,6 +158,8 @@ class SimulationRequest(BaseModel):
     target_market: Optional[str] = None
     intended_use: Optional[str] = None
     category: Optional[str] = None
+    food_contact: Optional[bool] = None
+    electrical: Optional[bool] = None
 
 class SimulationResult(BaseModel):
     product_id: str
