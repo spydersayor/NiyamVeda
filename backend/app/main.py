@@ -10,6 +10,7 @@ from app.api.analysis import router as analysis_router
 from app.api.simulation import router as simulation_router
 from app.api.sources import router as sources_router
 from app.api.auth import router as auth_router
+from app.api.assistant import router as assistant_router
 
 logger = logging.getLogger("niyamveda")
 
@@ -52,6 +53,7 @@ app.include_router(products_router)
 app.include_router(analysis_router)
 app.include_router(simulation_router)
 app.include_router(sources_router)
+app.include_router(assistant_router)
 
 @app.get("/")
 def root_info():
