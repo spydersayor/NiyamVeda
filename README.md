@@ -60,38 +60,52 @@ NiyamVeda is **explicitly not a generic conversational chatbot**. In compliance,
 
 ---
 
-## 🚀 Instant Deployment on Vercel
+## 🚀 Production Deployment Architecture
 
-The frontend is fully optimized for **Vercel** with Next.js 14 App Router, dynamic route generation, Google Fonts font-optimization, zero-warning builds, and resilient offline demo fallback modes.
+NiyamVeda is architected for clean separation of concerns:
+- **Frontend (Next.js 14)**: Hosted on **Vercel** with edge caching and static/dynamic rendering.
+- **Backend (FastAPI)**: Hosted on **Render** (Python Web Service with Uvicorn).
+- **Database (PostgreSQL)**: Hosted on **Render Managed PostgreSQL** (or Supabase/Neon/RDS).
 
-### Option 1: One-Click / Dashboard Import (Recommended)
+---
 
-1. Push your repository to **GitHub / GitLab / Bitbucket**.
-2. Log into the **[Vercel Dashboard](https://vercel.com/new)** and click **"Import Project"**.
-3. In the project setup screen:
-   - **Root Directory**: Click *Edit* and select **`frontend`**.
+### Part 1: Deploy Backend & Database on Render
+
+1. **Create Managed PostgreSQL Database**:
+   - Go to [Render Dashboard](https://dashboard.render.com) > **New** > **PostgreSQL**.
+   - Set Name: `niyamveda-db`, Database: `niyamveda_db`, User: `niyamveda`.
+   - Copy the **Internal Database URL** (or External Database URL if deploying backend elsewhere).
+
+2. **Deploy Backend Web Service**:
+   - Go to **New** > **Web Service** and connect your NiyamVeda GitHub repository.
+   - **Root Directory**: `backend`
+   - **Environment**: `Python 3`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+   - **Environment Variables**:
+     - `DATABASE_URL`: Your Render PostgreSQL database URL
+     - `CORS_ORIGIN`: Your Vercel frontend domain (e.g., `https://niyamveda.vercel.app`)
+     - `GEMINI_API_KEY`: Your Google AI Gemini API Key (optional for offline mock fallback)
+     - `LLM_MODEL`: `gemini-2.5-flash`
+     - `EMBEDDING_MODEL`: `text-embedding-004`
+     - `EMBEDDING_DIMENSION`: `768`
+   - Click **Create Web Service**. The backend will automatically initialize tables and demo seeders on startup via `init_db()`.
+   - Copy your backend URL: e.g. `https://niyamveda-api.onrender.com`.
+
+---
+
+### Part 2: Deploy Frontend on Vercel
+
+1. **Import Project to Vercel**:
+   - Go to [Vercel Dashboard](https://vercel.com/new) and click **"Import Project"**.
+   - Select your NiyamVeda repository.
+2. **Configure Project**:
+   - **Root Directory**: Select `frontend` (or leave as root with the included `vercel.json`).
    - **Framework Preset**: Automatically detected as **Next.js**.
-   - **Build Command**: `next build` *(default)*.
-   - **Output Directory**: `.next` *(default)*.
-4. *(Optional)* Add Environment Variable:
-   - `NEXT_PUBLIC_API_URL`: URL of your deployed backend (e.g. `https://niyamveda-api.onrender.com`).
-   - *Note: If omitted, the frontend automatically runs in its built-in resilient mock demo mode, allowing instant interactive demonstrations with all 12 screens working smoothly!*
-5. Click **Deploy**.
-
-### Option 2: Deploy Using Root `vercel.json`
-
-A pre-configured `vercel.json` is included in the workspace root. If you deploy from the repository root, Vercel will automatically build the `frontend` package:
-
-```bash
-# Install Vercel CLI globally
-npm i -g vercel
-
-# Deploy directly from workspace root
-vercel
-
-# Or deploy specifically targeting frontend directory
-vercel --cwd frontend
-```
+3. **Set Environment Variable**:
+   - `NEXT_PUBLIC_API_URL`: Your Render backend URL (e.g., `https://niyamveda-api.onrender.com`).
+   - *(If omitted, the frontend automatically activates offline demo fallback mode with all 12 screens functional).*
+4. **Deploy**: Click **Deploy**. Vercel will build and publish your Next.js frontend globally.
 
 ---
 

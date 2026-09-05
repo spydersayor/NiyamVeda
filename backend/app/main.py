@@ -1,16 +1,39 @@
+from datetime import datetime, timezone
+from contextlib import asynccontextmanager
+import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
+from app.core.database import init_db, close_pool
 from app.api.products import router as products_router
 from app.api.analysis import router as analysis_router
 from app.api.simulation import router as simulation_router
 from app.api.sources import router as sources_router
 from app.api.auth import router as auth_router
 
+logger = logging.getLogger("niyamveda")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: initialize database schema & demo records
+    try:
+        init_db()
+        logger.info("NiyamVeda backend startup: database initialized.")
+    except Exception as e:
+        logger.warning(f"Database initialization warning on startup (will retry on demand): {e}")
+    yield
+    # Shutdown: clean up connection pool
+    try:
+        close_pool()
+        logger.info("NiyamVeda backend shutdown: connection pool closed.")
+    except Exception as e:
+        logger.warning(f"Error during pool shutdown: {e}")
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     description="Explainable BIS Compliance Intelligence Assistant for Indian MSMEs (SIH26107)",
-    version=settings.VERSION
+    version=settings.VERSION,
+    lifespan=lifespan
 )
 
 # Explicit CORS Configuration
@@ -46,7 +69,7 @@ def root_info():
 def health_check():
     return {
         "status": "healthy",
-        "timestamp": "2026-09-02T20:50:00Z"
+        "timestamp": datetime.now(timezone.utc).isoformat()
     }
 
 if __name__ == "__main__":

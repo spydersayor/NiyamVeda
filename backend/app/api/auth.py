@@ -1,22 +1,56 @@
 import uuid
+import hashlib
+from datetime import datetime, timezone, timedelta
 from fastapi import APIRouter, HTTPException, Depends, Header
 from typing import Optional
+from psycopg2.extras import RealDictCursor
+from app.core.database import get_connection
 from app.schemas.auth import UserRegister, UserLogin, UserResponse, AuthTokenResponse
 from app.repositories.user_repo import user_repository
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
-# In-memory simple token map for MVP sessions (maps token -> user_id)
-# Tokens persist during process run; DB persists permanently in SQLite.
-ACTIVE_SESSIONS = {}
+def _hash_token(token: str) -> str:
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+def _create_session(user_id: str, token: str) -> None:
+    token_hash = _hash_token(token)
+    expires_at = datetime.now(timezone.utc) + timedelta(hours=24)
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO sessions (token_hash, user_id, expires_at, created_at)
+                VALUES (%s, %s, %s, NOW())
+                ON CONFLICT (token_hash) DO UPDATE SET expires_at = EXCLUDED.expires_at
+                """,
+                (token_hash, user_id, expires_at)
+            )
 
 def get_current_user(authorization: Optional[str] = Header(None)) -> UserResponse:
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Authentication token required")
     token = authorization.split(" ")[1]
-    user_id = ACTIVE_SESSIONS.get(token)
-    if not user_id:
-        raise HTTPException(status_code=401, detail="Invalid or expired session token")
+    token_hash = _hash_token(token)
+    
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute(
+                "SELECT user_id, expires_at FROM sessions WHERE token_hash = %s",
+                (token_hash,)
+            )
+            row = cur.fetchone()
+            if not row:
+                raise HTTPException(status_code=401, detail="Invalid or expired session token")
+            
+            expires_at = row["expires_at"]
+            if expires_at and expires_at < datetime.now(timezone.utc):
+                # Clean up expired session
+                cur.execute("DELETE FROM sessions WHERE token_hash = %s", (token_hash,))
+                raise HTTPException(status_code=401, detail="Session expired, please log in again")
+            
+            user_id = row["user_id"]
+
     user = user_repository.get_by_id(user_id)
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
@@ -33,7 +67,7 @@ def register(data: UserRegister):
 
     user = user_repository.create_user(data)
     token = f"nv-token-{uuid.uuid4().hex}"
-    ACTIVE_SESSIONS[token] = user.id
+    _create_session(user.id, token)
 
     return AuthTokenResponse(
         access_token=token,
@@ -48,7 +82,7 @@ def login(data: UserLogin):
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
     token = f"nv-token-{uuid.uuid4().hex}"
-    ACTIVE_SESSIONS[token] = user.id
+    _create_session(user.id, token)
 
     return AuthTokenResponse(
         access_token=token,
@@ -76,7 +110,7 @@ def demo_login():
         )
     
     token = f"nv-token-demo-{uuid.uuid4().hex[:8]}"
-    ACTIVE_SESSIONS[token] = user.id
+    _create_session(user.id, token)
 
     return AuthTokenResponse(
         access_token=token,
@@ -92,5 +126,8 @@ def get_me(user: UserResponse = Depends(get_current_user)):
 def logout(authorization: Optional[str] = Header(None)):
     if authorization and authorization.startswith("Bearer "):
         token = authorization.split(" ")[1]
-        ACTIVE_SESSIONS.pop(token, None)
+        token_hash = _hash_token(token)
+        with get_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("DELETE FROM sessions WHERE token_hash = %s", (token_hash,))
     return {"message": "Successfully logged out"}

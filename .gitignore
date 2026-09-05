@@ -18,9 +18,11 @@ backend/.pytest_cache/
 backend/.venv/
 backend/venv/
 backend/env/
-backend/*.sqlite3
-backend/*.db
+*.sqlite
+*.sqlite3
+*.db
 backend/uploads/
+uploads/
 
 # Environment and secrets
 .env
