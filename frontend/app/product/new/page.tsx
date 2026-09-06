@@ -7,14 +7,15 @@ import {
   Info, Sparkles, ArrowRight, X, Loader2, CheckCircle2 
 } from 'lucide-react';
 import { api, type ProductCreate } from '@/lib/api';
+import { useTranslation } from '@/lib/i18n-context';
 
 const STEPS = [
-  { num: 1, label: 'Product Definition' },
-  { num: 2, label: 'Technical Details' },
-  { num: 3, label: 'Manufacturing' },
-  { num: 4, label: 'Market Info' },
-  { num: 5, label: 'Review' },
-];
+  { num: 1, key: 'product_new_step_1' },
+  { num: 2, key: 'product_new_step_2' },
+  { num: 3, key: 'product_new_step_3' },
+  { num: 4, key: 'product_new_step_4' },
+  { num: 5, key: 'product_new_step_5' },
+] as const;
 
 interface UploadedFileItem {
   id: string;
@@ -25,6 +26,7 @@ interface UploadedFileItem {
 
 export default function ProductInputPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -156,7 +158,7 @@ export default function ProductInputPage() {
                 <span className={`text-xs font-semibold whitespace-nowrap hidden sm:inline ${
                   step.num === currentStep ? 'text-white' : 'text-slate-500'
                 }`}>
-                  {step.label}
+                  {t(step.key as any)}
                 </span>
               </div>
               {idx < STEPS.length - 1 && (
@@ -189,12 +191,12 @@ export default function ProductInputPage() {
               {/* Left Column: Product Definition (7 cols) */}
               <div className="lg:col-span-7 space-y-4">
                 <h2 className="text-lg font-bold text-slate-900 border-b border-slate-200 pb-2">
-                  Product Definition
+                  {t('product_new_title')}
                 </h2>
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Product Commercial Name <span className="text-red-500">*</span>
+                    {t('product_new_name_label')} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -206,7 +208,7 @@ export default function ProductInputPage() {
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Product Category <span className="text-red-500">*</span>
+                    {t('product_new_cat_label')} <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={form.category}
@@ -214,16 +216,16 @@ export default function ProductInputPage() {
                     className="w-full bg-[#F8FAFC] border border-slate-300 rounded-md px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:border-[#FF7828] focus:bg-white transition-all"
                   >
                     <option value="Household Electrical Appliances (Water Filters)">
-                      Household Electrical Appliances (Water Filters)
+                      {t('product_new_cat_household')}
                     </option>
-                    <option value="Electronics & IT Goods">Electronics &amp; IT Goods</option>
-                    <option value="Food Contact Plastic Apparatus">Food Contact Plastic Apparatus</option>
+                    <option value="Electronics & IT Goods">{t('product_new_cat_electronics')}</option>
+                    <option value="Food Contact Plastic Apparatus">{t('product_new_cat_plastic')}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Intended Application / Use Case <span className="text-red-500">*</span>
+                    {t('product_new_use_label')} <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     rows={2}
@@ -235,7 +237,7 @@ export default function ProductInputPage() {
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Material / Chemical Composition
+                    {t('product_new_mat_label')}
                   </label>
                   <textarea
                     rows={2}
@@ -247,7 +249,7 @@ export default function ProductInputPage() {
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Key Technical Characteristics
+                    {t('product_new_tech_label')}
                   </label>
                   <textarea
                     rows={3}
@@ -262,11 +264,11 @@ export default function ProductInputPage() {
               <div className="lg:col-span-5 space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    Supporting Documents <span className="text-slate-400 font-normal">(Optional)</span>
+                    {t('product_new_docs_title')} <span className="text-slate-400 font-normal">({t('product_new_docs_optional')})</span>
                   </h3>
                   {uploadedFiles.length > 0 && (
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-300">
-                      {uploadedFiles.length} {uploadedFiles.length === 1 ? 'file' : 'files'} attached
+                      {uploadedFiles.length} {uploadedFiles.length === 1 ? t('product_new_docs_file') : t('product_new_docs_files')} {t('product_new_docs_attached')}
                     </span>
                   )}
                 </div>
@@ -301,10 +303,10 @@ export default function ProductInputPage() {
                     <Upload size={20} />
                   </div>
                   <p className="text-xs font-bold text-slate-800">
-                    Upload datasheets, test reports,<br />or brochures
+                    {t('product_new_upload_drag')}
                   </p>
                   <p className="text-[10px] text-slate-500 mt-1">
-                    Click to browse or drag &amp; drop (PDF, DOC, JPG up to 10MB)
+                    {t('product_new_upload_hint')}
                   </p>
                 </div>
 
@@ -337,7 +339,7 @@ export default function ProductInputPage() {
                               {file.filename}
                             </p>
                             <p className="text-[10px] text-slate-400">
-                              {file.uploading ? 'Uploading to NiyamVeda...' : `${file.size_kb} KB • Verified`}
+                              {file.uploading ? t('product_new_uploading') : `${file.size_kb} KB • ${t('product_new_verified')}`}
                             </p>
                           </div>
                         </div>
@@ -349,7 +351,7 @@ export default function ProductInputPage() {
                             handleRemoveFile(file.id);
                           }}
                           className="text-slate-400 hover:text-red-500 p-1 rounded hover:bg-slate-200/60 transition-colors flex-shrink-0"
-                          title="Remove file"
+                          title={t('product_new_remove_file')}
                         >
                           <X size={14} />
                         </button>
@@ -362,7 +364,7 @@ export default function ProductInputPage() {
                 <div className="flex items-start gap-2 bg-[#F8FAFC] border border-slate-200 rounded-lg p-3 text-[11px] text-slate-500 leading-relaxed">
                   <Info size={14} className="text-[#FF7828] mt-0.5 flex-shrink-0" />
                   <span>
-                    Supporting documents provide additional product context but do not override authoritative regulatory sources.
+                    {t('product_new_disclaimer')}
                   </span>
                 </div>
               </div>
@@ -375,20 +377,20 @@ export default function ProductInputPage() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-200 pb-3">
                   <div className="flex items-center gap-2 text-amber-950 font-bold text-sm">
                     <CheckCircle2 size={19} className="text-amber-600 flex-shrink-0" />
-                    <span>PDF Fact Verification</span>
+                    <span>{t('product_new_pdf_verify_title')}</span>
                   </div>
                   <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded bg-amber-200/90 text-amber-900 uppercase tracking-wide w-fit">
-                    Extracted from Datasheet
+                    {t('product_new_pdf_extracted_badge')}
                   </span>
                 </div>
 
                 <div className="p-3 bg-white/90 border border-amber-300 rounded-lg text-xs font-semibold text-amber-950 leading-relaxed">
-                  ⚠️ Please verify the information extracted from your document before proceeding to compliance analysis. You can adjust any parameter below.
+                  {t('product_new_pdf_verify_notice')}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
                   <div>
-                    <label className="font-bold text-slate-800 block mb-1">Operating Voltage</label>
+                    <label className="font-bold text-slate-800 block mb-1">{t('product_new_voltage_label')}</label>
                     <input
                       type="text"
                       value={form.operating_voltage || ''}
@@ -397,7 +399,7 @@ export default function ProductInputPage() {
                     />
                   </div>
                   <div>
-                    <label className="font-bold text-slate-800 block mb-1">Power Consumption</label>
+                    <label className="font-bold text-slate-800 block mb-1">{t('product_new_power_label')}</label>
                     <input
                       type="text"
                       value={form.power_consumption || ''}
@@ -406,7 +408,7 @@ export default function ProductInputPage() {
                     />
                   </div>
                   <div>
-                    <label className="font-bold text-slate-800 block mb-1">Storage / Fluid Capacity</label>
+                    <label className="font-bold text-slate-800 block mb-1">{t('product_new_capacity_label')}</label>
                     <input
                       type="text"
                       value={form.water_storage_capacity || ''}
@@ -415,7 +417,7 @@ export default function ProductInputPage() {
                     />
                   </div>
                   <div className="sm:col-span-2 lg:col-span-3">
-                    <label className="font-bold text-slate-800 block mb-1">Material Composition</label>
+                    <label className="font-bold text-slate-800 block mb-1">{t('product_new_material_label')}</label>
                     <input
                       type="text"
                       value={form.material_composition || ''}
@@ -424,7 +426,7 @@ export default function ProductInputPage() {
                     />
                   </div>
                   <div className="sm:col-span-2 lg:col-span-3">
-                    <label className="font-bold text-slate-800 block mb-1">Intended Application / Use</label>
+                    <label className="font-bold text-slate-800 block mb-1">{t('product_new_use_label')}</label>
                     <input
                       type="text"
                       value={form.intended_use || ''}
@@ -443,7 +445,7 @@ export default function ProductInputPage() {
                     }}
                     className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-5 py-2.5 rounded-md shadow-md flex items-center gap-2 transition-all hover:scale-[1.01]"
                   >
-                    <Check size={15} /> Confirm &amp; Save Verified Facts
+                    <Check size={15} /> {t('product_new_btn_confirm_facts')}
                   </button>
                 </div>
               </div>
@@ -453,7 +455,7 @@ export default function ProductInputPage() {
               <div className="mt-4 bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-xl p-4 text-xs flex items-center gap-3 animate-fade-in shadow-sm">
                 <CheckCircle2 size={18} className="text-emerald-600 flex-shrink-0" />
                 <span className="font-semibold">
-                  Extracted parameters verified and successfully applied to product profile.
+                  {t('product_new_verified_success')}
                 </span>
               </div>
             )}
@@ -465,7 +467,7 @@ export default function ProductInputPage() {
                 onClick={() => router.push('/product/demo-purifier-001/confirm')}
                 className="bg-[#0B132B] hover:bg-[#1E293B] text-slate-200 text-xs font-semibold px-5 py-2.5 rounded-md transition-all"
               >
-                Save Draft
+                {t('product_new_btn_save_draft')}
               </button>
               
               <button
@@ -475,7 +477,7 @@ export default function ProductInputPage() {
               >
                 {loading ? 'Processing...' : (
                   <>
-                    Continue <ArrowRight size={14} />
+                    {t('product_new_btn_continue')} <ArrowRight size={14} />
                   </>
                 )}
               </button>

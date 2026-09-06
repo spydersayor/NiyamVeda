@@ -43,9 +43,9 @@ export default function ProfilePage() {
             <User size={28} />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white tracking-tight">Authentication Required</h2>
+            <h2 className="text-xl font-bold text-white tracking-tight">{t('profile_auth_required_title')}</h2>
             <p className="text-xs text-slate-400 mt-2">
-              Please sign in or use demo evaluation access to view your organization profile and products.
+              {t('profile_auth_required_desc')}
             </p>
           </div>
           <div className="space-y-3">
@@ -53,14 +53,14 @@ export default function ProfilePage() {
               href="/auth"
               className="block w-full py-2.5 px-4 bg-[#FF7828] hover:bg-[#E05E10] text-white text-xs font-bold rounded-lg transition-colors shadow-md"
             >
-              Sign In to Your Account
+              {t('profile_btn_signin')}
             </Link>
             <button
               onClick={demoLogin}
               className="w-full py-2.5 px-4 bg-[#070D1B] hover:bg-slate-900 border border-slate-700 text-slate-200 text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
             >
               <Sparkles size={14} className="text-amber-400" />
-              <span>Instant Evaluator Demo Access</span>
+              <span>{t('profile_btn_demo')}</span>
             </button>
           </div>
         </div>
@@ -69,8 +69,8 @@ export default function ProfilePage() {
   }
 
   const registeredDate = user.created_at
-    ? new Date(user.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-    : 'Active Member';
+    ? new Date(user.created_at).toLocaleDateString(language === 'bn' ? 'bn-IN' : language === 'hi' ? 'hi-IN' : 'en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+    : t('profile_active_member');
 
   return (
     <div className="min-h-screen py-10 px-4 sm:px-8 max-w-7xl mx-auto space-y-8">
@@ -101,7 +101,7 @@ export default function ProfilePage() {
               </span>
               <span className="flex items-center gap-1.5">
                 <Calendar size={13} className="text-slate-400" />
-                Joined {registeredDate}
+                {t('profile_joined')} {registeredDate}
               </span>
             </div>
           </div>
@@ -113,7 +113,7 @@ export default function ProfilePage() {
             className="flex items-center gap-2 bg-[#FF7828] hover:bg-[#E05E10] text-white text-xs font-bold px-4 py-2.5 rounded-lg transition-all shadow-md shadow-orange-500/20"
           >
             <PlusCircle size={15} />
-            <span>New Compliance Project</span>
+            <span>{t('profile_btn_new_project')}</span>
           </Link>
           <button
             onClick={logout}
@@ -141,31 +141,31 @@ export default function ProfilePage() {
             <div className="space-y-3 text-xs">
               <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#070D1B]/70 border border-slate-800">
                 <div className="space-y-0.5">
-                  <div className="font-medium text-slate-200">Password Authentication</div>
-                  <div className="text-[11px] text-slate-400">Salted password authentication active</div>
+                  <div className="font-medium text-slate-200">{t('profile_sec_pwd_title')}</div>
+                  <div className="text-[11px] text-slate-400">{t('profile_sec_pwd_desc')}</div>
                 </div>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  SECURE
+                  {t('profile_sec_pwd_badge')}
                 </span>
               </div>
 
               <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#070D1B]/70 border border-slate-800">
                 <div className="space-y-0.5">
-                  <div className="font-medium text-slate-200">Session Management</div>
-                  <div className="text-[11px] text-slate-400">Server-side hashed session token</div>
+                  <div className="font-medium text-slate-200">{t('profile_sec_session_title')}</div>
+                  <div className="text-[11px] text-slate-400">{t('profile_sec_session_desc')}</div>
                 </div>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                  ACTIVE
+                  {t('profile_sec_session_badge')}
                 </span>
               </div>
 
               <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#070D1B]/70 border border-slate-800">
                 <div className="space-y-0.5">
-                  <div className="font-medium text-slate-200">Token Expiry Window</div>
-                  <div className="text-[11px] text-slate-400">Automatic 24-hour expiration check</div>
+                  <div className="font-medium text-slate-200">{t('profile_sec_token_title')}</div>
+                  <div className="text-[11px] text-slate-400">{t('profile_sec_token_desc')}</div>
                 </div>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300">
-                  24 HOURS
+                  {t('profile_sec_token_badge')}
                 </span>
               </div>
             </div>
@@ -182,7 +182,7 @@ export default function ProfilePage() {
               {/* Language Selection */}
               <div>
                 <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                  System Language / भाषा
+                  {t('profile_pref_lang')}
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {(['en', 'hi', 'bn'] as SupportedLanguage[]).map((lang) => (
@@ -204,7 +204,7 @@ export default function ProfilePage() {
               {/* Theme Selection */}
               <div>
                 <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                  Appearance / Theme
+                  {t('profile_pref_theme')}
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
@@ -216,7 +216,7 @@ export default function ProfilePage() {
                     }`}
                   >
                     <Moon size={14} className="text-blue-400" />
-                    <span>Dark Mode</span>
+                    <span>{t('profile_theme_dark')}</span>
                   </button>
                   <button
                     onClick={() => setTheme('light')}
@@ -227,7 +227,7 @@ export default function ProfilePage() {
                     }`}
                   >
                     <Sun size={14} className="text-amber-400" />
-                    <span>Light Mode</span>
+                    <span>{t('profile_theme_light')}</span>
                   </button>
                 </div>
               </div>
@@ -238,16 +238,16 @@ export default function ProfilePage() {
           <div className="bg-gradient-to-br from-[#0B132B] to-[#122040] border border-[#1E355B] rounded-xl p-5 space-y-3">
             <div className="flex items-center gap-2 text-sm font-bold text-white">
               <Sparkles size={16} className="text-[#FF7828]" />
-              <span>Regulatory Copilot</span>
+              <span>{t('profile_copilot_title')}</span>
             </div>
             <p className="text-xs text-slate-300 leading-relaxed">
-              Have queries on IS 302, IS 16240, dry-boil requirements, or MeitY CRS registration?
+              {t('profile_copilot_desc')}
             </p>
             <Link
               href="/assistant"
               className="inline-flex items-center gap-2 text-xs font-bold text-[#FF9933] hover:text-[#FF7828] transition-colors"
             >
-              <span>Launch Conversational Assistant</span>
+              <span>{t('profile_copilot_launch')}</span>
               <ArrowRight size={13} />
             </Link>
           </div>
@@ -263,33 +263,33 @@ export default function ProfilePage() {
                 <span>{t('profile_my_products')}</span>
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
-                Evaluated products, deterministic rule findings, and active compliance dossiers.
+                {t('profile_products_sub')}
               </p>
             </div>
             <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-              {products.length} Products
+              {products.length} {t('profile_products_count')}
             </span>
           </div>
 
           {loadingProducts ? (
             <div className="p-8 text-center bg-[#0B132B]/50 border border-slate-800 rounded-xl">
               <div className="w-6 h-6 border-2 border-[#FF7828] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-              <div className="text-xs text-slate-400">Loading your compliance dossiers...</div>
+              <div className="text-xs text-slate-400">{t('profile_loading_products')}</div>
             </div>
           ) : products.length === 0 ? (
             <div className="p-8 text-center bg-[#0B132B]/50 border border-slate-800 rounded-xl space-y-3">
               <div className="w-12 h-12 rounded-xl bg-slate-800/80 text-slate-400 flex items-center justify-center mx-auto">
                 <Layers size={24} />
               </div>
-              <div className="text-sm font-semibold text-white">No products registered yet</div>
+              <div className="text-sm font-semibold text-white">{t('profile_no_products_title')}</div>
               <p className="text-xs text-slate-400 max-w-sm mx-auto">
-                Add your electrical appliance or hardware product to evaluate applicable BIS standards and build a verified compliance pathway.
+                {t('profile_no_products_desc')}
               </p>
               <Link
                 href="/product/new"
                 className="inline-flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-lg bg-[#FF7828] text-white hover:bg-[#E05E10] transition-colors"
               >
-                <span>Add Your First Product</span>
+                <span>{t('profile_add_first_product')}</span>
                 <ArrowRight size={13} />
               </Link>
             </div>
@@ -315,7 +315,7 @@ export default function ProfilePage() {
                         </span>
                       </div>
                       <div className="text-xs text-slate-400 mt-0.5">
-                        {prod.category} • {prod.operating_voltage || 'Voltage not specified'}
+                        {prod.category} • {prod.operating_voltage || t('profile_voltage_na')}
                       </div>
                     </div>
 
@@ -324,22 +324,22 @@ export default function ProfilePage() {
                         href={`/product/${prod.id}/analysis`}
                         className="text-xs font-bold px-3 py-1.5 rounded-md bg-[#1E355B] text-sky-300 hover:bg-[#2A487B] border border-sky-500/30 transition-colors flex items-center gap-1"
                       >
-                        <span>Analysis</span>
+                        <span>{t('profile_btn_analysis')}</span>
                         <ArrowRight size={12} />
                       </Link>
                       <Link
                         href={`/product/${prod.id}/simulation`}
                         className="text-xs font-semibold px-3 py-1.5 rounded-md bg-[#070D1B] text-slate-300 hover:text-white border border-slate-700 hover:border-slate-600 transition-colors"
                       >
-                        What-If
+                        {t('profile_btn_whatif')}
                       </Link>
                       <Link
                         href={`/assistant?product_id=${prod.id}`}
                         className="text-xs font-semibold px-3 py-1.5 rounded-md bg-orange-950/20 text-[#FF9933] hover:text-[#FF7828] border border-orange-500/30 transition-colors flex items-center gap-1"
-                        title="Chat with Assistant with this product context"
+                        title={t('profile_chat_tooltip')}
                       >
                         <Sparkles size={12} />
-                        <span>Chat</span>
+                        <span>{t('profile_btn_chat')}</span>
                       </Link>
                     </div>
                   </div>
@@ -347,19 +347,19 @@ export default function ProfilePage() {
                   {/* Fact summary pills */}
                   <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-800/60 text-[11px] text-slate-400">
                     <span className="bg-[#070D1B] px-2 py-0.5 rounded border border-slate-800">
-                      Material: <strong className="text-slate-300">{prod.material_composition || 'Standard'}</strong>
+                      {t('profile_fact_material')}: <strong className="text-slate-300">{prod.material_composition || 'Standard'}</strong>
                     </span>
                     <span className="bg-[#070D1B] px-2 py-0.5 rounded border border-slate-800">
-                      Power: <strong className="text-slate-300">{prod.power_consumption || 'N/A'}</strong>
+                      {t('profile_fact_power')}: <strong className="text-slate-300">{prod.power_consumption || 'N/A'}</strong>
                     </span>
                     <span className="bg-[#070D1B] px-2 py-0.5 rounded border border-slate-800">
-                      Origin: <strong className="text-slate-300">{prod.manufacturing_origin || 'India'}</strong>
+                      {t('profile_fact_origin')}: <strong className="text-slate-300">{prod.manufacturing_origin || 'India'}</strong>
                     </span>
                     <Link
                       href={`/product/${prod.id}/confirm`}
                       className="text-[11px] text-slate-400 hover:text-slate-200 underline ml-auto"
                     >
-                      Inspect Confirmed Facts ({prod.facts?.length || 0})
+                      {t('profile_inspect_facts')} ({prod.facts?.length || 0})
                     </Link>
                   </div>
                 </div>

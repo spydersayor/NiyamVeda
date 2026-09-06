@@ -102,7 +102,7 @@ export default function Nav() {
           <button
             onClick={toggleTheme}
             title={theme === 'dark' ? t('theme_toggle_light') : t('theme_toggle_dark')}
-            aria-label="Toggle Theme"
+            aria-label={t('theme_toggle_aria')}
             className="w-8 h-8 rounded-md bg-[#0B1426] border border-slate-700/80 hover:border-slate-500 flex items-center justify-center text-slate-300 hover:text-[#FF9933] transition-colors"
           >
             {theme === 'dark' ? (
@@ -117,7 +117,7 @@ export default function Nav() {
               <Link 
                 href="/profile" 
                 className="hidden sm:flex items-center gap-1.5 bg-[#0B1426] border border-slate-700 hover:border-[#FF7828] rounded-md px-2.5 py-1.5 text-[11px] text-slate-300 transition-colors"
-                title="View Profile & Products"
+                title={t('nav_profile_tooltip')}
               >
                 <div className="w-2 h-2 rounded-full bg-emerald-400" />
                 <span className="font-semibold text-white max-w-[90px] truncate">{user.full_name.split(' ')[0]}</span>
@@ -144,7 +144,7 @@ export default function Nav() {
             className="bg-[#FF7828] hover:bg-[#E05E10] text-white font-bold text-xs px-3 sm:px-4 py-2 rounded-md transition-all shadow-md shadow-orange-500/20 flex items-center gap-1.5"
           >
             <span className="hidden sm:inline">{t('nav_start_analysis')}</span>
-            <span className="sm:hidden">Start</span>
+            <span className="sm:hidden">{t('nav_start')}</span>
             <ArrowRight size={13} />
           </Link>
         </div>

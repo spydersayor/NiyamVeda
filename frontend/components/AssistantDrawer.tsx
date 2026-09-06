@@ -27,15 +27,19 @@ export default function AssistantDrawer({ productId, productName }: AssistantDra
   const [loading, setLoading] = useState(false);
   const { language, t } = useTranslation();
 
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 'welcome',
-      sender: 'assistant',
-      text: productName
-        ? `Hello! I am your regulatory compliance copilot for **${productName}**. Ask me any question about applicable BIS standards, test procedures, or missing compliance facts.`
-        : "Hello! I am your NiyamVeda regulatory copilot. Ask me about Indian Standards (BIS), Quality Control Orders, or certification routes."
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  useEffect(() => {
+    setMessages([
+      {
+        id: 'welcome',
+        sender: 'assistant',
+        text: productName
+          ? t('drawer_welcome_product')
+          : t('drawer_welcome_generic')
+      }
+    ]);
+  }, [productName, language]);
 
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -71,7 +75,7 @@ export default function AssistantDrawer({ productId, productName }: AssistantDra
     } catch {
       setMessages(prev => [
         ...prev,
-        { id: `e-${Date.now()}`, sender: 'assistant', text: "Unable to connect to regulatory assistant service." }
+        { id: `e-${Date.now()}`, sender: 'assistant', text: t('assistant_error_connect') }
       ]);
     } finally {
       setLoading(false);
@@ -85,10 +89,10 @@ export default function AssistantDrawer({ productId, productName }: AssistantDra
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="flex items-center gap-2 bg-gradient-to-r from-[#FF7828] to-[#FF9933] hover:from-[#E05E10] hover:to-[#FF7828] text-white px-4 py-3 rounded-full shadow-2xl shadow-orange-500/30 transition-all transform hover:scale-105 font-bold text-xs"
-          title="Open Regulatory Copilot"
+          title={t('drawer_btn_ask')}
         >
           <Sparkles size={16} className="animate-pulse" />
-          <span>Ask Compliance Copilot</span>
+          <span>{t('drawer_btn_ask')}</span>
         </button>
       </div>
 
@@ -104,12 +108,12 @@ export default function AssistantDrawer({ productId, productName }: AssistantDra
               </div>
               <div>
                 <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                  <span>Regulatory Assistant</span>
+                  <span>{t('drawer_title')}</span>
                   <span className="w-2 h-2 rounded-full bg-emerald-400" />
                 </div>
                 {productName && (
                   <div className="text-[10px] text-slate-400 truncate max-w-[170px]">
-                    Context: {productName}
+                    {t('drawer_context_label')} {productName}
                   </div>
                 )}
               </div>
@@ -119,7 +123,7 @@ export default function AssistantDrawer({ productId, productName }: AssistantDra
               <Link
                 href={productId ? `/assistant?product_id=${productId}` : '/assistant'}
                 className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
-                title="Open Fullscreen"
+                title={t('drawer_fullscreen')}
               >
                 <Maximize2 size={13} />
               </Link>
@@ -151,14 +155,14 @@ export default function AssistantDrawer({ productId, productName }: AssistantDra
                   {m.safe_abstention && (
                     <div className="mt-2 p-2 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[10px] flex items-center gap-1.5">
                       <AlertTriangle size={12} className="text-amber-400 flex-shrink-0" />
-                      <span>Safe Abstention Activated</span>
+                      <span>{t('assistant_abstention_badge')}</span>
                     </div>
                   )}
 
                   {m.citations && m.citations.length > 0 && (
                     <div className="mt-2 pt-2 border-t border-slate-700/60 space-y-1">
                       <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
-                        Verified Sources:
+                        {t('drawer_verified_sources')}
                       </span>
                       {m.citations.slice(0, 2).map((c, i) => (
                         <div key={i} className="text-[10px] text-slate-300 bg-[#070D1B]/80 p-1.5 rounded border border-slate-800">
@@ -174,7 +178,7 @@ export default function AssistantDrawer({ productId, productName }: AssistantDra
             {loading && (
               <div className="flex items-center gap-2 text-[11px] text-slate-400 p-2 bg-[#121E36]/60 rounded-lg border border-slate-800">
                 <RefreshCw size={12} className="animate-spin text-[#FF7828]" />
-                <span>Checking BIS standards & rules...</span>
+                <span>{t('drawer_checking')}</span>
               </div>
             )}
             <div ref={bottomRef} />
@@ -183,22 +187,22 @@ export default function AssistantDrawer({ productId, productName }: AssistantDra
           {/* Quick suggestions */}
           <div className="px-3 py-1.5 bg-[#070D1B] border-t border-slate-800/80 flex gap-1.5 overflow-x-auto text-[10px]">
             <button
-              onClick={() => handleSend("What standards apply?")}
+              onClick={() => handleSend(t('drawer_chip_standards'))}
               className="whitespace-nowrap px-2 py-0.5 rounded bg-slate-800 text-slate-300 hover:text-white"
             >
-              What standards apply?
+              {t('drawer_chip_standards')}
             </button>
             <button
-              onClick={() => handleSend("What tests are needed?")}
+              onClick={() => handleSend(t('drawer_chip_tests'))}
               className="whitespace-nowrap px-2 py-0.5 rounded bg-slate-800 text-slate-300 hover:text-white"
             >
-              Required tests?
+              {t('drawer_chip_tests')}
             </button>
             <button
-              onClick={() => handleSend("How to get CRS registration?")}
+              onClick={() => handleSend(t('drawer_chip_crs'))}
               className="whitespace-nowrap px-2 py-0.5 rounded bg-slate-800 text-slate-300 hover:text-white"
             >
-              CRS registration?
+              {t('drawer_chip_crs')}
             </button>
           </div>
 
@@ -214,7 +218,7 @@ export default function AssistantDrawer({ productId, productName }: AssistantDra
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about BIS compliance..."
+              placeholder={t('drawer_placeholder')}
               disabled={loading}
               className="flex-1 bg-[#070D1B] border border-slate-800 focus:border-[#FF7828] rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 outline-none"
             />

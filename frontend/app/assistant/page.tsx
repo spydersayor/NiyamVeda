@@ -184,8 +184,7 @@ function AssistantPageContent() {
         id: `err-${Date.now()}`,
         sender: 'assistant',
 
-        text:
-          'We encountered a temporary connection issue. Please verify your query or try again.',
+        text: t('assistant_error_connect'),
 
         timestamp:
           new Date().toLocaleTimeString([], {
@@ -232,7 +231,7 @@ function AssistantPageContent() {
               </span>
 
               <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                BIS GROUNDED
+                {t('assistant_grounded_badge')}
               </span>
 
             </h1>
@@ -305,11 +304,11 @@ function AssistantPageContent() {
           <div className="flex items-center gap-2">
 
             <span className="font-semibold text-sky-400">
-              Context Active:
+              {t('assistant_context_active')}
             </span>
 
             <span>
-              Evaluating queries against{' '}
+              {t('assistant_eval_against')}{' '}
               <strong>
                 {selectedProductObj.product_name}
               </strong>{' '}
@@ -330,7 +329,7 @@ function AssistantPageContent() {
             }
             className="text-[11px] text-slate-400 hover:text-slate-200 underline"
           >
-            Clear Context
+            {t('assistant_clear_context')}
           </button>
 
         </div>
@@ -449,7 +448,7 @@ function AssistantPageContent() {
                               </span>
 
                               <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex-shrink-0">
-                                VERIFIED
+                                {t('assistant_verified_badge')}
                               </span>
 
                             </div>
@@ -469,7 +468,7 @@ function AssistantPageContent() {
                               >
 
                                 <span>
-                                  Official Standard Source
+                                  {t('assistant_official_source')}
                                 </span>
 
                                 <ExternalLink
@@ -528,7 +527,7 @@ function AssistantPageContent() {
               />
 
               <span>
-                Retrieving authoritative Indian Standards & evaluating grounded context...
+                {t('assistant_loading')}
               </span>
 
             </div>

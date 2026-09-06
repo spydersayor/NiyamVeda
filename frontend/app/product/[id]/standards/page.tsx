@@ -7,10 +7,12 @@ import {
   HelpCircle, ChevronRight, X, Info, Check 
 } from 'lucide-react';
 import { api, type AnalysisResult, type ApplicableStandard } from '@/lib/api';
+import { useTranslation } from '@/lib/i18n-context';
 import ProductSidebar from '@/components/ProductSidebar';
 
 export default function RelevantStandardsPage() {
   const params = useParams();
+  const { t } = useTranslation();
   const productId = (params.id as string) || 'demo-purifier-001';
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [selectedStandard, setSelectedStandard] = useState<ApplicableStandard | null>(null);
@@ -34,10 +36,10 @@ export default function RelevantStandardsPage() {
           {/* ─── Header (Screen 7 Exact) ─── */}
           <div className="animate-slide-up">
             <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-              Relevant Standards
+              {t('standards_title')}
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 mt-0.5">
-              Based on your product facts and rule evaluation.
+              {t('standards_subtitle')}
             </p>
           </div>
 
@@ -49,18 +51,17 @@ export default function RelevantStandardsPage() {
                   <AlertCircle size={24} />
                 </div>
                 <h2 className="text-base font-bold text-slate-800">
-                  Insufficient Evidence to Determine Applicable Standard
+                  {t('standards_insufficient_title')}
                 </h2>
                 <p className="text-xs text-slate-600 max-w-lg mx-auto leading-relaxed">
-                  {result?.safe_abstention?.abstention_reason || 
-                    "No published Indian Standards (BIS) or statutory Quality Control Orders matched the supplied technical parameters."}
+                  {result?.safe_abstention?.abstention_reason || t('standards_insufficient_desc')}
                 </p>
                 <div className="pt-2">
                   <Link
                     href={`/product/${productId}/analysis`}
                     className="text-xs text-[#FF7828] font-bold hover:underline"
                   >
-                    &larr; Return to Compliance Pathway
+                    &larr; {t('abstention_btn_back')}
                   </Link>
                 </div>
               </div>
@@ -89,17 +90,17 @@ export default function RelevantStandardsPage() {
                   {/* Verified Badge */}
                   {std.verification_status === 'VERIFIED_OFFICIAL' && (
                     <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-300 flex items-center gap-1">
-                      <Check size={12} /> Verified Official Source
+                      <Check size={12} /> {t('standards_badge_mandatory')}
                     </span>
                   )}
                   {std.verification_status === 'NEEDS_REVIEW' && (
                     <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-300 flex items-center gap-1">
-                      <AlertCircle size={12} /> Version/Needs Review
+                      <AlertCircle size={12} /> {t('standards_badge_gazette')}
                     </span>
                   )}
                   {std.verification_status === 'POTENTIALLY_APPLICABLE' && (
                     <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-orange-50 text-[#FF7828] border border-orange-200 flex items-center gap-1">
-                      <HelpCircle size={12} /> Needs Confirmation
+                      <HelpCircle size={12} /> {t('status_pending')}
                     </span>
                   )}
 
@@ -108,7 +109,7 @@ export default function RelevantStandardsPage() {
                     onClick={() => setSelectedStandard(std)}
                     className="border border-slate-300 hover:bg-slate-50 text-slate-800 text-xs font-bold px-4 py-2 rounded-md transition-all whitespace-nowrap"
                   >
-                    View Evidence
+                    {t('standards_view_source')}
                   </button>
                 </div>
               </div>
@@ -119,7 +120,7 @@ export default function RelevantStandardsPage() {
           <div className="flex items-start gap-2.5 bg-[#F8FAFC] border border-slate-200 rounded-lg p-4 text-xs text-slate-500 leading-relaxed mt-6">
             <Info size={16} className="text-blue-500 flex-shrink-0 mt-0.5" />
             <span>
-              These standards are potentially applicable. Final applicability may depend on detailed evaluation.
+              {t('standards_insufficient_desc')}
             </span>
           </div>
 
@@ -133,7 +134,7 @@ export default function RelevantStandardsPage() {
             <div className="flex items-start justify-between border-b border-slate-200 pb-3">
               <div>
                 <span className="text-[10px] uppercase font-bold text-emerald-600 tracking-wider">
-                  AUTHORITATIVE EVIDENCE
+                  {t('inspector_authoritative_badge')}
                 </span>
                 <h3 className="text-base font-bold text-slate-900 mt-0.5">
                   {selectedStandard.standard_identifier}
@@ -142,6 +143,7 @@ export default function RelevantStandardsPage() {
               <button 
                 onClick={() => setSelectedStandard(null)}
                 className="w-7 h-7 rounded-md hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700"
+                title={t('analysis_modal_close')}
               >
                 <X size={16} />
               </button>
@@ -158,7 +160,7 @@ export default function RelevantStandardsPage() {
               </div>
 
               <div className="text-slate-500 pt-1">
-                Authority: <strong className="text-slate-800">{selectedStandard.document_source}</strong>
+                {t('evidence_source_label')}: <strong className="text-slate-800">{selectedStandard.document_source}</strong>
               </div>
             </div>
 
@@ -169,13 +171,13 @@ export default function RelevantStandardsPage() {
                 rel="noreferrer"
                 className="text-xs text-[#FF7828] font-bold hover:underline flex items-center gap-1"
               >
-                Open BIS Portal <ExternalLink size={12} />
+                {t('evidence_open_portal')} <ExternalLink size={12} />
               </a>
               <button
                 onClick={() => setSelectedStandard(null)}
                 className="bg-[#0B132B] text-white text-xs font-bold px-4 py-2 rounded-md"
               >
-                Close
+                {t('analysis_modal_close')}
               </button>
             </div>
           </div>

@@ -7,10 +7,12 @@ import {
   Info, ExternalLink 
 } from 'lucide-react';
 import { api, type AnalysisResult, type ComplianceRisk } from '@/lib/api';
+import { useTranslation } from '@/lib/i18n-context';
 import ProductSidebar from '@/components/ProductSidebar';
 
 export default function PotentialComplianceRisksPage() {
   const params = useParams();
+  const { t } = useTranslation();
   const productId = (params.id as string) || 'demo-purifier-001';
   const [result, setResult] = useState<AnalysisResult | null>(null);
 
@@ -32,10 +34,10 @@ export default function PotentialComplianceRisksPage() {
           {/* ─── Header (Screen 9 Exact) ─── */}
           <div className="animate-slide-up">
             <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-              Potential Compliance Risks – Before You Test
+              {t('risks_title')}
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 mt-0.5">
-              Identified risks based on current product information.
+              {t('risks_subtitle')}
             </p>
           </div>
 
@@ -44,10 +46,10 @@ export default function PotentialComplianceRisksPage() {
             {risks.length === 0 ? (
               <div className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-xl p-8 text-center space-y-2 shadow-lg">
                 <h2 className="text-sm font-bold text-slate-800">
-                  No Compliance Risks Established
+                  {t('risks_no_risks_title')}
                 </h2>
                 <p className="text-xs text-slate-500 max-w-md mx-auto">
-                  No significant compliance failure risks or material vulnerabilities were established from the available evidence.
+                  {t('risks_no_risks_desc')}
                 </p>
               </div>
             ) : (
@@ -61,17 +63,17 @@ export default function PotentialComplianceRisksPage() {
                     {/* Severity Pill */}
                     {r.severity === 'HIGH' && (
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-red-50 text-red-600 border border-red-200 uppercase tracking-wide">
-                        HIGH RISK
+                        {t('risks_severity_high')}
                       </span>
                     )}
                     {r.severity === 'MEDIUM' && (
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-600 border border-amber-200 uppercase tracking-wide">
-                        MEDIUM RISK
+                        {t('risks_severity_medium')}
                       </span>
                     )}
                     {r.severity === 'POTENTIAL' && (
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-200 uppercase tracking-wide">
-                        POTENTIAL RISK
+                        {t('risks_severity_low')}
                       </span>
                     )}
 
@@ -85,7 +87,7 @@ export default function PotentialComplianceRisksPage() {
                   </p>
 
                   <p className="text-xs text-slate-800 font-semibold">
-                    <span className="text-slate-500 font-normal">Action: </span>
+                    <span className="text-slate-500 font-normal">{t('risks_suggested_action')}: </span>
                     {r.suggested_action}
                   </p>
                 </div>
@@ -93,7 +95,7 @@ export default function PotentialComplianceRisksPage() {
                 {/* Evidence Strength (Right Column of card) */}
                 <div className="text-right sm:text-right flex-shrink-0">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                    Evidence Strength
+                    {t('metric_evidence_confidence')}
                   </span>
                   <span className={`text-xs font-bold ${
                     r.evidence_strength === 'High' ? 'text-red-600' : 'text-amber-600'
@@ -111,7 +113,7 @@ export default function PotentialComplianceRisksPage() {
               href={`/product/${productId}/simulation`}
               className="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors"
             >
-              View All Risks &amp; Scenarios <ArrowRight size={13} />
+              {t('sim_title')} <ArrowRight size={13} />
             </Link>
           </div>
 

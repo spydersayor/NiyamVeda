@@ -6,10 +6,12 @@ import {
   FlaskConical, ArrowRight, Info, RefreshCw, Check 
 } from 'lucide-react';
 import { api, type SimulationResult } from '@/lib/api';
+import { useTranslation } from '@/lib/i18n-context';
 import ProductSidebar from '@/components/ProductSidebar';
 
 export default function WhatIfSimulationPage() {
   const params = useParams();
+  const { t } = useTranslation();
   const productId = (params.id as string) || 'demo-purifier-001';
 
   const [material, setMaterial] = useState('Flame-Retardant ABS');
@@ -56,10 +58,10 @@ export default function WhatIfSimulationPage() {
           {/* ─── Header (Screen 10 Exact) ─── */}
           <div className="animate-slide-up">
             <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-              What If You Change Your Product?
+              {t('sim_header_title')}
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 mt-0.5">
-              See how changes in product attributes may affect the compliance pathway.
+              {t('sim_header_desc')}
             </p>
           </div>
 
@@ -70,13 +72,13 @@ export default function WhatIfSimulationPage() {
             <div className="bg-white/95 backdrop-blur-sm border border-white/60 rounded-xl p-5 flex flex-col justify-between space-y-4 shadow-lg card-interactive">
               <div>
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 border-b border-slate-200 pb-2 mb-4">
-                  Change Product Attributes
+                  {t('sim_change_attrs')}
                 </h2>
 
                 <form onSubmit={handleSimulate} className="space-y-4 text-xs">
                   <div>
                     <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                      Material
+                      {t('sim_attr_material')}
                     </label>
                     <div className="flex items-center gap-2">
                       <span className="text-slate-400 text-[11px] line-through">Polycarbonate</span>
@@ -95,7 +97,7 @@ export default function WhatIfSimulationPage() {
 
                   <div>
                     <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                      Operating Voltage
+                      {t('sim_attr_voltage')}
                     </label>
                     <div className="flex items-center gap-2">
                       <span className="text-slate-400 text-[11px] line-through">230V AC</span>
@@ -114,7 +116,7 @@ export default function WhatIfSimulationPage() {
 
                   <div>
                     <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                      Application
+                      {t('sim_attr_use')}
                     </label>
                     <div className="flex items-center gap-2">
                       <span className="text-slate-400 text-[11px] line-through">Domestic Use</span>
@@ -138,11 +140,11 @@ export default function WhatIfSimulationPage() {
                   >
                     {simulating ? (
                       <>
-                        <RefreshCw size={13} className="animate-spin" /> Evaluating...
+                        <RefreshCw size={13} className="animate-spin" /> {t('sim_simulating')}
                       </>
                     ) : (
                       <>
-                        Simulate Change <ArrowRight size={13} />
+                        {t('sim_btn_recalculate')} <ArrowRight size={13} />
                       </>
                     )}
                   </button>
@@ -153,13 +155,13 @@ export default function WhatIfSimulationPage() {
             {/* Column 2: Current Product Profile */}
             <div className="bg-white/95 backdrop-blur-sm border border-white/60 rounded-xl p-5 space-y-4 shadow-lg card-interactive">
               <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 border-b border-slate-200 pb-2 mb-3">
-                Current Product Profile
+                {t('sim_current_profile')}
               </h2>
 
               <div className="space-y-4 text-xs">
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                    Applicable Standards
+                    {t('standards_title')}
                   </span>
                   {(simResult?.current_profile?.standards && simResult.current_profile.standards.length > 0) ? (
                     simResult.current_profile.standards.map((s: string) => (
@@ -172,7 +174,7 @@ export default function WhatIfSimulationPage() {
 
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                    Key Tests
+                    {t('drawer_chip_tests')}
                   </span>
                   {(simResult?.current_profile?.tests && simResult.current_profile.tests.length > 0) ? (
                     simResult.current_profile.tests.map((t: string) => (
@@ -185,7 +187,7 @@ export default function WhatIfSimulationPage() {
 
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                    Certification Route
+                    {t('drawer_chip_crs')}
                   </span>
                   <p className="font-bold text-slate-900">
                     {simResult?.current_profile?.certification_route || 'Scheme I (ISI Mark)'}
@@ -198,7 +200,7 @@ export default function WhatIfSimulationPage() {
             <div className="bg-white/95 backdrop-blur-sm border-2 border-[#FF7828] rounded-xl p-5 space-y-4 shadow-xl card-interactive relative">
               <div className="flex items-center justify-between border-b border-orange-200 pb-2 mb-3">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-[#FF7828]">
-                  Simulation Result <span className="text-[10px] font-normal text-slate-500">(After Change)</span>
+                  {t('sim_result_profile')}
                 </h2>
                 {simResult?.standards_diff && (
                   <div className="flex items-center gap-1.5 text-[10px] font-bold">
@@ -219,7 +221,7 @@ export default function WhatIfSimulationPage() {
               <div className="space-y-4 text-xs">
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
-                    Applicable Standards Diff
+                    {t('sim_diff_standards')}
                   </span>
                   
                   {/* Added Standards */}
@@ -227,7 +229,7 @@ export default function WhatIfSimulationPage() {
                     <div key={s} className="bg-emerald-50 border border-emerald-200 text-emerald-900 rounded p-1.5 text-xs font-bold mb-1.5 flex items-center justify-between">
                       <span className="truncate">{s}</span>
                       <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.2 rounded bg-emerald-200 text-emerald-900 flex-shrink-0 ml-1">
-                        + Added
+                        + {t('sim_added')}
                       </span>
                     </div>
                   ))}
@@ -237,7 +239,7 @@ export default function WhatIfSimulationPage() {
                     <div key={s} className="bg-slate-50 border border-slate-200 text-slate-800 rounded p-1.5 text-xs font-semibold mb-1.5 flex items-center justify-between">
                       <span className="truncate">{s}</span>
                       <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded bg-slate-200 text-slate-700 flex-shrink-0 ml-1">
-                        Unchanged
+                        {t('sim_retained')}
                       </span>
                     </div>
                   ))}
@@ -247,7 +249,7 @@ export default function WhatIfSimulationPage() {
                     <div key={s} className="bg-rose-50 border border-rose-200 text-rose-700 rounded p-1.5 text-[11px] mb-1.5 flex items-center justify-between line-through opacity-75">
                       <span className="truncate">{s}</span>
                       <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded bg-rose-200 text-rose-800 no-underline flex-shrink-0 ml-1">
-                        - Removed
+                        - {t('sim_removed')}
                       </span>
                     </div>
                   ))}
@@ -259,7 +261,7 @@ export default function WhatIfSimulationPage() {
 
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                    Tests Required
+                    {t('drawer_chip_tests')}
                   </span>
                   {(simResult?.tests_diff?.retained || []).map((t: string) => (
                     <p key={t} className="font-semibold text-slate-800 mt-0.5">• {t}</p>
@@ -273,7 +275,7 @@ export default function WhatIfSimulationPage() {
 
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                    Certification Route
+                    {t('drawer_chip_crs')}
                   </span>
                   <div className="p-2 rounded bg-slate-100 border border-slate-200 font-extrabold text-slate-900 text-xs">
                     {simResult?.certification_route || 'Scheme I (ISI Mark)'}
@@ -283,7 +285,7 @@ export default function WhatIfSimulationPage() {
                 {simResult?.deterministic_provenance && simResult.deterministic_provenance.length > 0 && (
                   <div className="pt-2 border-t border-slate-200 space-y-1.5 bg-orange-50/50 p-2.5 rounded-lg border border-orange-100">
                     <span className="text-[10px] font-bold text-orange-900 uppercase tracking-wider block">
-                      Deterministic Impact &amp; Rationale
+                      {t('sim_impact_summary')}
                     </span>
                     {simResult.deterministic_provenance.map((prov: string, i: number) => (
                       <p key={i} className="text-[11px] text-slate-700 leading-snug">
@@ -301,7 +303,7 @@ export default function WhatIfSimulationPage() {
           <div className="flex items-start gap-2.5 bg-[#F8FAFC] border border-slate-200 rounded-lg p-4 text-xs text-slate-500 leading-relaxed mt-6">
             <Info size={16} className="text-blue-500 flex-shrink-0 mt-0.5" />
             <span>
-              Simulation result is for decision support only and not a legal compliance conclusion.
+              {t('sim_provenance_note')}
             </span>
           </div>
 

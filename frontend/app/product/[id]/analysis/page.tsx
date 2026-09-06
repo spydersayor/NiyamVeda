@@ -7,12 +7,14 @@ import {
   Clock, AlertCircle, Info, ShieldCheck, HelpCircle, Sparkles 
 } from 'lucide-react';
 import { api, type AnalysisResult, type RuleEvaluationResult } from '@/lib/api';
+import { useTranslation } from '@/lib/i18n-context';
 import ProductSidebar from '@/components/ProductSidebar';
 import AssistantDrawer from '@/components/AssistantDrawer';
 
 export default function CompliancePathwayDashboard() {
   const params = useParams();
   const router = useRouter();
+  const { t } = useTranslation();
   const productId = (params.id as string) || 'demo-purifier-001';
 
   const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -48,27 +50,27 @@ export default function CompliancePathwayDashboard() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
             <div className="bg-[#0B1426]/85 backdrop-blur-md border border-slate-800 rounded-xl p-4 text-center card-interactive">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-                RELEVANT STANDARDS
+                {t('metric_relevant_standards')}
               </span>
               <div className="text-3xl font-extrabold text-white">
                 {result?.relevant_standards_count ?? result?.standards?.length ?? 0}
               </div>
-              <span className="text-[11px] text-slate-400 font-medium">Identified</span>
+              <span className="text-[11px] text-slate-400 font-medium">{t('metric_identified')}</span>
             </div>
 
             <div className="bg-[#0B1426]/85 backdrop-blur-md border border-slate-800 rounded-xl p-4 text-center card-interactive">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-                KEY REQUIREMENTS
+                {t('metric_key_requirements')}
               </span>
               <div className="text-3xl font-extrabold text-white">
                 {result?.key_requirements_count ?? result?.requirements?.length ?? 0}
               </div>
-              <span className="text-[11px] text-slate-400 font-medium">Criteria</span>
+              <span className="text-[11px] text-slate-400 font-medium">{t('metric_criteria')}</span>
             </div>
 
             <div className="bg-[#0B1426]/85 backdrop-blur-md border border-slate-800 rounded-xl p-4 text-center card-interactive">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-                EVIDENCE CONFIDENCE
+                {t('metric_evidence_confidence')}
               </span>
               <div className={`text-3xl font-extrabold ${
                 result?.evidence_confidence === 'High'
@@ -83,23 +85,23 @@ export default function CompliancePathwayDashboard() {
               </div>
               <span className="text-[11px] text-slate-400 font-medium">
                 {result?.evidence_confidence === 'High'
-                  ? 'Strong'
+                  ? t('analysis_strong')
                   : result?.evidence_confidence === 'Medium'
-                  ? 'Moderate'
+                  ? t('analysis_moderate')
                   : result?.evidence_confidence === 'Insufficient Evidence'
-                  ? 'Abstaining'
-                  : 'Preliminary'}
+                  ? t('analysis_abstaining')
+                  : t('analysis_preliminary')}
               </span>
             </div>
 
             <div className="bg-[#0B1426]/85 backdrop-blur-md border border-slate-800 rounded-xl p-4 text-center card-interactive">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-                ATTENTION NEEDED
+                {t('metric_attention_needed')}
               </span>
               <div className="text-3xl font-extrabold text-amber-400">
                 {result?.attention_needed_count ?? 0}
               </div>
-              <span className="text-[11px] text-slate-400 font-medium">Areas</span>
+              <span className="text-[11px] text-slate-400 font-medium">{t('metric_areas')}</span>
             </div>
           </div>
 
@@ -127,39 +129,37 @@ export default function CompliancePathwayDashboard() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs font-bold text-[#FF9933] uppercase tracking-wider">
                 <ShieldCheck size={16} />
-                <span>Executive Compliance Summary</span>
+                <span>{t('summary_heading')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Link
                   href={`/assistant?product_id=${productId}`}
                   className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#FF7828]/15 hover:bg-[#FF7828]/25 border border-[#FF7828]/40 text-[#FF9933] text-[11px] font-bold transition-colors"
-                  title="Ask conversational assistant with this product context"
+                  title={t('profile_chat_tooltip')}
                 >
                   <Sparkles size={11} />
-                  <span>Ask Copilot</span>
+                  <span>{t('analysis_ask_copilot')}</span>
                 </Link>
                 <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-                  {result?.checklist_completion_percent ?? 0}% Ready
+                  {result?.checklist_completion_percent ?? 0}% {t('analysis_ready')}
                 </span>
               </div>
             </div>
             
             <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-normal">
-              {result?.ai_synthesis_summary || (
-                'Product facts evaluated against published Bureau of Indian Standards (BIS) and mandatory Quality Control Orders (QCO).'
-              )}
+              {result?.ai_synthesis_summary || t('analysis_default_eval')}
             </p>
 
             <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px]">
               <span className="px-2.5 py-1 rounded bg-[#102242] border border-[#1E3865] text-blue-300 font-semibold">
-                {result?.relevant_standards_count ?? result?.standards?.length ?? 0} Mandatory Standards Identified
+                {result?.relevant_standards_count ?? result?.standards?.length ?? 0} {t('analysis_standards_identified')}
               </span>
               <span className="px-2.5 py-1 rounded bg-[#102242] border border-[#1E3865] text-blue-300 font-semibold">
-                {result?.key_requirements_count ?? result?.requirements?.length ?? 0} Statutory Requirements
+                {result?.key_requirements_count ?? result?.requirements?.length ?? 0} {t('analysis_statutory_reqs')}
               </span>
               {result?.attention_needed_count !== undefined && result.attention_needed_count > 0 && (
                 <span className="px-2.5 py-1 rounded bg-amber-950/60 border border-amber-800/80 text-amber-300 font-semibold">
-                  {result.attention_needed_count} Items Requiring Attention
+                  {result.attention_needed_count} {t('analysis_requiring_attention')}
                 </span>
               )}
             </div>
@@ -171,10 +171,10 @@ export default function CompliancePathwayDashboard() {
               <div>
                 <h2 className="text-sm sm:text-base font-bold text-white tracking-tight flex items-center gap-2">
                   <AlertCircle size={17} className="text-amber-400 flex-shrink-0" />
-                  <span>What Needs Your Attention?</span>
+                  <span>{t('attention_heading')}</span>
                 </h2>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  High-priority items identified from your product facts requiring lab verification or testing action.
+                  {t('attention_subheading')}
                 </p>
               </div>
               <span className={`text-xs font-bold px-2.5 py-0.5 rounded ${
@@ -182,7 +182,7 @@ export default function CompliancePathwayDashboard() {
                   ? 'bg-amber-950 text-amber-300 border border-amber-800'
                   : 'bg-emerald-950 text-emerald-300 border border-emerald-800'
               }`}>
-                {(result?.attention_needed_count ?? 0) > 0 ? `${result?.attention_needed_count} Action Items` : 'All Clear'}
+                {(result?.attention_needed_count ?? 0) > 0 ? `${result?.attention_needed_count} ${t('analysis_action_items')}` : t('attention_all_clear')}
               </span>
             </div>
 
@@ -201,7 +201,7 @@ export default function CompliancePathwayDashboard() {
                   <div className="bg-[#070D1B] border border-slate-800 rounded-lg p-4 text-xs text-slate-300 flex items-center gap-3">
                     <Check size={18} className="text-emerald-400 flex-shrink-0" />
                     <span>
-                      All identified compliance criteria are satisfied based on current product parameters. No critical laboratory flags pending.
+                      {t('analysis_all_clear_badge')}
                     </span>
                   </div>
                 );
@@ -214,7 +214,7 @@ export default function CompliancePathwayDashboard() {
                     <div className="bg-rose-950/40 border border-rose-800/70 rounded-lg p-3.5 space-y-1">
                       <div className="flex items-center gap-2 text-xs font-bold text-rose-300">
                         <span className="w-2 h-2 rounded-full bg-rose-400" />
-                        <span>Incomplete Parameters for Deterministic Standard Mapping</span>
+                        <span>{t('analysis_incomplete_params')}</span>
                       </div>
                       <p className="text-[11px] text-rose-200/90 leading-relaxed">
                         {result.safe_abstention.abstention_reason}
@@ -230,14 +230,14 @@ export default function CompliancePathwayDashboard() {
                           {req.source}: {req.requirement}
                         </span>
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800/80 uppercase">
-                          Action Required
+                          {t('analysis_action_required')}
                         </span>
                       </div>
                       <p className="text-xs text-slate-300 leading-relaxed">
                         {req.why_it_applies}
                       </p>
                       <p className="text-[11px] text-[#FF9933] font-semibold pt-0.5">
-                        Category: {req.category} • Status: {req.status}
+                        {t('analysis_category')}: {req.category} • {t('analysis_status')}: {req.status}
                       </p>
                     </div>
                   ))}
@@ -254,14 +254,14 @@ export default function CompliancePathwayDashboard() {
                             ? 'bg-red-950 text-red-300 border border-red-800' 
                             : 'bg-amber-950 text-amber-300 border border-amber-800'
                         }`}>
-                          {rk.severity} Risk
+                          {rk.severity} {t('analysis_risk')}
                         </span>
                       </div>
                       <p className="text-xs text-slate-300 leading-relaxed">
                         {rk.why_it_matters}
                       </p>
                       <p className="text-[11px] text-emerald-400 font-semibold pt-0.5">
-                        Mitigation: {rk.suggested_action}
+                        {t('analysis_mitigation')}: {rk.suggested_action}
                       </p>
                     </div>
                   ))}
@@ -277,17 +277,17 @@ export default function CompliancePathwayDashboard() {
                 <div>
                   <h2 className="text-sm sm:text-base font-bold text-white tracking-tight flex items-center gap-2">
                     <Info size={17} className="text-blue-400 flex-shrink-0" />
-                    <span>Why Do These Standards Apply?</span>
+                    <span>{t('why_applies_heading')}</span>
                   </h2>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    Physical engineering facts that triggered specific Indian Standards without AI hallucination.
+                    {t('why_applies_subheading')}
                   </p>
                 </div>
                 <button
                   onClick={() => setShowRuleModal(true)}
                   className="text-xs text-[#FF9933] hover:text-[#FF7828] font-semibold flex items-center gap-1 transition-colors"
                 >
-                  Full Modal View <ChevronRight size={14} />
+                  {t('analysis_modal_view')} <ChevronRight size={14} />
                 </button>
               </div>
 
@@ -306,7 +306,7 @@ export default function CompliancePathwayDashboard() {
                         {rule.rule_id}
                       </span>
                       <span className="text-[10px] font-bold text-slate-400 group-hover:text-[#FF9933] transition-colors flex items-center gap-1">
-                        Inspect <ChevronRight size={12} />
+                        {t('btn_inspect_rule')} <ChevronRight size={12} />
                       </span>
                     </div>
 
@@ -315,7 +315,7 @@ export default function CompliancePathwayDashboard() {
                     </h3>
 
                     <div className="text-[11px] text-slate-400 leading-relaxed border-t border-slate-800/60 pt-1.5">
-                      <span className="text-slate-500 font-semibold">Clause: </span>
+                      <span className="text-slate-500 font-semibold">{t('evidence_clause_label')}: </span>
                       <span className="text-slate-300 font-mono">{rule.clause_reference}</span>
                     </div>
 
@@ -332,14 +332,14 @@ export default function CompliancePathwayDashboard() {
           <div className="bg-[#0B1426]/90 backdrop-blur-md border border-slate-800 rounded-xl p-6 sm:p-7 space-y-5 shadow-2xl animate-slide-up">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold text-white tracking-tight">
-                Your Compliance Pathway
+                {t('pathway_heading')}
               </h2>
               {result?.evaluated_rules && result.evaluated_rules.length > 0 && (
                 <button
                   onClick={() => setShowRuleModal(true)}
                   className="text-xs text-[#FF9933] hover:text-[#FF7828] font-semibold flex items-center gap-1 transition-colors"
                 >
-                  Inspect Triggered Rule (Screen 5) <ChevronRight size={14} />
+                  {t('btn_inspect_rule')} <ChevronRight size={14} />
                 </button>
               )}
             </div>
@@ -418,7 +418,7 @@ export default function CompliancePathwayDashboard() {
                       }`}
                     >
                       {isCompleted && <Check size={12} />}
-                      {isCompleted ? 'Completed' : isInProgress ? 'In Progress' : 'Pending'}
+                      {isCompleted ? t('status_completed') : isInProgress ? t('status_in_progress') : t('status_pending')}
                     </span>
                   </div>
                 );
@@ -431,7 +431,7 @@ export default function CompliancePathwayDashboard() {
                 href={`/product/${productId}/standards`}
                 className="bg-[#FF7828] hover:bg-[#E05E10] text-white font-bold text-xs px-6 py-2.5 rounded-md transition-all shadow-md shadow-orange-500/20 flex items-center gap-2"
               >
-                View Detailed Analysis <ArrowRight size={14} />
+                {t('btn_view_detailed_analysis')} <ArrowRight size={14} />
               </Link>
             </div>
           </div>
@@ -446,11 +446,12 @@ export default function CompliancePathwayDashboard() {
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <h2 className="text-base font-extrabold text-slate-900">
-                Why This Rule Applies
+                {t('why_applies_heading')}
               </h2>
               <button 
                 onClick={() => setShowRuleModal(false)}
                 className="w-7 h-7 rounded-md hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors"
+                title={t('analysis_modal_close')}
               >
                 <X size={18} />
               </button>
@@ -463,14 +464,14 @@ export default function CompliancePathwayDashboard() {
               <div className="relative">
                 <div className="absolute -left-[23px] top-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white" />
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                  PRODUCT FACT
+                  {t('analysis_physical_facts')}
                 </span>
                 <p className="text-xs font-bold text-slate-900 mt-0.5">
                   {activeRule?.input_facts
                     ? Object.entries(activeRule.input_facts)
                         .map(([k, v]) => `${k.replace(/_/g, ' ')}: ${v}`)
                         .join(' | ')
-                    : 'Validated engineering characteristics'}
+                    : t('analysis_product_facts')}
                 </p>
               </div>
 
@@ -479,10 +480,10 @@ export default function CompliancePathwayDashboard() {
                 <div className="absolute -left-[23px] top-0.5 w-3.5 h-3.5 rounded-full bg-slate-700 border-2 border-white" />
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                    RULE EVALUATED
+                    {t('rule_inspector_heading')}
                   </span>
                   <span className="text-[9px] font-bold px-2 py-0.5 bg-slate-100 text-slate-700 rounded border border-slate-300">
-                    {activeRule?.origin_badge || 'DETERMINISTIC RULE'}
+                    {activeRule?.origin_badge || t('analysis_deterministic_badge')}
                   </span>
                 </div>
                 <p className="text-xs font-bold text-slate-900 mt-0.5">
@@ -498,10 +499,10 @@ export default function CompliancePathwayDashboard() {
                 <div className="absolute -left-[23px] top-0.5 w-3.5 h-3.5 rounded-full bg-slate-700 border-2 border-white" />
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                    RULE CONDITION
+                    {t('evidence_clause_label')}
                   </span>
                   <span className="text-[9px] font-bold px-2 py-0.5 bg-slate-100 text-slate-700 rounded border border-slate-300">
-                    {activeRule?.verification_status || 'VERIFIED OFFICIAL'}
+                    {activeRule?.verification_status || t('inspector_verified_badge')}
                   </span>
                 </div>
                 <p className="text-xs font-bold text-slate-900 mt-0.5">
@@ -517,10 +518,10 @@ export default function CompliancePathwayDashboard() {
                 <div className="absolute -left-[23px] top-0.5 w-3.5 h-3.5 rounded-full bg-purple-600 border-2 border-white" />
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                    RESULT
+                    {t('inspector_outcome_heading')}
                   </span>
                   <span className="text-[9px] font-bold px-2 py-0.5 bg-purple-50 text-purple-700 rounded border border-purple-200">
-                    DETERMINISTIC ENGINE
+                    {t('analysis_deterministic_badge')}
                   </span>
                 </div>
                 <p className="text-xs text-slate-700 mt-0.5 leading-relaxed">
@@ -539,14 +540,14 @@ export default function CompliancePathwayDashboard() {
                 }}
                 className="text-xs text-[#FF7828] font-bold hover:underline"
               >
-                Inspect Full Rule Details
+                {t('analysis_view_inspector')}
               </button>
 
               <Link
                 href={`/product/${productId}/sources`}
                 className="bg-[#0B132B] hover:bg-[#1E293B] text-white text-xs font-bold px-5 py-2.5 rounded-md transition-all flex items-center gap-1.5"
               >
-                View Evidence Trail <ArrowRight size={13} />
+                {t('evidence_title')} <ArrowRight size={13} />
               </Link>
             </div>
           </div>
@@ -560,11 +561,12 @@ export default function CompliancePathwayDashboard() {
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <h2 className="text-base font-extrabold text-slate-900">
-                Rule Inspector – {activeRule.rule_id}
+                {t('rule_inspector_heading')} – {activeRule.rule_id}
               </h2>
               <button 
                 onClick={() => setShowInspectorModal(false)}
                 className="w-7 h-7 rounded-md hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors"
+                title={t('analysis_modal_close')}
               >
                 <X size={18} />
               </button>
@@ -577,10 +579,10 @@ export default function CompliancePathwayDashboard() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800">
-                    RULE LOGIC
+                    {t('inspector_logic_heading')}
                   </span>
                   <span className="text-[9px] font-bold px-2 py-0.5 bg-slate-100 text-slate-700 rounded border border-slate-300">
-                    DETERMINISTIC RULE
+                    {t('analysis_deterministic_badge')}
                   </span>
                 </div>
 
@@ -601,7 +603,7 @@ export default function CompliancePathwayDashboard() {
 
                 <div className="flex items-start gap-2 text-[11px] text-slate-500 pt-1">
                   <Info size={14} className="text-slate-400 flex-shrink-0 mt-0.5" />
-                  <span>This rule is evaluated deterministically based on structured product facts.</span>
+                  <span>{t('analysis_rule_provenance')}</span>
                 </div>
               </div>
 
@@ -609,29 +611,29 @@ export default function CompliancePathwayDashboard() {
               <div className="md:pl-6 space-y-3.5 text-xs">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800">
-                    SUPPORTING EVIDENCE
+                    {t('evidence_title')}
                   </span>
                   <span className="text-[9px] font-bold px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded border border-emerald-300">
-                    AUTHORITATIVE EVIDENCE
+                    {t('inspector_authoritative_badge')}
                   </span>
                 </div>
 
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Source</span>
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block">{t('evidence_source_label')}</span>
                   <p className="font-bold text-slate-900 text-xs mt-0.5">
                     {activeRule.clause_reference.split(' - ')[0] || 'IS 302 (Part 1): 2008'}
                   </p>
                 </div>
 
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Clause</span>
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block">{t('evidence_clause_label')}</span>
                   <p className="font-semibold text-slate-800 text-xs mt-0.5">
                     {activeRule.clause_reference}
                   </p>
                 </div>
 
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Excerpt</span>
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">{t('evidence_excerpt_label')}</span>
                   <blockquote className="bg-[#F8FAFC] border-l-2 border-l-[#FF7828] border border-slate-200 rounded-md p-3 text-xs text-slate-700 italic leading-relaxed">
                     &ldquo;{activeRule.supporting_evidence_excerpt}&rdquo;
                   </blockquote>
@@ -646,7 +648,7 @@ export default function CompliancePathwayDashboard() {
                 href={`/product/${productId}/sources`}
                 className="bg-[#0B132B] hover:bg-[#1E293B] text-white text-xs font-bold px-6 py-2.5 rounded-md transition-all flex items-center gap-1.5"
               >
-                View Full Source <ArrowRight size={13} />
+                {t('evidence_view_full_source')} <ArrowRight size={13} />
               </Link>
             </div>
           </div>

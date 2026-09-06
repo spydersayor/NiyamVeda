@@ -7,7 +7,10 @@ import {
 } from 'lucide-react';
 import { api, type SourceRegistryItem } from '@/lib/api';
 
+import { useTranslation } from '@/lib/i18n-context';
+
 export default function GlobalSourcesDirectoryPage() {
+  const { t } = useTranslation();
   const [sources, setSources] = useState<SourceRegistryItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
@@ -33,10 +36,10 @@ export default function GlobalSourcesDirectoryPage() {
         {/* Breadcrumbs */}
         <div className="flex items-center gap-2 text-xs text-slate-500">
           <Link href="/" className="hover:text-slate-300 flex items-center gap-1">
-            <ArrowLeft size={12} /> Home
+            <ArrowLeft size={12} /> {t('common_home')}
           </Link>
           <span>/</span>
-          <span className="text-[#FF9933]">Authoritative Source Registry</span>
+          <span className="text-[#FF9933]">{t('sources_title')}</span>
         </div>
 
         {/* Header */}
@@ -46,10 +49,10 @@ export default function GlobalSourcesDirectoryPage() {
               <div className="w-9 h-9 rounded-xl bg-[#FF7828]/20 flex items-center justify-center text-[#FF7828]">
                 <Database size={20} />
               </div>
-              <h1 className="text-3xl font-extrabold text-white">Authoritative Source Registry</h1>
+              <h1 className="text-3xl font-extrabold text-white">{t('sources_title')}</h1>
             </div>
             <p className="text-slate-400 text-sm max-w-2xl">
-              Curated repository of official Indian Standards (IS), MeitY Gazette Compulsory Registration Orders (CRO), and QCOs. Every compliance rule in NiyamVeda strictly traces to one of these records.
+              {t('sources_subtitle')}
             </p>
           </div>
 
@@ -57,7 +60,7 @@ export default function GlobalSourcesDirectoryPage() {
             <Search size={16} className="absolute left-3.5 top-3 text-slate-500" />
             <input
               type="text"
-              placeholder="Search standards or gazettes..."
+              placeholder={t('sources_search_placeholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="input-field pl-10 text-xs py-2.5"
@@ -68,7 +71,11 @@ export default function GlobalSourcesDirectoryPage() {
         {loading ? (
           <div className="card py-16 text-center text-slate-400">
             <div className="w-8 h-8 border-2 border-[#FF7828]/30 border-t-[#FF7828] rounded-full animate-spin mx-auto mb-3" />
-            Loading registered sources...
+            {t('sources_loading')}
+          </div>
+        ) : filteredSources.length === 0 ? (
+          <div className="card py-16 text-center text-slate-400">
+            {t('sources_no_results')}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -98,7 +105,7 @@ export default function GlobalSourcesDirectoryPage() {
 
                   <div className="bg-[#060C1A] border border-[#1E293B] rounded-lg p-3 text-xs text-slate-300 space-y-1">
                     <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wide block">
-                      Applicable Scope
+                      {t('sources_scope')}
                     </span>
                     <p>{source.applicable_domain}</p>
                   </div>
@@ -106,7 +113,7 @@ export default function GlobalSourcesDirectoryPage() {
 
                 <div className="flex items-center justify-between pt-3 border-t border-[#1E293B] text-xs">
                   <span className="text-slate-500 text-[11px]">
-                    Effective: <strong className="text-slate-400">{source.effective_date || 'Enforced'}</strong>
+                    {t('sources_effective')} <strong className="text-slate-400">{source.effective_date || t('sources_enforced')}</strong>
                   </span>
                   <a
                     href={source.official_url || 'https://standardsbis.bsbedge.com'}
@@ -114,7 +121,7 @@ export default function GlobalSourcesDirectoryPage() {
                     rel="noreferrer"
                     className="text-[#FF7828] hover:text-[#FF9933] font-semibold flex items-center gap-1"
                   >
-                    Official Portal <ExternalLink size={12} />
+                    {t('sources_portal_link')} <ExternalLink size={12} />
                   </a>
                 </div>
               </div>

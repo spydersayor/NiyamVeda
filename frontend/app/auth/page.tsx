@@ -7,10 +7,12 @@ import {
   ArrowRight, Sparkles, CheckCircle2, AlertCircle, Loader2 
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
+import { useTranslation } from '@/lib/i18n-context';
 
 export default function AuthPage() {
   const router = useRouter();
   const { user, login, register, demoLogin, logout } = useAuth();
+  const { t } = useTranslation();
 
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
@@ -69,7 +71,7 @@ export default function AuthPage() {
 
     // Frontend email format validation — reject before calling API
     if (!isValidEmail(email)) {
-      setError('Please enter a valid email address.');
+      setError(t('auth_err_email_invalid'));
       return;
     }
 
@@ -86,7 +88,7 @@ export default function AuthPage() {
       // Network / timeout failures have no useful message from the backend.
       // Distinguish them from genuine auth errors so the user is not confused.
       if (!msg || msg.startsWith('API fetch error') || msg.startsWith('Failed to fetch') || msg.includes('abort')) {
-        setError('Unable to sign in right now. Please try again.');
+        setError(t('auth_err_generic'));
       } else {
         // Surface the backend detail (e.g. "Invalid email or password",
         // "An account with this email already exists", etc.)
@@ -104,7 +106,7 @@ export default function AuthPage() {
       await demoLogin();
       router.push('/product/new');
     } catch (err: any) {
-      setError('Failed to initiate demo session.');
+      setError(t('auth_err_demo'));
     } finally {
       setLoading(false);
     }
@@ -119,25 +121,25 @@ export default function AuthPage() {
             <CheckCircle2 size={32} />
           </div>
           <div className="space-y-1">
-            <h2 className="text-xl font-bold text-white">Active Session</h2>
-            <p className="text-xs text-slate-400">You are logged into NiyamVeda Compliance Portal</p>
+            <h2 className="text-xl font-bold text-white">{t('nav_profile')}</h2>
+            <p className="text-xs text-slate-400">{t('profile_desc')}</p>
           </div>
 
           <div className="bg-[#070D1B] border border-slate-800/80 rounded-xl p-4 text-left text-xs space-y-2.5">
             <div>
-              <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">Full Name</span>
+              <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">{t('auth_full_name')}</span>
               <p className="font-semibold text-white text-sm">{user.full_name}</p>
             </div>
             <div>
-              <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">Email Address</span>
+              <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">{t('auth_email')}</span>
               <p className="font-medium text-slate-300">{user.email}</p>
             </div>
             <div>
-              <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">Enterprise / MSME</span>
+              <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">{t('auth_company_name')}</span>
               <p className="font-medium text-slate-300">{user.company_name}</p>
             </div>
             <div>
-              <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">Role</span>
+              <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">{t('auth_card_role')}</span>
               <span className="inline-block text-[10px] font-bold px-2 py-0.5 rounded bg-orange-500/10 text-[#FF9933] border border-orange-500/20">
                 {user.role}
               </span>
@@ -149,13 +151,13 @@ export default function AuthPage() {
               href="/product/new"
               className="bg-[#FF7828] hover:bg-[#E05E10] text-white text-xs font-bold py-3 px-4 rounded-lg shadow-md transition-all flex items-center justify-center gap-2"
             >
-              Start Product Analysis <ArrowRight size={14} />
+              {t('auth_card_start')} <ArrowRight size={14} />
             </Link>
             <button
               onClick={async () => { await logout(); }}
               className="border border-slate-700 hover:bg-slate-800/50 text-slate-400 hover:text-white text-xs font-semibold py-2.5 px-4 rounded-lg transition-all"
             >
-              Sign Out
+              {t('auth_card_signout')}
             </button>
           </div>
         </div>
@@ -181,7 +183,7 @@ export default function AuthPage() {
             NiyamVeda <span className="text-[#FF9933] font-normal">(नियमवेद)</span>
           </h1>
           <p className="text-xs text-slate-400 max-w-sm mx-auto">
-            Secure BIS Compliance Intelligence Portal for Indian MSMEs
+            {t('auth_portal_subtitle')}
           </p>
         </div>
 
@@ -189,10 +191,10 @@ export default function AuthPage() {
         <div className="bg-gradient-to-r from-orange-950/40 via-amber-950/30 to-[#0B1426] border border-orange-500/30 rounded-xl p-4 shadow-lg text-center space-y-2 card-interactive">
           <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-[#FF9933]">
             <Sparkles size={14} />
-            <span>Instant Evaluation Mode</span>
+            <span>{t('auth_demo_badge')}</span>
           </div>
           <p className="text-[11px] text-slate-300">
-            Sign in with 1-click as <strong className="text-white">Rajesh Kumar Sharma</strong> (Water Purifier MSME)
+            {t('auth_demo_desc')}
           </p>
           <button
             onClick={handleDemoLogin}
@@ -200,7 +202,7 @@ export default function AuthPage() {
             className="w-full mt-2 bg-gradient-to-r from-[#FF7828] to-[#FF9933] hover:from-[#E05E10] hover:to-[#FF7828] text-white text-xs font-bold py-2.5 px-4 rounded-lg shadow-md transition-all flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
           >
             {loading ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
-            <span>1-Click Demo Sign In</span>
+            <span>{t('auth_demo_btn')}</span>
           </button>
         </div>
 
@@ -218,7 +220,7 @@ export default function AuthPage() {
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              Sign In
+              {t('auth_tab_login')}
             </button>
             <button
               type="button"
@@ -229,7 +231,7 @@ export default function AuthPage() {
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              Create Account
+              {t('auth_tab_register')}
             </button>
           </div>
 
@@ -245,7 +247,7 @@ export default function AuthPage() {
               <>
                 <div>
                   <label className="block text-xs font-bold text-slate-300 mb-1">
-                    Full Name <span className="text-[#FF7828]">*</span>
+                    {t('auth_full_name')} <span className="text-[#FF7828]">*</span>
                   </label>
                   <div className="relative">
                     <User size={15} className="absolute left-3 top-2.5 text-slate-500" />
@@ -254,7 +256,7 @@ export default function AuthPage() {
                       required
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      placeholder="e.g. Rajesh Kumar Sharma"
+                      placeholder={t('auth_full_name_placeholder')}
                       className="w-full bg-[#070D1B] border border-slate-700 rounded-lg pl-9 pr-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#FF7828]"
                     />
                   </div>
@@ -262,7 +264,7 @@ export default function AuthPage() {
 
                 <div>
                   <label className="block text-xs font-bold text-slate-300 mb-1">
-                    MSME / Enterprise Name
+                    {t('auth_company_name')}
                   </label>
                   <div className="relative">
                     <Building2 size={15} className="absolute left-3 top-2.5 text-slate-500" />
@@ -270,7 +272,7 @@ export default function AuthPage() {
                       type="text"
                       value={companyName}
                       onChange={(e) => setCompanyName(e.target.value)}
-                      placeholder="e.g. Apex PureWater Innovations Pvt. Ltd."
+                      placeholder={t('auth_company_placeholder')}
                       className="w-full bg-[#070D1B] border border-slate-700 rounded-lg pl-9 pr-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#FF7828]"
                     />
                   </div>
@@ -280,7 +282,7 @@ export default function AuthPage() {
 
             <div>
               <label className="block text-xs font-bold text-slate-300 mb-1">
-                Email Address <span className="text-[#FF7828]">*</span>
+                {t('auth_email')} <span className="text-[#FF7828]">*</span>
               </label>
               <div className="relative">
                 <Mail size={15} className="absolute left-3 top-2.5 text-slate-500" />
@@ -289,7 +291,7 @@ export default function AuthPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@company.com"
+                  placeholder={t('auth_email_placeholder')}
                   className="w-full bg-[#070D1B] border border-slate-700 rounded-lg pl-9 pr-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#FF7828]"
                 />
               </div>
@@ -297,7 +299,7 @@ export default function AuthPage() {
 
             <div>
               <label className="block text-xs font-bold text-slate-300 mb-1">
-                Password <span className="text-[#FF7828]">*</span>
+                {t('auth_password')} <span className="text-[#FF7828]">*</span>
               </label>
               <div className="relative">
                 <Lock size={15} className="absolute left-3 top-2.5 text-slate-500" />
@@ -306,7 +308,7 @@ export default function AuthPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder={t('auth_password_placeholder')}
                   className="w-full bg-[#070D1B] border border-slate-700 rounded-lg pl-9 pr-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#FF7828]"
                 />
               </div>
@@ -317,9 +319,9 @@ export default function AuthPage() {
               disabled={loading}
               className="w-full bg-[#070D1B] hover:bg-[#121c33] border border-slate-700 hover:border-slate-500 text-white text-xs font-bold py-2.5 px-4 rounded-lg transition-all flex items-center justify-center gap-2 mt-2"
             >
-              {loading ? 'Processing...' : (
+              {loading ? t('common_processing') : (
                 <>
-                  {mode === 'login' ? 'Sign In to Portal' : 'Create MSME Account'}
+                  {mode === 'login' ? t('auth_btn_login') : t('auth_btn_register')}
                   <ArrowRight size={14} />
                 </>
               )}

@@ -7,10 +7,12 @@ import {
   User, CheckCircle2, AlertCircle, Edit3, Save, X 
 } from 'lucide-react';
 import { api, type Product, type ProductFact } from '@/lib/api';
+import { useTranslation } from '@/lib/i18n-context';
 
 export default function ConfirmProductFactsPage() {
   const params = useParams();
   const router = useRouter();
+  const { t } = useTranslation();
   const productId = (params.id as string) || 'demo-purifier-001';
 
   const [product, setProduct] = useState<Product | null>(null);
@@ -121,13 +123,13 @@ export default function ConfirmProductFactsPage() {
         <div className="space-y-1 animate-slide-up">
           <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#102242] border border-blue-500/30 text-[11px] font-bold text-blue-300">
             <CheckCircle2 size={13} className="text-emerald-400" />
-            <span>STEP 3: FACT VERIFICATION</span>
+            <span>{t('confirm_step_badge')}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-            Confirm What We Understood
+            {t('confirm_title')}
           </h1>
           <p className="text-xs sm:text-sm text-slate-300">
-            Review the extracted engineering facts before NiyamVeda evaluates applicable BIS standards. You can edit any parameter inline.
+            {t('confirm_subtitle')}
           </p>
         </div>
 
@@ -156,12 +158,12 @@ export default function ConfirmProductFactsPage() {
                     {isExtracted ? (
                       <>
                         <FileText size={10} />
-                        <span>Extracted from Spec</span>
+                        <span>{t('confirm_origin_extracted')}</span>
                       </>
                     ) : (
                       <>
                         <User size={10} />
-                        <span>Manufacturer Provided</span>
+                        <span>{t('confirm_origin_manufacturer')}</span>
                       </>
                     )}
                   </span>
@@ -215,7 +217,7 @@ export default function ConfirmProductFactsPage() {
         <div className="flex items-center gap-3 bg-[#0B152A] border border-blue-900/60 rounded-xl p-4 text-xs text-slate-300">
           <Info size={16} className="text-blue-400 flex-shrink-0" />
           <span className="leading-relaxed">
-            These parameters form the input facts to NiyamVeda&apos;s deterministic rule engine. Changes will directly alter which Indian Standards and mandatory testing protocols are triggered.
+            {t('confirm_notice')}
           </span>
         </div>
 
@@ -226,7 +228,7 @@ export default function ConfirmProductFactsPage() {
             className="bg-[#0B132B] hover:bg-[#1E293B] border border-slate-700 text-slate-300 text-xs font-semibold px-4 py-2.5 rounded-lg transition-all flex items-center gap-1.5"
           >
             <ArrowLeft size={13} />
-            <span>Upload Another Document</span>
+            <span>{t('confirm_btn_upload_another')}</span>
           </Link>
 
           <button
@@ -234,9 +236,9 @@ export default function ConfirmProductFactsPage() {
             disabled={loading}
             className="bg-[#FF7828] hover:bg-[#E05E10] text-white text-xs font-bold px-6 py-2.5 rounded-lg transition-all shadow-md shadow-orange-500/20 flex items-center gap-2"
           >
-            {loading ? 'Evaluating Rules...' : (
+            {loading ? t('confirm_evaluating') : (
               <>
-                <span>Confirm &amp; Run Compliance Analysis</span>
+                <span>{t('confirm_btn_run_analysis')}</span>
                 <ArrowRight size={14} />
               </>
             )}

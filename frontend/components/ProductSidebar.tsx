@@ -6,35 +6,33 @@ import {
   AlertTriangle, FlaskConical, Database, Shield, Home, Zap, Sparkles
 } from 'lucide-react';
 
+import { useTranslation } from '@/lib/i18n-context';
+import type { Translations } from '@/lib/translations';
+
 interface ProductSidebarProps {
   productId: string;
 }
 
-const navItems = [
-  { href: '/product/{id}/confirm',       icon: Home,            label: 'Product',       tip: 'Product Facts (Screen 3)'       },
-  { href: '/product/{id}/analysis',      icon: LayoutDashboard, label: 'Analysis',      tip: 'Pathway Dashboard (Screen 4)'   },
-  { href: '/product/{id}/why-rule',      icon: Zap,             label: 'Why Rule',      tip: 'Why This Rule Applies (Screen 5)'},
-  { href: '/product/{id}/rule-inspector',icon: FileCheck,       label: 'Inspector',     tip: 'Rule Inspector (Screen 6)'      },
-  { href: '/product/{id}/standards',     icon: BookOpen,        label: 'Standards',     tip: 'Relevant Standards (Screen 7)'  },
-  { href: '/product/{id}/requirements',  icon: ClipboardList,   label: 'Requirements',  tip: 'Requirements Checklist (Screen 8)'},
-  { href: '/product/{id}/risks',         icon: AlertTriangle,   label: 'Risks',         tip: 'Potential Risks (Screen 9)'     },
-  { href: '/product/{id}/simulation',    icon: FlaskConical,    label: 'Simulate',      tip: 'What-If Simulation (Screen 10)' },
-  { href: '/product/{id}/sources',       icon: Database,        label: 'Sources',       tip: 'Evidence Trail (Screen 11)'     },
-  { href: '/product/{id}/abstention',    icon: Shield,          label: 'Abstention',    tip: 'Safe Abstention (Screen 12)'    },
+const navItems: Array<{
+  href: string;
+  icon: any;
+  key: keyof Translations;
+}> = [
+  { href: '/product/{id}/confirm',       icon: Home,            key: 'sidebar_product' },
+  { href: '/product/{id}/analysis',      icon: LayoutDashboard, key: 'sidebar_analysis' },
+  { href: '/product/{id}/why-rule',      icon: Zap,             key: 'sidebar_why_rule' },
+  { href: '/product/{id}/rule-inspector',icon: FileCheck,       key: 'sidebar_inspector' },
+  { href: '/product/{id}/standards',     icon: BookOpen,        key: 'sidebar_standards' },
+  { href: '/product/{id}/requirements',  icon: ClipboardList,   key: 'sidebar_requirements' },
+  { href: '/product/{id}/risks',         icon: AlertTriangle,   key: 'sidebar_risks' },
+  { href: '/product/{id}/simulation',    icon: FlaskConical,    key: 'sidebar_simulation' },
+  { href: '/product/{id}/sources',       icon: Database,        key: 'sidebar_sources' },
+  { href: '/product/{id}/abstention',    icon: Shield,          key: 'sidebar_abstention' },
 ];
 
 export default function ProductSidebar({ productId }: ProductSidebarProps) {
   const pathname = usePathname();
-
-  // Screens 7 to 12 have a clean light canvas in the reference image
-  const isLightPage = pathname?.includes('/standards') || 
-                      pathname?.includes('/requirements') || 
-                      pathname?.includes('/risks') || 
-                      pathname?.includes('/simulation') || 
-                      pathname?.includes('/sources') ||
-                      pathname?.includes('/why-rule') ||
-                      pathname?.includes('/rule-inspector') ||
-                      pathname?.includes('/abstention');
+  const { t } = useTranslation();
 
   return (
     <aside className="fixed left-0 top-14 bottom-0 w-14 flex flex-col items-center py-4 gap-1.5 z-40 bg-[#060C1A]/90 backdrop-blur-xl border-r border-slate-800/80 shadow-2xl">
@@ -49,11 +47,12 @@ export default function ProductSidebar({ productId }: ProductSidebarProps) {
         const href = item.href.replace('{id}', productId);
         const isActive = pathname === href;
         const Icon = item.icon;
+        const tipText = t(item.key);
         return (
           <Link
             key={item.href}
             href={href}
-            title={item.tip}
+            title={tipText}
             className={`relative group w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 ${
               isActive
                 ? 'bg-[#FF7828]/25 text-[#FF7828] font-bold shadow-md shadow-orange-500/20 scale-105'
@@ -67,7 +66,7 @@ export default function ProductSidebar({ productId }: ProductSidebarProps) {
             )}
             {/* Tooltip */}
             <span className="absolute left-14 text-xs px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap transition-opacity duration-200 bg-slate-900/95 backdrop-blur-md text-white border border-slate-700 shadow-xl z-50">
-              {item.tip}
+              {tipText}
             </span>
           </Link>
         );
