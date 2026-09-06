@@ -208,3 +208,93 @@ def test_duplicate_email_with_different_case_and_spacing_is_rejected():
     detail = duplicate_response.json().get("detail", "")
 
     assert "already exists" in detail.lower()
+
+
+# ============================================================================
+# Login email validation — mandatory regression cases (schema level)
+# ============================================================================
+
+@pytest.mark.parametrize(
+    "email",
+    [
+        "wish@123",          # numeric-only TLD (not alphabetic)
+        "test",              # no @
+        "test@",             # empty domain
+        "test@gmail",        # missing TLD (only 1 domain label)
+        "@gmail.com",        # empty local part
+        "user@",             # empty domain
+        "user@.com",         # domain starts with dot
+        "user name@gmail.com",  # space in local part
+        "test..user@gmail.com", # consecutive dots in local part
+        ".test@gmail.com",   # local part starts with dot
+        "test.@gmail.com",   # local part ends with dot
+        "user@gmail..com",   # consecutive dots in domain
+    ],
+)
+def test_login_invalid_email_is_rejected_by_schema(email):
+    """
+    UserLogin schema must reject the same malformed emails as UserRegister.
+    The backend must not attempt authentication for any of these.
+    """
+    with pytest.raises(ValidationError):
+        make_login(email)
+
+
+@pytest.mark.parametrize(
+    "email",
+    [
+        "user@gmail.com",
+        "test.user@gmail.com",
+        "user+test@gmail.com",
+        "user@example.co.in",
+        "user123@outlook.com",
+    ],
+)
+def test_login_valid_email_is_accepted_by_schema(email):
+    """Valid emails must be accepted by the UserLogin schema."""
+    obj = make_login(email)
+    assert obj.email == email.strip().lower()
+
+
+# ============================================================================
+# Login endpoint API-level rejection of invalid email
+# ============================================================================
+
+@pytest.mark.parametrize(
+    "email",
+    [
+        "wish@123",
+        "test",
+        "test@",
+        "test@gmail",
+        "@gmail.com",
+        "user@",
+        "user@.com",
+        "user name@gmail.com",
+        "test..user@gmail.com",
+        ".test@gmail.com",
+        "test.@gmail.com",
+    ],
+)
+def test_login_endpoint_rejects_invalid_email(email):
+    """
+    The /api/auth/login endpoint must return 422 Unprocessable Entity
+    for structurally invalid emails without attempting authentication.
+    """
+    resp = client.post(
+        "/api/auth/login",
+        json={"email": email, "password": "anypassword"},
+    )
+    assert resp.status_code == 422, (
+        f"Expected 422 for email={email!r}, got {resp.status_code}: {resp.text}"
+    )
+
+
+# ============================================================================
+# Login normalization
+# ============================================================================
+
+def test_login_email_normalization_whitespace_and_case():
+    """Login normalizes email consistently with registration."""
+    obj = make_login("  User.Test@Example.COM  ")
+    assert obj.email == "user.test@example.com"

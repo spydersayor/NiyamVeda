@@ -20,11 +20,60 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * Validate email format (mirrors backend rules in UserRegister).
+   * Returns true if valid, false if invalid.
+   */
+  function isValidEmail(value: string): boolean {
+    const normalized = value.trim().toLowerCase();
+    if (!normalized) return false;
+
+    // Exactly one @
+    if (normalized.split('@').length - 1 !== 1) return false;
+
+    const atIdx = normalized.indexOf('@');
+    const local = normalized.slice(0, atIdx);
+    const domain = normalized.slice(atIdx + 1);
+
+    if (!local || !domain) return false;
+
+    // Local part rules
+    if (local.startsWith('.') || local.endsWith('.')) return false;
+    if (local.includes('..')) return false;
+
+    // No spaces allowed anywhere
+    if (/\s/.test(normalized)) return false;
+
+    // Domain rules
+    if (domain.startsWith('.') || domain.endsWith('.')) return false;
+    if (domain.includes('..')) return false;
+
+    const labels = domain.split('.');
+    // Must have domain + TLD (at least 2 labels)
+    if (labels.length < 2) return false;
+    // No empty labels
+    if (labels.some((l) => !l)) return false;
+    // No label starting/ending with hyphen
+    if (labels.some((l) => l.startsWith('-') || l.endsWith('-'))) return false;
+
+    // TLD must be purely alphabetic and at least 2 chars
+    const tld = labels[labels.length - 1];
+    if (tld.length < 2 || !/^[a-z]+$/.test(tld)) return false;
+
+    return true;
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setLoading(true);
 
+    // Frontend email format validation — reject before calling API
+    if (!isValidEmail(email)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
+    setLoading(true);
     try {
       if (mode === 'login') {
         await login(email, password);
@@ -33,7 +82,16 @@ export default function AuthPage() {
       }
       router.push('/product/new');
     } catch (err: any) {
-      setError(err?.message || 'Authentication failed. Please check your credentials.');
+      const msg: string = err?.message ?? '';
+      // Network / timeout failures have no useful message from the backend.
+      // Distinguish them from genuine auth errors so the user is not confused.
+      if (!msg || msg.startsWith('API fetch error') || msg.startsWith('Failed to fetch') || msg.includes('abort')) {
+        setError('Unable to sign in right now. Please try again.');
+      } else {
+        // Surface the backend detail (e.g. "Invalid email or password",
+        // "An account with this email already exists", etc.)
+        setError(msg);
+      }
     } finally {
       setLoading(false);
     }
@@ -94,7 +152,7 @@ export default function AuthPage() {
               Start Product Analysis <ArrowRight size={14} />
             </Link>
             <button
-              onClick={logout}
+              onClick={async () => { await logout(); }}
               className="border border-slate-700 hover:bg-slate-800/50 text-slate-400 hover:text-white text-xs font-semibold py-2.5 px-4 rounded-lg transition-all"
             >
               Sign Out

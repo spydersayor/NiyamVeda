@@ -123,7 +123,7 @@ export default function Nav() {
                 <span className="font-semibold text-white max-w-[90px] truncate">{user.full_name.split(' ')[0]}</span>
               </Link>
               <button
-                onClick={logout}
+                onClick={async () => { await logout(); }}
                 title={t('nav_sign_out')}
                 className="text-[11px] text-slate-400 hover:text-red-400 px-1.5 py-1 transition-colors"
               >

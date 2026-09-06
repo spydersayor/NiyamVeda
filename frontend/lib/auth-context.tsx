@@ -1,5 +1,6 @@
 'use client';
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { api, type UserResponse } from './api';
 
 interface AuthContextType {
@@ -9,7 +10,7 @@ interface AuthContextType {
   login: (email: string, pass: string) => Promise<void>;
   register: (email: string, pass: string, name: string, company?: string) => Promise<void>;
   demoLogin: () => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -61,10 +62,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     saveSession(res.access_token, res.user);
   };
 
-  const logout = () => {
+  const router = useRouter();
+
+  const logout = async () => {
+    // Call backend to invalidate session server-side
     if (token) {
-      api.logout(token).catch(() => {});
+      try {
+        await api.logout(token);
+      } catch {
+        // Ignore backend errors — clear client state regardless
+      }
     }
+    // Clear client auth state
     setToken(null);
     setUser(null);
     try {
@@ -73,6 +82,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // ignore
     }
+    // Redirect to landing page
+    router.push('/');
   };
 
   return (

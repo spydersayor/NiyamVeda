@@ -590,51 +590,15 @@ export const api = {
         'NiyamVeda provides source-grounded regulatory information from its indexed knowledge corpus. It does not constitute official BIS certification, legal advice, or a guarantee of conformity.',
     })),
 
-  // Authentication
+  // Authentication — errors must always propagate; never fall back to demo.
   login: (data: { email: string; password: string }) =>
-    apiFetch<AuthTokenResponse>('/api/auth/login', { method: 'POST', body: JSON.stringify(data) })
-      .catch(() => ({
-        access_token: 'nv-token-demo-fallback',
-        token_type: 'bearer',
-        user: {
-          id: 'usr-demo-001',
-          email: data.email,
-          full_name: 'Rajesh Kumar Sharma',
-          company_name: 'Apex PureWater Innovations Pvt. Ltd.',
-          role: 'MSME_MANUFACTURER',
-          created_at: new Date().toISOString()
-        }
-      })),
+    apiFetch<AuthTokenResponse>('/api/auth/login', { method: 'POST', body: JSON.stringify(data) }),
 
   register: (data: { email: string; password: string; full_name: string; company_name?: string }) =>
-    apiFetch<AuthTokenResponse>('/api/auth/register', { method: 'POST', body: JSON.stringify(data) })
-      .catch(() => ({
-        access_token: 'nv-token-demo-fallback',
-        token_type: 'bearer',
-        user: {
-          id: 'usr-new-001',
-          email: data.email,
-          full_name: data.full_name,
-          company_name: data.company_name || 'MSME Innovations Ltd.',
-          role: 'MSME_MANUFACTURER',
-          created_at: new Date().toISOString()
-        }
-      })),
+    apiFetch<AuthTokenResponse>('/api/auth/register', { method: 'POST', body: JSON.stringify(data) }),
 
   demoLogin: () =>
-    apiFetch<AuthTokenResponse>('/api/auth/demo-login', { method: 'POST' })
-      .catch(() => ({
-        access_token: 'nv-token-demo-fallback',
-        token_type: 'bearer',
-        user: {
-          id: 'usr-demo-001',
-          email: 'demo@niyamveda.gov.in',
-          full_name: 'Rajesh Kumar Sharma',
-          company_name: 'Apex PureWater Innovations Pvt. Ltd.',
-          role: 'MSME_MANUFACTURER',
-          created_at: new Date().toISOString()
-        }
-      })),
+    apiFetch<AuthTokenResponse>('/api/auth/demo-login', { method: 'POST' }),
 
   getMe: (token: string) =>
     apiFetch<UserResponse>('/api/auth/me', {

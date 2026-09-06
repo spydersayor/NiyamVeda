@@ -86,14 +86,65 @@ class UserLogin(BaseModel):
 
     @field_validator("email", mode="before")
     @classmethod
-    def clean_email(cls, value):
+    def clean_and_validate_email(cls, value):
+        """
+        Apply the same normalization and structural validation as UserRegister
+        so the backend independently rejects malformed emails.
+        """
         if not isinstance(value, str):
             raise ValueError("Email must be a string")
 
+        # Normalize before Pydantic's EmailStr validation.
         email = value.strip().lower()
 
         if not email:
             raise ValueError("Email address cannot be empty")
+
+        # Split only after confirming there is exactly one @.
+        if email.count("@") != 1:
+            raise ValueError("Email must contain exactly one @ symbol")
+
+        local_part, domain_part = email.split("@")
+
+        if not local_part:
+            raise ValueError("Email must have a non-empty local part")
+
+        if not domain_part:
+            raise ValueError("Email must have a non-empty domain")
+
+        # RFC-style local-part dot rules.
+        if local_part.startswith(".") or local_part.endswith("."):
+            raise ValueError("Email local part cannot start or end with a dot")
+
+        if ".." in local_part:
+            raise ValueError("Email local part cannot contain consecutive dots")
+
+        # Basic domain structure checks.
+        if domain_part.startswith(".") or domain_part.endswith("."):
+            raise ValueError("Invalid domain structure")
+
+        if ".." in domain_part:
+            raise ValueError("Domain cannot contain consecutive dots")
+
+        domain_labels = domain_part.split(".")
+
+        # Require a domain and TLD.
+        if len(domain_labels) < 2:
+            raise ValueError("Email domain must contain a top-level domain")
+
+        if any(not label for label in domain_labels):
+            raise ValueError("Invalid domain structure")
+
+        # Domain labels cannot start/end with hyphens.
+        for label in domain_labels:
+            if label.startswith("-") or label.endswith("-"):
+                raise ValueError("Invalid domain label")
+
+        # TLD must contain alphabetic characters only and be at least 2 chars.
+        tld = domain_labels[-1]
+
+        if len(tld) < 2 or not tld.isalpha():
+            raise ValueError("Invalid top-level domain")
 
         return email
 
