@@ -8,7 +8,7 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   login: (email: string, pass: string) => Promise<void>;
-  register: (email: string, pass: string, name: string, company?: string) => Promise<void>;
+  register: (email: string, pass: string, name: string, username: string, company?: string) => Promise<void>;
   demoLogin: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -52,8 +52,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     saveSession(res.access_token, res.user);
   };
 
-  const register = async (email: string, pass: string, name: string, company?: string) => {
-    const res = await api.register({ email, password: pass, full_name: name, company_name: company });
+  const register = async (email: string, pass: string, name: string, username: string, company?: string) => {
+    const res = await api.register({ email, password: pass, full_name: name, username, company_name: company });
     saveSession(res.access_token, res.user);
   };
 

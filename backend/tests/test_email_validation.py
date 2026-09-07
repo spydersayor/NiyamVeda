@@ -18,6 +18,7 @@ def make_register(email: str) -> UserRegister:
         email=email,
         password="validpassword123",
         full_name="Test User",
+        username="valid_test_user",
         company_name="Test Labs",
     )
 
@@ -166,6 +167,7 @@ def test_duplicate_email_with_different_case_and_spacing_is_rejected():
         "email": f"  {email}  ",
         "password": "securepassword123",
         "full_name": "Alpha Tester",
+        "username": "alpha_tester_unique",
         "company_name": "Alpha Innovations",
     }
 
@@ -180,7 +182,7 @@ def test_duplicate_email_with_different_case_and_spacing_is_rejected():
     if first_response.status_code == 400:
         detail = first_response.json().get("detail", "")
 
-        assert "already exists" in detail.lower()
+        assert "already exists" in detail.lower() or "taken" in detail.lower()
     else:
         assert first_response.status_code == 200, (
             f"Initial registration failed: "
@@ -195,6 +197,7 @@ def test_duplicate_email_with_different_case_and_spacing_is_rejected():
         "email": "NIYAMVEDA.EMAIL.TEST.2026@example.com",
         "password": "anotherpassword123",
         "full_name": "Duplicate Tester",
+        "username": "duplicate_tester_unique",
         "company_name": "Alpha Innovations",
     }
 

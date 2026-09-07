@@ -21,6 +21,7 @@ import {
 } from '@/lib/api';
 
 import { useTranslation } from '@/lib/i18n-context';
+import RequireAuth from '@/components/RequireAuth';
 
 interface ChatMessage {
   id: string;
@@ -648,7 +649,9 @@ export default function AssistantPage() {
         </div>
       }
     >
-      <AssistantPageContent />
+      <RequireAuth>
+        <AssistantPageContent />
+      </RequireAuth>
     </Suspense>
   );
 }

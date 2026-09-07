@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { api, AssistantChatResponse, AssistantCitation } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n-context';
+import { useAuth } from '@/lib/auth-context';
 
 interface AssistantDrawerProps {
   productId?: string;
@@ -48,6 +49,12 @@ export default function AssistantDrawer({ productId, productName }: AssistantDra
       bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, isOpen]);
+
+  const { user } = useAuth();
+
+  if (!user) {
+    return null;
+  }
 
   const handleSend = async (customQuery?: string) => {
     const q = (customQuery || input).trim();

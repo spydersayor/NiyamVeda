@@ -163,6 +163,13 @@ def register(data: UserRegister):
             detail="An account with this email already exists",
         )
 
+    existing_username = user_repository.get_by_username(data.username)
+    if existing_username:
+        raise HTTPException(
+            status_code=400,
+            detail="This username is already taken",
+        )
+
     if len(data.password) < 6:
         raise HTTPException(
             status_code=400,
@@ -173,7 +180,16 @@ def register(data: UserRegister):
     # canonical normalized email.
     data.email = normalized_email
 
-    user = user_repository.create_user(data)
+    try:
+        user = user_repository.create_user(data)
+    except Exception as err:
+        err_msg = str(err).lower()
+        if "username" in err_msg or "unique" in err_msg:
+            raise HTTPException(
+                status_code=400,
+                detail="This username is already taken",
+            )
+        raise
 
     token = f"nv-token-{uuid.uuid4().hex}"
 
@@ -251,6 +267,7 @@ def demo_login():
                 email=demo_email,
                 password="password123",
                 full_name="Rajesh Kumar Sharma",
+                username="rajesh_sharma",
                 company_name="Apex PureWater Innovations Pvt. Ltd.",
                 role="MSME_MANUFACTURER",
             )

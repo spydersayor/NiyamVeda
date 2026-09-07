@@ -1,3 +1,4 @@
+import re
 from typing import Optional
 
 from datetime import datetime
@@ -9,8 +10,31 @@ class UserRegister(BaseModel):
     email: EmailStr
     password: str
     full_name: str
+    username: str
     company_name: Optional[str] = "MSME Manufacturing Ltd."
     role: Optional[str] = "MSME_MANUFACTURER"
+
+    @field_validator("full_name")
+    @classmethod
+    def validate_full_name(cls, value: str) -> str:
+        if not isinstance(value, str):
+            raise ValueError("Full name must be a string")
+        if not re.match(r"^[A-Za-z]+(?: [A-Za-z]+)*$", value):
+            raise ValueError(
+                "Full name must contain only English letters with single spaces between words"
+            )
+        return value
+
+    @field_validator("username")
+    @classmethod
+    def validate_username(cls, value: str) -> str:
+        if not isinstance(value, str):
+            raise ValueError("Username must be a string")
+        if not re.match(r"^[A-Za-z0-9_]{3,30}$", value):
+            raise ValueError(
+                "Username must be 3–30 characters long and contain only letters, numbers, and underscores"
+            )
+        return value
 
     @field_validator("email", mode="before")
     @classmethod
@@ -158,6 +182,7 @@ class UserResponse(BaseModel):
     id: str
     email: str
     full_name: str
+    username: Optional[str] = None
     company_name: str
     role: str
     created_at: str

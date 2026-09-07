@@ -594,7 +594,7 @@ export const api = {
   login: (data: { email: string; password: string }) =>
     apiFetch<AuthTokenResponse>('/api/auth/login', { method: 'POST', body: JSON.stringify(data) }),
 
-  register: (data: { email: string; password: string; full_name: string; company_name?: string }) =>
+  register: (data: { email: string; password: string; full_name: string; username: string; company_name?: string }) =>
     apiFetch<AuthTokenResponse>('/api/auth/register', { method: 'POST', body: JSON.stringify(data) }),
 
   demoLogin: () =>
@@ -616,6 +616,7 @@ export interface UserResponse {
   id: string;
   email: string;
   full_name: string;
+  username?: string;
   company_name: string;
   role: string;
   created_at: string;

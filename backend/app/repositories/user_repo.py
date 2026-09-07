@@ -50,10 +50,35 @@ class UserRepository:
                     email=demo_email,
                     password="password123",
                     full_name="Rajesh Kumar Sharma",
+                    username="rajesh_sharma",
                     company_name="Apex PureWater Innovations Pvt. Ltd.",
                     role="MSME_MANUFACTURER",
                 )
             )
+        elif not existing.get("username"):
+            with get_connection() as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE users SET username = 'rajesh_sharma' WHERE email = %s",
+                        (demo_email,),
+                    )
+
+    def get_by_username(self, username: str) -> Optional[Dict[str, Any]]:
+        """
+        Case-insensitive username lookup.
+        """
+        if not username:
+            return None
+        with get_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute(
+                    "SELECT * FROM users WHERE LOWER(username) = LOWER(%s)",
+                    (username.strip(),),
+                )
+                row = cursor.fetchone()
+                if row:
+                    return dict(row)
+        return None
 
     def create_user(self, data: UserRegister) -> UserResponse:
         """
@@ -99,11 +124,13 @@ class UserRepository:
                         password_hash,
                         salt,
                         full_name,
+                        username,
                         company_name,
                         role,
                         created_at
                     )
                     VALUES (
+                        %s,
                         %s,
                         %s,
                         %s,
@@ -121,6 +148,7 @@ class UserRepository:
                         password_hash,
                         salt,
                         data.full_name,
+                        data.username,
                         company_name,
                         role,
                         created_at,
@@ -131,6 +159,7 @@ class UserRepository:
             id=user_id,
             email=normalized_email,
             full_name=data.full_name,
+            username=data.username,
             company_name=company_name,
             role=role,
             created_at=created_at,
@@ -196,6 +225,7 @@ class UserRepository:
                         id=data["id"],
                         email=data["email"],
                         full_name=data["full_name"],
+                        username=data.get("username"),
                         company_name=data["company_name"],
                         role=data["role"],
                         created_at=str(data["created_at"]),
@@ -237,6 +267,7 @@ class UserRepository:
             id=user_row["id"],
             email=user_row["email"],
             full_name=user_row["full_name"],
+            username=user_row.get("username"),
             company_name=user_row["company_name"],
             role=user_row["role"],
             created_at=str(user_row["created_at"]),

@@ -12,8 +12,9 @@ import { useTheme } from '@/lib/theme-context';
 import { useTranslation } from '@/lib/i18n-context';
 import { api, Product } from '@/lib/api';
 import type { SupportedLanguage } from '@/lib/translations';
+import RequireAuth from '@/components/RequireAuth';
 
-export default function ProfilePage() {
+function ProfileContent() {
   const { user, logout, demoLogin } = useAuth();
   const { theme, setTheme } = useTheme();
   const { language, setLanguage, t } = useTranslation();
@@ -35,38 +36,7 @@ export default function ProfilePage() {
     loadUserProducts();
   }, []);
 
-  if (!user) {
-    return (
-      <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
-        <div className="max-w-md w-full bg-[#0B132B]/80 border border-slate-800 rounded-xl p-8 text-center space-y-6 shadow-2xl backdrop-blur-md">
-          <div className="w-14 h-14 bg-[#FF7828]/10 text-[#FF7828] border border-[#FF7828]/30 rounded-2xl flex items-center justify-center mx-auto">
-            <User size={28} />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-white tracking-tight">{t('profile_auth_required_title')}</h2>
-            <p className="text-xs text-slate-400 mt-2">
-              {t('profile_auth_required_desc')}
-            </p>
-          </div>
-          <div className="space-y-3">
-            <Link
-              href="/auth"
-              className="block w-full py-2.5 px-4 bg-[#FF7828] hover:bg-[#E05E10] text-white text-xs font-bold rounded-lg transition-colors shadow-md"
-            >
-              {t('profile_btn_signin')}
-            </Link>
-            <button
-              onClick={demoLogin}
-              className="w-full py-2.5 px-4 bg-[#070D1B] hover:bg-slate-900 border border-slate-700 text-slate-200 text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
-            >
-              <Sparkles size={14} className="text-amber-400" />
-              <span>{t('profile_btn_demo')}</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (!user) return null;
 
   const registeredDate = user.created_at
     ? new Date(user.created_at).toLocaleDateString(language === 'bn' ? 'bn-IN' : language === 'hi' ? 'hi-IN' : 'en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -86,6 +56,9 @@ export default function ProfilePage() {
               <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight break-words">
                 {user.full_name}
               </h1>
+              <span className="text-xs font-bold px-2.5 py-0.5 rounded-md bg-[#FF7828]/15 text-[#FF9933] border border-[#FF7828]/30">
+                @{user.username || 'user'}
+              </span>
               <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-[#1E355B] text-amber-300 border border-amber-500/30">
                 {user.role || 'MSME_MANUFACTURER'}
               </span>
@@ -131,6 +104,34 @@ export default function ProfilePage() {
         {/* Left Column: Account Security & Preferences */}
         <div className="space-y-6">
           
+          {/* Identity & Account Information Card */}
+          <div className="bg-[#0B132B]/75 border border-slate-800 rounded-xl p-5 space-y-4 backdrop-blur-md">
+            <div className="flex items-center gap-2 text-sm font-bold text-white border-b border-slate-800/80 pb-3">
+              <User size={16} className="text-[#FF7828]" />
+              <span>{t('nav_profile')}</span>
+            </div>
+            
+            <div className="space-y-3 text-xs">
+              <div className="p-3 rounded-lg bg-[#070D1B]/70 border border-slate-800 space-y-1">
+                <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">
+                  {t('profile_label_username')}
+                </span>
+                <p className="text-sm font-bold text-[#FF9933]">
+                  {user.username || '—'}
+                </p>
+              </div>
+
+              <div className="p-3 rounded-lg bg-[#070D1B]/70 border border-slate-800 space-y-1">
+                <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">
+                  {t('profile_label_fullname')}
+                </span>
+                <p className="text-sm font-semibold text-white">
+                  {user.full_name}
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Account Security Card */}
           <div className="bg-[#0B132B]/75 border border-slate-800 rounded-xl p-5 space-y-4 backdrop-blur-md">
             <div className="flex items-center gap-2 text-sm font-bold text-white border-b border-slate-800/80 pb-3">
@@ -371,5 +372,13 @@ export default function ProfilePage() {
       </div>
 
     </div>
+  );
+}
+
+export default function ProfilePage() {
+  return (
+    <RequireAuth>
+      <ProfileContent />
+    </RequireAuth>
   );
 }

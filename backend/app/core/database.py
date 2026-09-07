@@ -1,13 +1,62 @@
 import json
 import logging
+import re
 from contextlib import contextmanager
-from typing import Generator, Optional
+from typing import Generator, Optional, Set
 import psycopg2
 from psycopg2.pool import ThreadedConnectionPool
 from psycopg2.extras import RealDictCursor
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
+
+def generate_safe_username(email: str, existing_usernames: Set[str]) -> str:
+    """
+    Derives a valid username matching ^[A-Za-z0-9_]{3,30}$ from an email address,
+    guaranteeing case-insensitive uniqueness against existing_usernames.
+    """
+    local = email.split("@")[0].strip() if email else "user"
+    # Allow only A-Z, a-z, 0-9, underscore
+    sanitized = re.sub(r"[^A-Za-z0-9_]", "_", local)
+    # Collapse consecutive underscores
+    sanitized = re.sub(r"_+", "_", sanitized).strip("_")
+    if not sanitized or len(sanitized) < 3:
+        sanitized = f"user_{sanitized}" if sanitized else "user_default"
+        if len(sanitized) < 3:
+            sanitized = (sanitized + "123")[:30]
+
+    # Base candidate truncated to max 25 chars to leave room for collision suffixes (total <= 30)
+    base = sanitized[:25]
+    candidate = base
+    suffix = 1
+    while candidate.lower() in existing_usernames or len(candidate) < 3:
+        suffix_str = f"_{suffix}"
+        max_base_len = 30 - len(suffix_str)
+        candidate = f"{base[:max_base_len]}{suffix_str}"
+        suffix += 1
+
+    existing_usernames.add(candidate.lower())
+    return candidate
+
+def _migrate_usernames_safely(cur) -> None:
+    """
+    Backfills usernames for existing users that have no username or an empty username.
+    Guarantees no duplicate usernames (case-insensitively), preserves existing records,
+    and ensures generated usernames conform to ^[A-Za-z0-9_]{3,30}$.
+    """
+    cur.execute("SELECT id, email, username FROM users;")
+    rows = cur.fetchall()
+    existing_usernames: Set[str] = {
+        r[2].lower() for r in rows if len(r) > 2 and r[2] and isinstance(r[2], str) and r[2].strip()
+    }
+    for row in rows:
+        uid = row[0]
+        uemail = row[1] if len(row) > 1 else "user@example.com"
+        u_username = row[2] if len(row) > 2 else None
+        if not u_username or not str(u_username).strip():
+            new_u = generate_safe_username(uemail or "user@example.com", existing_usernames)
+            cur.execute("UPDATE users SET username = %s WHERE id = %s;", (new_u, uid))
+            logger.info(f"Safely migrated user {uid} ({uemail}) with username '{new_u}'")
 
 _pool: Optional[ThreadedConnectionPool] = None
 
@@ -71,11 +120,21 @@ def init_db() -> None:
                         password_hash TEXT NOT NULL,
                         salt TEXT NOT NULL,
                         full_name VARCHAR(255) NOT NULL,
+                        username VARCHAR(30),
                         company_name VARCHAR(255) NOT NULL,
                         role VARCHAR(64) NOT NULL DEFAULT 'MSME_MANUFACTURER',
                         created_at TEXT NOT NULL
                     );
                     CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+                    ALTER TABLE users ADD COLUMN IF NOT EXISTS username VARCHAR(30);
+                """)
+
+                # Safe existing-user migration for username backfill
+                _migrate_usernames_safely(cur)
+
+                # Case-insensitive unique index on LOWER(username)
+                cur.execute("""
+                    CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username_lower ON users (LOWER(username));
                 """)
 
                 # 3. Sessions table (server-side token persistence)

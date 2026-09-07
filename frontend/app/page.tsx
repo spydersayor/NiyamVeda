@@ -1,15 +1,19 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { 
   ArrowRight, ShieldCheck, Scale, FileSearch, 
   Milestone, Play, Shield, Users, Check, Box,
   FileCheck2, Gavel
 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n-context';
+import { useAuth } from '@/lib/auth-context';
 
 export default function LandingPage() {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const router = useRouter();
 
   return (
     <div className="landing-page min-h-screen bg-[#070D1B] text-white relative overflow-hidden font-sans">
@@ -65,12 +69,12 @@ export default function LandingPage() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2">
-              <Link 
-                href="/product/new"
+              <button 
+                onClick={() => router.push(user ? '/product/new' : '/auth?next=/product/new')}
                 className="bg-[#FF7828] hover:bg-[#E05E10] text-white font-bold text-sm px-6 py-3 rounded-lg transition-all duration-200 shadow-lg shadow-orange-500/25 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
               >
                 <span>{t('btn_analyse_product')}</span> <ArrowRight size={16} />
-              </Link>
+              </button>
               
               <Link 
                 href="/how-it-works"

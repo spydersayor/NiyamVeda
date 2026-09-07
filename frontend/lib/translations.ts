@@ -307,6 +307,8 @@ export interface Translations {
   auth_tab_register: string;
   auth_full_name: string;
   auth_full_name_placeholder: string;
+  auth_username: string;
+  auth_username_placeholder: string;
   auth_company_name: string;
   auth_company_placeholder: string;
   auth_email: string;
@@ -316,11 +318,16 @@ export interface Translations {
   auth_btn_login: string;
   auth_btn_register: string;
   auth_err_email_invalid: string;
+  auth_err_fullname_invalid: string;
+  auth_err_username_invalid: string;
+  auth_err_username_taken: string;
   auth_err_generic: string;
   auth_err_demo: string;
   auth_card_role: string;
   auth_card_start: string;
   auth_card_signout: string;
+  profile_label_username: string;
+  profile_label_fullname: string;
 
   // Standards Page
   standards_title: string;
@@ -825,6 +832,8 @@ export const translations: Record<SupportedLanguage, Translations> = {
     auth_tab_register: 'Create Account',
     auth_full_name: 'Full Name',
     auth_full_name_placeholder: 'e.g. Rajesh Kumar Sharma',
+    auth_username: 'Username',
+    auth_username_placeholder: 'e.g. rishi_s',
     auth_company_name: 'MSME / Enterprise Name',
     auth_company_placeholder: 'e.g. Apex PureWater Innovations Pvt. Ltd.',
     auth_email: 'Email Address',
@@ -834,11 +843,16 @@ export const translations: Record<SupportedLanguage, Translations> = {
     auth_btn_login: 'Sign In to Portal',
     auth_btn_register: 'Create MSME Account',
     auth_err_email_invalid: 'Please enter a valid email address.',
+    auth_err_fullname_invalid: 'Full name must contain only English letters with single spaces between words.',
+    auth_err_username_invalid: 'Username must be 3–30 characters long and contain only letters, numbers, and underscores.',
+    auth_err_username_taken: 'This username is already taken.',
     auth_err_generic: 'Unable to sign in right now. Please try again.',
     auth_err_demo: 'Failed to initiate demo session.',
     auth_card_role: 'Role',
     auth_card_start: 'Start Product Analysis',
     auth_card_signout: 'Sign Out',
+    profile_label_username: 'Username',
+    profile_label_fullname: 'Full Name',
 
     // Standards Page
     standards_title: 'Relevant Standards',
@@ -1342,6 +1356,8 @@ export const translations: Record<SupportedLanguage, Translations> = {
     auth_tab_register: 'खाता बनाएं',
     auth_full_name: 'पूरा नाम',
     auth_full_name_placeholder: 'उदा. राजेश कुमार शर्मा',
+    auth_username: 'उपयोगकर्ता नाम',
+    auth_username_placeholder: 'उदा. rishi_s',
     auth_company_name: 'एमएसएमई / उद्यम का नाम',
     auth_company_placeholder: 'उदा. एपेक्स प्योरवाटर इनोवेशंस प्रा. लि.',
     auth_email: 'ईमेल पता',
@@ -1351,11 +1367,16 @@ export const translations: Record<SupportedLanguage, Translations> = {
     auth_btn_login: 'पोर्टल में साइन इन करें',
     auth_btn_register: 'एमएसएमई खाता बनाएं',
     auth_err_email_invalid: 'कृपया एक मान्य ईमेल पता दर्ज करें।',
+    auth_err_fullname_invalid: 'पूरे नाम में केवल अंग्रेज़ी अक्षर और शब्दों के बीच एकल स्पेस होना चाहिए।',
+    auth_err_username_invalid: 'उपयोगकर्ता नाम 3–30 वर्णों का होना चाहिए और इसमें केवल अक्षर, संख्याएं और अंडरस्कोर हो सकते हैं।',
+    auth_err_username_taken: 'यह उपयोगकर्ता नाम पहले से लिया जा चुका है।',
     auth_err_generic: 'इस समय साइन इन करने में असमर्थ। कृपया पुन: प्रयास करें।',
     auth_err_demo: 'डेमो सत्र आरंभ करने में विफल।',
     auth_card_role: 'भूमिका',
     auth_card_start: 'उत्पाद विश्लेषण शुरू करें',
     auth_card_signout: 'साइन आउट',
+    profile_label_username: 'उपयोगकर्ता नाम',
+    profile_label_fullname: 'पूरा नाम',
 
     // Standards Page
     standards_title: 'प्रासंगिक मानक',
@@ -1859,6 +1880,8 @@ export const translations: Record<SupportedLanguage, Translations> = {
     auth_tab_register: 'অ্যাকাউন্ট তৈরি করুন',
     auth_full_name: 'পুরো নাম',
     auth_full_name_placeholder: 'যেমন: রাজেশ কুমার শর্মা',
+    auth_username: 'ইউজারনেম',
+    auth_username_placeholder: 'যেমন: rishi_s',
     auth_company_name: 'এমএসএমই / প্রতিষ্ঠানের নাম',
     auth_company_placeholder: 'যেমন: অ্যাপেক্স পিওরওয়াটার ইনোভেশনস প্রা. লি.',
     auth_email: 'ইমেইল ঠিকানা',
@@ -1868,11 +1891,16 @@ export const translations: Record<SupportedLanguage, Translations> = {
     auth_btn_login: 'পোর্টালে সাইন ইন করুন',
     auth_btn_register: 'এমএসএমই অ্যাকাউন্ট তৈরি করুন',
     auth_err_email_invalid: 'অনুগ্রহ করে একটি বৈধ ইমেইল ঠিকানা লিখুন।',
+    auth_err_fullname_invalid: 'পুরো নামে শুধুমাত্র ইংরেজি অক্ষর এবং শব্দের মাঝে একটি স্পেস থাকতে হবে।',
+    auth_err_username_invalid: 'ইউজারনেম ৩–৩০ অক্ষরের হতে হবে এবং শুধুমাত্র অক্ষর, সংখ্যা ও আন্ডারস্কোর থাকতে পারে।',
+    auth_err_username_taken: 'এই ইউজারনেমটি ইতিমধ্যে নেওয়া হয়েছে।',
     auth_err_generic: 'এই মুহূর্তে সাইন ইন করা সম্ভব হচ্ছে না। অনুগ্রহ করে আবার চেষ্টা করুন।',
     auth_err_demo: 'ডেমো সেশন শুরু করা যায়নি।',
     auth_card_role: 'ভূমিকা',
     auth_card_start: 'পণ্য বিশ্লেষণ শুরু করুন',
     auth_card_signout: 'সাইন আউট',
+    profile_label_username: 'ইউজারনেম',
+    profile_label_fullname: 'পুরো নাম',
 
     // Standards Page
     standards_title: 'প্রাসঙ্গিক মান',

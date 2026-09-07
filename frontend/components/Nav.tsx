@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { 
   ArrowRight, Sun, Moon, Globe, Sparkles, User as UserIcon,
   Menu, X, LogOut, CheckCircle2 
@@ -13,6 +13,7 @@ import type { SupportedLanguage } from '@/lib/translations';
 
 export default function Nav() {
   const pathname = usePathname();
+  const router = useRouter();
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { language, setLanguage, t } = useTranslation();
@@ -67,8 +68,9 @@ export default function Nav() {
           >
             {t('nav_sources')}
           </Link>
-          <Link 
-            href="/assistant" 
+          <button 
+            type="button"
+            onClick={() => router.push(user ? '/assistant' : '/auth?next=/assistant')}
             className={`transition-colors flex items-center gap-1.5 ${
               pathname === '/assistant' 
                 ? 'text-[#FF9933] font-semibold' 
@@ -77,7 +79,7 @@ export default function Nav() {
           >
             <Sparkles size={13} className="text-[#FF7828]" />
             <span>{t('nav_assistant')}</span>
-          </Link>
+          </button>
           <Link 
             href="/about" 
             className={`transition-colors ${
@@ -131,7 +133,7 @@ export default function Nav() {
                 title={t('nav_profile_tooltip')}
               >
                 <div className="w-2 h-2 rounded-full bg-emerald-400" />
-                <span className="font-semibold text-white max-w-[90px] truncate">{user.full_name.split(' ')[0]}</span>
+                <span className="font-semibold text-white max-w-[100px] truncate">{user.username || user.full_name?.split(' ')[0] || 'User'}</span>
               </Link>
               <button
                 onClick={async () => { await logout(); }}
@@ -151,14 +153,15 @@ export default function Nav() {
           )}
 
           {/* CTA Button */}
-          <Link 
-            href="/product/new" 
+          <button 
+            type="button"
+            onClick={() => router.push(user ? '/product/new' : '/auth?next=/product/new')}
             className="hidden xs:flex bg-[#FF7828] hover:bg-[#E05E10] text-white font-bold text-xs px-2.5 sm:px-4 py-2 rounded-md transition-all shadow-md shadow-orange-500/20 items-center gap-1.5 flex-shrink-0"
           >
             <span className="hidden sm:inline">{t('nav_start_analysis')}</span>
             <span className="sm:hidden">{t('nav_start')}</span>
             <ArrowRight size={13} />
-          </Link>
+          </button>
 
           {/* Mobile Hamburger Toggle Button (< md) */}
           <button
@@ -206,10 +209,13 @@ export default function Nav() {
               <ArrowRight size={14} className="text-slate-500" />
             </Link>
 
-            <Link 
-              href="/assistant" 
-              onClick={() => setMobileMenuOpen(false)}
-              className={`px-3 py-2.5 rounded-lg transition-colors flex items-center justify-between ${
+            <button 
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                router.push(user ? '/assistant' : '/auth?next=/assistant');
+              }}
+              className={`w-full px-3 py-2.5 rounded-lg transition-colors flex items-center justify-between ${
                 pathname === '/assistant' 
                   ? 'bg-[#1E293B] text-[#FF9933] font-semibold' 
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
@@ -220,7 +226,7 @@ export default function Nav() {
                 <span>{t('nav_assistant')}</span>
               </div>
               <ArrowRight size={14} className="text-slate-500" />
-            </Link>
+            </button>
 
             <Link 
               href="/about" 
@@ -281,7 +287,7 @@ export default function Nav() {
                 >
                   <div className="flex items-center gap-2 truncate">
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 flex-shrink-0" />
-                    <span className="font-bold text-white truncate">{user.full_name}</span>
+                    <span className="font-bold text-white truncate">{user.username || user.full_name || 'User'}</span>
                     <span className="text-slate-400 text-[11px] truncate">({user.company_name})</span>
                   </div>
                   <span className="text-[11px] text-[#FF9933] font-semibold flex-shrink-0">{t('nav_profile_tooltip')}</span>
@@ -308,14 +314,17 @@ export default function Nav() {
               </Link>
             )}
 
-            <Link 
-              href="/product/new" 
-              onClick={() => setMobileMenuOpen(false)}
+            <button 
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                router.push(user ? '/product/new' : '/auth?next=/product/new');
+              }}
               className="w-full bg-[#FF7828] hover:bg-[#E05E10] text-white font-bold text-xs py-3 px-4 rounded-lg transition-all shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2"
             >
               <span>{t('nav_start_analysis')}</span>
               <ArrowRight size={14} />
-            </Link>
+            </button>
           </div>
 
         </div>

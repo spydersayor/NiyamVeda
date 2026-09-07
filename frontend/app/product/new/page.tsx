@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { api, type ProductCreate } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n-context';
+import RequireAuth from '@/components/RequireAuth';
 
 const STEPS = [
   { num: 1, key: 'product_new_step_1' },
@@ -136,7 +137,8 @@ export default function ProductInputPage() {
   };
 
   return (
-    <div className="min-h-screen portal-bg py-6 sm:py-8 px-3 sm:px-6 md:px-8 font-sans">
+    <RequireAuth>
+      <div className="min-h-screen portal-bg py-6 sm:py-8 px-3 sm:px-6 md:px-8 font-sans">
       <div className="max-w-5xl mx-auto space-y-6">
 
         {/* ─── Step Progress Bar (Screen 2 Top) ─── */}
@@ -486,6 +488,7 @@ export default function ProductInputPage() {
         </div>
 
       </div>
-    </div>
+      </div>
+    </RequireAuth>
   );
 }
