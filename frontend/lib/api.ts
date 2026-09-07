@@ -184,6 +184,7 @@ export interface AssistantChatRequest {
 
 export interface AssistantChatResponse {
   response: string;
+  response_type?: 'grounded_answer' | 'insufficient_evidence' | 'safe_abstention';
   suggested_queries: string[];
   citations: AssistantCitation[];
   safe_abstention: boolean;
@@ -583,6 +584,7 @@ export const api = {
             : 'NiyamVeda’s regulatory assistant is temporarily unavailable. Without sufficient verified evidence, I will not guess or invent a BIS standard, clause, certification requirement, or compliance conclusion. Please try again shortly.',
       suggested_queries: [],
       citations: [],
+      response_type: 'insufficient_evidence' as const,
       safe_abstention: true,
       abstention_reason: 'Authoritative assistant backend is unavailable.',
       grounded_in_corpus: false,

@@ -17,6 +17,7 @@ class AssistantChatRequest(BaseModel):
 
 class AssistantChatResponse(BaseModel):
     response: str
+    response_type: str = "grounded_answer"  # "grounded_answer" | "insufficient_evidence" | "safe_abstention"
     suggested_queries: List[str]
     citations: List[CitationItem]
     safe_abstention: bool = False

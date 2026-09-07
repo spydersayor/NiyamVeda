@@ -102,6 +102,8 @@ export interface Translations {
   assistant_abstention_badge: string;
   assistant_disclaimer: string;
   assistant_grounded_badge: string;
+  assistant_insufficient_badge: string;
+  assistant_evasion_badge: string;
   assistant_context_active: string;
   assistant_eval_against: string;
   assistant_clear_context: string;
@@ -627,6 +629,8 @@ export const translations: Record<SupportedLanguage, Translations> = {
     assistant_abstention_badge: 'Safe Abstention Activated',
     assistant_disclaimer: 'NiyamVeda provides source-grounded assistive guidance and does not replace official BIS certification. Final compliance must be verified through accredited laboratories.',
     assistant_grounded_badge: 'BIS GROUNDED',
+    assistant_insufficient_badge: 'INSUFFICIENT EVIDENCE',
+    assistant_evasion_badge: 'REQUEST BLOCKED',
     assistant_context_active: 'Context Active:',
     assistant_eval_against: 'Evaluating queries against',
     assistant_clear_context: 'Clear Context',
@@ -1151,6 +1155,8 @@ export const translations: Record<SupportedLanguage, Translations> = {
     assistant_abstention_badge: 'सुरक्षित संयम सक्रिय',
     assistant_disclaimer: 'नियमवेद स्रोत-आधारित मार्गदर्शन प्रदान करता है और यह आधिकारिक बीआईएस प्रमाणन नहीं है। अंतिम अनुपालन मान्यता प्राप्त प्रयोगशालाओं द्वारा सत्यापित किया जाना चाहिए।',
     assistant_grounded_badge: 'बीआईएस आधारित',
+    assistant_insufficient_badge: 'अपर्याप्त साक्ष्य',
+    assistant_evasion_badge: 'अनुरोध अवरुद्ध',
     assistant_context_active: 'सक्रिय संदर्भ:',
     assistant_eval_against: 'के आधार पर मूल्यांकन',
     assistant_clear_context: 'संदर्भ हटाएं',
@@ -1675,6 +1681,8 @@ export const translations: Record<SupportedLanguage, Translations> = {
     assistant_abstention_badge: 'নিরাপদ পরিহার সক্রিয়',
     assistant_disclaimer: 'নিয়মবেদ নির্ভরযোগ্য তথ্য প্রদান করে, এটি চূড়ান্ত সরকারি বিআইএস সার্টিফিকেট নয়। অনুমোদিত ল্যাবরেটরি দ্বারা যাচাই বাধ্যতামূলক।',
     assistant_grounded_badge: 'বিআইএস ভিত্তিক',
+    assistant_insufficient_badge: 'অপর্যাপ্ত সাক্ষ্য',
+    assistant_evasion_badge: 'অনুরোধ অবরুদ্ধ',
     assistant_context_active: 'সক্রিয় প্রেক্ষাপট:',
     assistant_eval_against: 'এর ভিত্তিতে মূল্যায়ন করা হচ্ছে',
     assistant_clear_context: 'প্রেক্ষাপট মুছুন',

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { 
   Sparkles, X, Send, Bot, User, BookOpen, 
-  ExternalLink, AlertTriangle, Maximize2, RefreshCw 
+  ExternalLink, AlertTriangle, Maximize2, RefreshCw, ShieldAlert, CheckCircle2 
 } from 'lucide-react';
 import { api, AssistantChatResponse, AssistantCitation } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n-context';
@@ -19,6 +19,7 @@ interface Message {
   sender: 'user' | 'assistant';
   text: string;
   citations?: AssistantCitation[];
+  response_type?: 'grounded_answer' | 'insufficient_evidence' | 'safe_abstention';
   safe_abstention?: boolean;
 }
 
@@ -76,6 +77,7 @@ export default function AssistantDrawer({ productId, productName }: AssistantDra
         sender: 'assistant',
         text: res.response,
         citations: res.citations,
+        response_type: res.response_type,
         safe_abstention: res.safe_abstention
       };
       setMessages(prev => [...prev, assistantMsg]);
@@ -99,88 +101,109 @@ export default function AssistantDrawer({ productId, productName }: AssistantDra
           title={t('drawer_btn_ask')}
         >
           <Sparkles size={16} className="animate-pulse" />
-          <span>{t('drawer_btn_ask')}</span>
+          <span className="hidden sm:inline">{t('drawer_title')}</span>
         </button>
       </div>
 
-      {/* Slide-in Assistant Drawer / Modal */}
-      {isOpen && (
-        <div className="fixed bottom-16 sm:bottom-20 right-3 sm:right-6 left-3 sm:left-auto sm:w-96 max-h-[calc(100vh-5.5rem)] h-[520px] z-50 bg-[#0B132B] border border-slate-700/80 rounded-2xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-2xl">
-          
-          {/* Drawer Header */}
-          <div className="bg-[#070D1B] border-b border-slate-800 px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-[#FF7828]/20 border border-[#FF7828]/40 text-[#FF7828] flex items-center justify-center">
-                <Bot size={15} />
-              </div>
-              <div>
-                <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                  <span>{t('drawer_title')}</span>
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                </div>
-                {productName && (
-                  <div className="text-[10px] text-slate-400 truncate max-w-[170px]">
-                    {t('drawer_context_label')} {productName}
+      {/* Slide-over Drawer */}
+      <div
+        className={`fixed inset-y-0 right-0 z-50 w-full sm:w-[420px] bg-[#0B132B] border-l border-slate-800 shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out ${
+          isOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        {/* Drawer Header */}
+        <div className="p-4 border-b border-slate-800 bg-[#070D1B] flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-orange-500/10 border border-orange-500/20 text-[#FF7828] flex items-center justify-center">
+              <Bot size={18} />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-white leading-none">
+                {t('drawer_title')}
+              </h3>
+              {productName && (
+                <p className="text-[10px] text-slate-400 mt-1 truncate max-w-[220px]">
+                  {t('drawer_context_label')} {productName}
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-1">
+            <Link
+              href={productId ? `/assistant?product_id=${productId}` : '/assistant'}
+              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+              title={t('drawer_fullscreen')}
+            >
+              <Maximize2 size={13} />
+            </Link>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        </div>
+
+        {/* Messages Body */}
+        <div className="flex-1 p-3.5 overflow-y-auto space-y-3 bg-[#070D1B]/40 text-xs">
+          {messages.map((m) => (
+            <div
+              key={m.id}
+              className={`flex gap-2 ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div
+                className={`max-w-[85%] rounded-xl px-3 py-2.5 leading-relaxed ${
+                  m.sender === 'user'
+                    ? 'bg-[#FF7828] text-white rounded-tr-none font-medium'
+                    : 'bg-[#121E36] text-slate-200 border border-slate-800 rounded-tl-none'
+                }`}
+              >
+                <div className="whitespace-pre-line text-[11px]">{m.text}</div>
+
+                {m.response_type === 'safe_abstention' && (
+                  <div className="mt-2 p-2 rounded bg-rose-500/10 border border-rose-500/20 text-rose-300 text-[10px] flex items-center gap-1.5">
+                    <ShieldAlert size={12} className="text-rose-400 flex-shrink-0" />
+                    <span>{t('assistant_evasion_badge')}</span>
+                  </div>
+                )}
+
+                {m.response_type === 'insufficient_evidence' && (
+                  <div className="mt-2 p-2 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[10px] flex items-center gap-1.5">
+                    <AlertTriangle size={12} className="text-amber-400 flex-shrink-0" />
+                    <span>{t('assistant_insufficient_badge')}</span>
+                  </div>
+                )}
+
+                {(m.response_type === 'grounded_answer' || (!m.response_type && !m.safe_abstention && m.citations && m.citations.length > 0)) && (
+                  <div className="mt-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[9px] font-semibold">
+                    <CheckCircle2 size={10} className="text-emerald-400 flex-shrink-0" />
+                    <span>{t('assistant_grounded_badge')}</span>
+                  </div>
+                )}
+
+                {(!m.response_type && m.safe_abstention) && (
+                  <div className="mt-2 p-2 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[10px] flex items-center gap-1.5">
+                    <AlertTriangle size={12} className="text-amber-400 flex-shrink-0" />
+                    <span>{t('assistant_abstention_badge')}</span>
+                  </div>
+                )}
+
+                {m.citations && m.citations.length > 0 && (
+                  <div className="mt-2 pt-2 border-t border-slate-700/60 space-y-1">
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
+                      {t('drawer_verified_sources')}
+                    </span>
+                    {m.citations.slice(0, 2).map((c, i) => (
+                      <div key={i} className="text-[10px] text-slate-300 bg-[#070D1B]/80 p-1.5 rounded border border-slate-800">
+                        <strong>{c.title}</strong> ({c.clause})
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
             </div>
-
-            <div className="flex items-center gap-1">
-              <Link
-                href={productId ? `/assistant?product_id=${productId}` : '/assistant'}
-                className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
-                title={t('drawer_fullscreen')}
-              >
-                <Maximize2 size={13} />
-              </Link>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
-              >
-                <X size={14} />
-              </button>
-            </div>
-          </div>
-
-          {/* Messages Body */}
-          <div className="flex-1 p-3.5 overflow-y-auto space-y-3 bg-[#070D1B]/40 text-xs">
-            {messages.map((m) => (
-              <div
-                key={m.id}
-                className={`flex gap-2 ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div
-                  className={`max-w-[85%] rounded-xl px-3 py-2.5 leading-relaxed ${
-                    m.sender === 'user'
-                      ? 'bg-[#FF7828] text-white rounded-tr-none font-medium'
-                      : 'bg-[#121E36] text-slate-200 border border-slate-800 rounded-tl-none'
-                  }`}
-                >
-                  <div className="whitespace-pre-line text-[11px]">{m.text}</div>
-
-                  {m.safe_abstention && (
-                    <div className="mt-2 p-2 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[10px] flex items-center gap-1.5">
-                      <AlertTriangle size={12} className="text-amber-400 flex-shrink-0" />
-                      <span>{t('assistant_abstention_badge')}</span>
-                    </div>
-                  )}
-
-                  {m.citations && m.citations.length > 0 && (
-                    <div className="mt-2 pt-2 border-t border-slate-700/60 space-y-1">
-                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
-                        {t('drawer_verified_sources')}
-                      </span>
-                      {m.citations.slice(0, 2).map((c, i) => (
-                        <div key={i} className="text-[10px] text-slate-300 bg-[#070D1B]/80 p-1.5 rounded border border-slate-800">
-                          <strong>{c.title}</strong> ({c.clause})
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
+          ))}
 
             {loading && (
               <div className="flex items-center gap-2 text-[11px] text-slate-400 p-2 bg-[#121E36]/60 rounded-lg border border-slate-800">
@@ -239,7 +262,6 @@ export default function AssistantDrawer({ productId, productName }: AssistantDra
           </form>
 
         </div>
-      )}
     </>
   );
 }

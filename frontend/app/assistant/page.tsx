@@ -12,6 +12,8 @@ import {
   AlertTriangle,
   Layers,
   RefreshCw,
+  ShieldAlert,
+  CheckCircle2,
 } from 'lucide-react';
 
 import {
@@ -28,6 +30,7 @@ interface ChatMessage {
   sender: 'user' | 'assistant';
   text: string;
   citations?: AssistantCitation[];
+  response_type?: 'grounded_answer' | 'insufficient_evidence' | 'safe_abstention';
   safe_abstention?: boolean;
   abstention_reason?: string;
   timestamp: string;
@@ -159,6 +162,7 @@ function AssistantPageContent() {
         sender: 'assistant',
         text: res.response,
         citations: res.citations || [],
+        response_type: res.response_type,
         safe_abstention:
           res.safe_abstention,
         abstention_reason:
@@ -378,25 +382,39 @@ function AssistantPageContent() {
               </div>
 
               {/* =================================================
-                  SAFE ABSTENTION
+                  SAFE ABSTENTION / RESPONSE TYPE BADGES
               ================================================== */}
 
-              {msg.safe_abstention && (
-                <div className="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 space-y-1">
-
+              {msg.response_type === 'safe_abstention' && (
+                <div className="mt-3 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 space-y-1">
                   <div className="flex items-center gap-2 font-bold text-[11px]">
+                    <ShieldAlert
+                      size={14}
+                      className="text-rose-400"
+                    />
+                    <span>
+                      {t('assistant_evasion_badge')}
+                    </span>
+                  </div>
 
+                  {msg.abstention_reason && (
+                    <div className="text-[11px] text-rose-200/90 pl-5">
+                      {msg.abstention_reason}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {msg.response_type === 'insufficient_evidence' && (
+                <div className="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 space-y-1">
+                  <div className="flex items-center gap-2 font-bold text-[11px]">
                     <AlertTriangle
                       size={14}
                       className="text-amber-400"
                     />
-
                     <span>
-                      {t(
-                        'assistant_abstention_badge'
-                      )}
+                      {t('assistant_insufficient_badge')}
                     </span>
-
                   </div>
 
                   {msg.abstention_reason && (
@@ -404,7 +422,40 @@ function AssistantPageContent() {
                       {msg.abstention_reason}
                     </div>
                   )}
+                </div>
+              )}
 
+              {(msg.response_type === 'grounded_answer' || (!msg.response_type && !msg.safe_abstention && msg.citations && msg.citations.length > 0)) && (
+                <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-semibold">
+                  <CheckCircle2
+                    size={12}
+                    className="text-emerald-400"
+                  />
+                  <span>
+                    {t('assistant_grounded_badge')}
+                  </span>
+                </div>
+              )}
+
+              {(!msg.response_type && msg.safe_abstention) && (
+                <div className="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 space-y-1">
+                  <div className="flex items-center gap-2 font-bold text-[11px]">
+                    <AlertTriangle
+                      size={14}
+                      className="text-amber-400"
+                    />
+                    <span>
+                      {t(
+                        'assistant_abstention_badge'
+                      )}
+                    </span>
+                  </div>
+
+                  {msg.abstention_reason && (
+                    <div className="text-[11px] text-amber-200/90 pl-5">
+                      {msg.abstention_reason}
+                    </div>
+                  )}
                 </div>
               )}
 

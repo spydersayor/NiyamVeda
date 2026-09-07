@@ -636,25 +636,55 @@ def _has_meaningful_overlap(
     # Generic lexical overlap
     # ---------------------------------------------------------------
 
+    # IMPORTANT: Words that appear in virtually every BIS/compliance
+    # document must never count as meaningful evidence of relevance.
+    # A query like "What BIS standards apply to QuantumFlux X9?" shares
+    # {"bis"} with every single chunk in the corpus — that is NOT evidence
+    # that the chunk is relevant to QuantumFlux X9.
+    GENERIC_COMPLIANCE_TOKENS: set[str] = {
+        # English filler / query words
+        "what", "which", "does", "this", "that", "the", "for",
+        "and", "are", "with", "from", "about", "apply", "applies",
+        "requirements", "requirement", "standard", "standards",
+        "information", "how", "can", "any", "all", "some", "get",
+        "tell", "give", "list", "show", "find", "explain", "describe",
+        "where", "when", "who", "why", "will", "should", "must",
+        "need", "want", "have", "has", "had", "been", "being",
+        "its", "their", "your", "our", "my", "his", "her",
+        # Generic BIS/compliance vocabulary that permeates the entire corpus
+        "bis", "indian", "india", "bureau", "national",
+        "product", "products", "compliance", "compliant", "comply",
+        "certification", "certify", "certified", "certificate",
+        "regulation", "regulatory", "regulations", "regulate",
+        "applicable", "applicability", "applicable", "whether",
+        "mandate", "mandatory", "mandated", "required", "require",
+        "quality", "testing", "test", "tests", "inspection",
+        "marking", "mark", "marked", "scheme", "schemes",
+        "safety", "safe", "approved", "approval", "authorized",
+        "rule", "rules", "act", "order", "notification",
+        "authority", "official", "government", "ministry",
+        "clause", "clauses", "section", "part", "chapter",
+        "general", "specific", "particular", "relevant",
+        "different", "various", "certain", "current", "new",
+        "available", "provide", "providing", "based", "under",
+    }
+
     query_tokens = _tokenise(query)
     chunk_tokens = _tokenise(searchable_lower)
 
+    # Only tokens that are NOT generic compliance vocabulary qualify
+    # as meaningful evidence of topical relevance.
     meaningful_query_tokens = {
         token
         for token in query_tokens
         if len(token) >= 3
-        and token not in {
-            "what", "which", "does", "this", "that", "the", "for",
-            "and", "are", "with", "from", "about", "apply", "applies",
-            "requirements", "requirement", "standard", "standards",
-            "information",
-        }
+        and token not in GENERIC_COMPLIANCE_TOKENS
     }
 
     overlap = meaningful_query_tokens.intersection(chunk_tokens)
 
-    # One generic word is not sufficient evidence. Require two meaningful
-    # lexical matches for queries that do not map to a known topic.
+    # Require at least 2 genuinely domain-specific tokens to overlap.
+    # This prevents "BIS" + "Indian" from being treated as relevance signal.
     return len(overlap) >= 2
 
 
@@ -1057,46 +1087,149 @@ def _language_instruction(
 
 
 # ---------------------------------------------------------------------------
-# Safe abstention
+# Safety evasion detection
+# ---------------------------------------------------------------------------
+
+# Signals that a user is seeking to bypass, circumvent, or defraud
+# regulatory requirements — these warrant SAFE_ABSTENTION, not just
+# insufficient evidence.
+_EVASION_PATTERNS: List[Tuple[re.Pattern, str]] = [
+    (
+        re.compile(
+            r"\b(bypass|circumvent|evade|avoid|skip|get\s+around)\b.*\b"
+            r"(bis|regulation|certification|testing|standard|compliance|requirement)",
+            re.IGNORECASE,
+        ),
+        "Regulatory evasion or circumvention request.",
+    ),
+    (
+        re.compile(
+            r"\b(loophole|workaround|backdoor|shortcut)\b.*\b"
+            r"(bis|regulation|testing|certification|compliance)",
+            re.IGNORECASE,
+        ),
+        "Seeking regulatory loophole or workaround.",
+    ),
+    (
+        re.compile(
+            r"\b(falsif|forg|fake|counterfeit|fraud|fraudulent)"
+            r"(y|ied|ying|ing|ous)?\b.*\b"
+            r"(compliance|certificate|document|report|test|mark|certification|bis)",
+            re.IGNORECASE,
+        ),
+        "Fraudulent compliance document request.",
+    ),
+    (
+        re.compile(
+            r"\b(forge|forged|fabricate|falsify|misrepresent)\b",
+            re.IGNORECASE,
+        ),
+        "Request to forge or fabricate regulatory documents.",
+    ),
+    (
+        re.compile(
+            r"how\s+(?:can\s+i|do\s+i|to)\s+(?:bypass|skip|avoid|evade)",
+            re.IGNORECASE,
+        ),
+        "Request to bypass regulatory requirements.",
+    ),
+]
+
+
+def _detect_safety_evasion(
+    message: str,
+) -> Tuple[bool, str | None]:
+    """
+    Detect regulatory evasion / fraud intent.
+
+    Returns (True, reason) if evasion is detected, (False, None) otherwise.
+
+    NOTE: Questions about *legitimate* exemptions (e.g. "Is my product exempt
+    from BIS certification?") are NOT evasion and must NOT be caught here.
+    Evasion detection applies only to explicit requests to bypass, forge, or
+    otherwise circumvent requirements.
+    """
+    for pattern, reason in _EVASION_PATTERNS:
+        if pattern.search(message):
+            return True, reason
+
+    return False, None
+
+
+# ---------------------------------------------------------------------------
+# Abstention response builders
 # ---------------------------------------------------------------------------
 
 def _safe_abstention_response(
     language: str,
     reason: str,
 ) -> str:
+    """SAFE_ABSTENTION: regulatory evasion / fraud."""
 
     if language == "hi":
         return (
-            "मुझे इस प्रश्न का विश्वसनीय उत्तर देने के लिए "
-            "NiyamVeda के वर्तमान indexed knowledge corpus में "
-            "पर्याप्त सत्यापित जानकारी नहीं मिली।\n\n"
-            "Safe Abstention सक्रिय है, इसलिए मैं अनुमान लगाकर "
-            "कोई BIS standard, clause, certification requirement, "
-            "laboratory, hallmarking requirement या regulatory "
-            "claim नहीं बताऊँगा।\n\n"
+            "यह अनुरोध NiyamVeda की regulatory सहायता के दायरे "
+            "से बाहर है। NiyamVeda regulatory requirements को "
+            "bypass, evade या circumvent करने में सहायता नहीं "
+            "कर सकता, और न ही compliance documents को forge या "
+            "falsify करने में।\n\n"
             f"कारण: {reason}"
         )
 
     if language == "bn":
         return (
-            "এই প্রশ্নের নির্ভরযোগ্য উত্তর দেওয়ার জন্য "
-            "NiyamVeda-এর বর্তমান indexed knowledge corpus-এ "
-            "পর্যাপ্ত যাচাইকৃত তথ্য পাওয়া যায়নি।\n\n"
-            "Safe Abstention সক্রিয় রয়েছে, তাই আমি অনুমান করে "
-            "কোনো BIS standard, clause, certification requirement, "
-            "laboratory, hallmarking requirement বা regulatory "
-            "claim প্রদান করব না।\n\n"
+            "এই অনুরোধটি NiyamVeda-এর নিয়ামক সহায়তার সুযোগের "
+            "বাইরে। NiyamVeda নিয়ামক প্রয়োজনীয়তা bypass, evade "
+            "বা circumvent করতে সাহায্য করতে পারে না, এবং "
+            "compliance documents জাল বা মিথ্যা প্রস্তুত করতেও নয়।\n\n"
             f"কারণ: {reason}"
         )
 
     return (
-        "I could not find sufficient verified information in "
-        "NiyamVeda's indexed knowledge corpus to answer this "
-        "reliably.\n\n"
-        "SAFE ABSTENTION is active, so I will not guess or invent "
-        "a BIS standard, clause, certification requirement, "
-        "laboratory, hallmarking requirement, URL, or regulatory claim.\n\n"
+        "This request falls outside the scope of NiyamVeda's regulatory "
+        "assistance. NiyamVeda cannot help bypass, evade, or circumvent "
+        "regulatory requirements, or forge/falsify compliance documents.\n\n"
         f"Reason: {reason}"
+    )
+
+
+def _insufficient_evidence_response(
+    language: str,
+    reason: str = "",
+) -> str:
+    """INSUFFICIENT_EVIDENCE: legitimate question, but no authoritative evidence available."""
+
+    if language == "hi":
+        return (
+            "इस प्रश्न का उत्तर देने के लिए NiyamVeda के "
+            "indexed knowledge corpus में पर्याप्त प्रामाणिक "
+            "साक्ष्य उपलब्ध नहीं है।\n\n"
+            "NiyamVeda केवल उपलब्ध प्रमाणित evidence के आधार पर "
+            "उत्तर देता है। Gemini की सामान्य ज्ञान का उपयोग "
+            "किए बिना, यह प्रश्न वर्तमान corpus से सिद्ध नहीं "
+            "किया जा सकता।\n\n"
+            + (f"कारण: {reason}" if reason else "")
+        )
+
+    if language == "bn":
+        return (
+            "এই প্রশ্নের উত্তর দেওয়ার জন্য NiyamVeda-এর indexed "
+            "knowledge corpus-এ পর্যাপ্ত প্রামাণিক সাক্ষ্য পাওয়া "
+            "যায়নি।\n\n"
+            "NiyamVeda শুধুমাত্র উপলব্ধ প্রামাণিক evidence-এর "
+            "ভিত্তিতে উত্তর দেয়। Gemini-র সাধারণ জ্ঞান ব্যবহার "
+            "না করে, বর্তমান corpus থেকে এই প্রশ্ন সমর্থিত "
+            "করা যাচ্ছে না।\n\n"
+            + (f"কারণ: {reason}" if reason else "")
+        )
+
+    return (
+        "NiyamVeda does not have sufficient authoritative evidence in its "
+        "indexed knowledge corpus to answer this question reliably.\n\n"
+        "NiyamVeda answers only from verified authoritative evidence. "
+        "Without relying on Gemini's general world knowledge, this question "
+        "cannot be supported from the current corpus.\n\n"
+        + (f"Reason: {reason}" if reason else "")
     )
 
 
@@ -1301,6 +1434,256 @@ def _certification_disclaimer(
 
 
 # ---------------------------------------------------------------------------
+# User-provided authoritative evidence extraction
+# ---------------------------------------------------------------------------
+
+def _extract_user_provided_evidence(
+    message: str,
+) -> List[Dict[str, Any]]:
+    """
+    Detect when the user has pasted or quoted an authoritative document
+    excerpt directly in their message, and construct a synthetic evidence
+    chunk from it.
+
+    This allows NiyamVeda to answer questions about products that are NOT
+    in its predefined dataset if the user supplies sufficient authoritative
+    source material in the query itself.
+
+    The returned chunk uses source_id "USER_PROVIDED" and verification_status
+    "USER_SUPPLIED" so the system can distinguish it from indexed corpus
+    evidence and apply appropriate disclaimer language.
+
+    Detection heuristics (conservative — must indicate authoritative content):
+    - Quoted block (triple-backtick or indent) following "here is"/"attached"/
+      "following document"/"BIS document"/"standard says"
+    - Clause/section references inline with surrounding quote context
+    - Explicit marker phrases: "Clause X.Y", "IS XXXXX", "BIS Standard",
+      "the following document", "as per the document I am providing"
+    """
+    evidence_markers = [
+        r"here is.*?(bis|standard|document|clause|specification)",
+        r"the following (bis|standard|document|clause|specification)",
+        r"as per (the )?(document|bis|standard|specification) (i|we) (am|are) providing",
+        r"i(?:'m| am) providing.*?(document|standard|specification)",
+        r"i(?:'ve| have) attached.*?(document|standard|specification)",
+        r"attached.*?(bis|standard|document|specification)",
+        r"the document (says|states|requires|specifies)",
+        r"this (bis|standard|document|specification) (says|states|requires|specifies)",
+        r"clause\s+\d+\.\d+\s+(?:says|states|requires|specifies|of\s+this)",
+        r"\bis[\s\-]+\d{3,6}[\s\-]+(?:says|states|requires|specifies|clause)",
+        r"according to.*?(document|standard|specification|bis|clause)",
+    ]
+
+    message_lower = message.lower()
+
+    has_marker = any(
+        re.search(pattern, message_lower, re.IGNORECASE)
+        for pattern in evidence_markers
+    )
+
+    if not has_marker:
+        return []
+
+    # Only create a user-evidence chunk if the message is substantive
+    # enough to plausibly contain authoritative content (> 150 chars).
+    if len(message) < 150:
+        return []
+
+    # Extract any inline IS numbers mentioned for metadata.
+    inline_standards = re.findall(
+        r"\bis[\s\-]*(\d{3,6})\b",
+        message,
+        re.IGNORECASE,
+    )
+
+    standard_ref = (
+        ", ".join(f"IS {n}" for n in inline_standards[:3])
+        if inline_standards
+        else "User-supplied authoritative document"
+    )
+
+    return [
+        {
+            "source_id": "USER_PROVIDED",
+            "title": standard_ref,
+            "authority": "User-supplied",
+            "document_type": "User-provided authoritative excerpt",
+            "clause_number": "",
+            "verification_status": "USER_SUPPLIED",
+            "source_url": None,
+            "chunk_text": message,
+        }
+    ]
+
+
+# ---------------------------------------------------------------------------
+# Evidence sufficiency evaluation
+# ---------------------------------------------------------------------------
+
+def _evaluate_evidence_sufficiency(
+    message: str,
+    retrieved_chunks: List[Dict[str, Any]],
+    product_context: str = "",
+) -> Tuple[bool, str, str]:
+    """
+    Multi-factor evidence sufficiency gate.
+
+    Determines whether the retrieved corpus evidence (plus any user-supplied
+    evidence) is sufficient to ground an answer to the user's question.
+
+    Returns (is_sufficient, response_type, reason) where:
+      - is_sufficient: True → proceed to LLM generation
+      - response_type: "grounded_answer" | "insufficient_evidence"
+      - reason: human-readable explanation (used in abstention message)
+
+    IMPORTANT:
+    - An empty product dataset entry does NOT by itself mean insufficient.
+    - User-supplied authoritative documents CAN satisfy the evidence gate.
+    - QuantumFlux X9 (and similar unknown products) produce INSUFFICIENT only
+      because NO authoritative evidence exists — not because the product name
+      is absent from a lookup table.
+    - Generic chunk counts (len > 0) are NOT sufficient — chunk relevance,
+      source authority, and topical match are all considered.
+    """
+
+    if not retrieved_chunks:
+        return (
+            False,
+            "insufficient_evidence",
+            "No sufficiently relevant authoritative evidence was retrieved "
+            "for this question.",
+        )
+
+    # Factor 1: Source authority — at least one chunk from a verified source
+    # or user-supplied document.
+    has_verified_source = any(
+        chunk.get("verification_status") in (
+            "VERIFIED", "AUTHORITATIVE", "INDEXED", "USER_SUPPLIED",
+        )
+        for chunk in retrieved_chunks
+    )
+
+    # If verification_status is not explicitly set, we still accept chunks
+    # from the indexed corpus (non-empty source_id != USER_PROVIDED checks
+    # are handled elsewhere).
+    # Treat any chunk from the corpus as having at least INDEXED authority.
+    if not has_verified_source:
+        all_source_ids = [
+            chunk.get("source_id", "") for chunk in retrieved_chunks
+        ]
+        # Accept if any non-empty source_id present (indexed corpus chunk)
+        has_verified_source = any(sid for sid in all_source_ids)
+
+    if not has_verified_source:
+        return (
+            False,
+            "insufficient_evidence",
+            "Retrieved evidence lacks verified or authoritative source "
+            "attribution.",
+        )
+
+    # Factor 2: Clause-specific question check.
+    # If the user asks about a specific clause (e.g. "Clause 30.2"), verify
+    # that at least one retrieved chunk actually contains that clause.
+    clause_match = re.search(
+        r"clause\s+(\d+(?:\.\d+)*)",
+        message,
+        re.IGNORECASE,
+    )
+
+    if clause_match:
+        requested_clause = clause_match.group(1)
+        clause_in_evidence = any(
+            requested_clause in str(
+                chunk.get("clause_number", "")
+            )
+            or requested_clause in str(
+                chunk.get("chunk_text", "")
+            )
+            for chunk in retrieved_chunks
+        )
+
+        if not clause_in_evidence:
+            return (
+                False,
+                "insufficient_evidence",
+                f"Clause {requested_clause} is not present in the "
+                "retrieved authoritative evidence. NiyamVeda will not "
+                "reconstruct clause content from general knowledge.",
+            )
+
+    # Factor 3: Standard-specific question check.
+    # If the user asks about a specific standard (e.g. "IS 99999"), verify
+    # that at least one chunk actually references it.
+    query_standard_numbers = _extract_explicit_standard_numbers(message)
+    if query_standard_numbers:
+        standard_in_evidence = any(
+            any(
+                std_num in str(chunk.get("source_id", ""))
+                or std_num in str(chunk.get("title", ""))
+                or std_num in str(chunk.get("chunk_text", ""))
+                for std_num in query_standard_numbers
+            )
+            for chunk in retrieved_chunks
+        )
+        if not standard_in_evidence:
+            return (
+                False,
+                "insufficient_evidence",
+                f"Standard IS {', '.join(query_standard_numbers)} is not present in the "
+                "retrieved authoritative evidence. NiyamVeda will not "
+                "fabricate standard content from general knowledge.",
+            )
+
+    # Factor 4: Product / domain mismatch check (Requirement 4).
+    # If the question unambiguously targets a specific product domain (Product A)
+    # but all retrieved chunks strictly belong to an unrelated product domain (Product B),
+    # reject as insufficient evidence.
+    intent_query = _remove_explicit_exclusions(message)
+    evidence_marker_match = re.search(
+        r"(?:here is|the following|as per the attached|attached document|refer to the following)\b",
+        intent_query,
+        re.IGNORECASE,
+    )
+    question_part = (
+        intent_query[:evidence_marker_match.start()].strip()
+        if evidence_marker_match
+        else intent_query
+    )
+    target_topics = _detect_primary_product_topics(
+        question_part or intent_query,
+        product_context,
+    )
+
+    if target_topics:
+        has_matching_chunk = any(
+            any(
+                _chunk_matches_product_topic(
+                    f"{chunk.get('title', '')} {chunk.get('chunk_text', '')} {chunk.get('source_id', '')}".lower(),
+                    topic,
+                )
+                for topic in target_topics
+            )
+            for chunk in retrieved_chunks
+        )
+        if not has_matching_chunk:
+            other_domains_in_chunks = set()
+            for chunk in retrieved_chunks:
+                c_text = f"{chunk.get('title', '')} {chunk.get('chunk_text', '')} {chunk.get('source_id', '')}".lower()
+                for known_topic in ("kettle", "ro", "cookware"):
+                    if _chunk_matches_product_topic(c_text, known_topic):
+                        other_domains_in_chunks.add(known_topic)
+            if other_domains_in_chunks and not (other_domains_in_chunks & target_topics):
+                return (
+                    False,
+                    "insufficient_evidence",
+                    "The retrieved evidence relates to a different product domain and does not address the question.",
+                )
+
+    return True, "grounded_answer", ""
+
+
+# ---------------------------------------------------------------------------
 # Chat endpoint
 # ---------------------------------------------------------------------------
 
@@ -1330,6 +1713,7 @@ def assistant_chat(
                 "Please enter a question so I can search the "
                 "available regulatory knowledge."
             ),
+            response_type="insufficient_evidence",
             suggested_queries=[
                 "What standards apply to electric kettles?",
                 "What information is available for RO purifiers?",
@@ -1370,22 +1754,52 @@ def assistant_chat(
         analysis = None
 
     # ---------------------------------------------------------------
-    # Unknown / unsupported domain
+    # STEP 1: Safety evasion check (SAFE_ABSTENTION)
+    # ---------------------------------------------------------------
+
+    is_evasion, evasion_reason = _detect_safety_evasion(message)
+
+    if is_evasion:
+        return AssistantChatResponse(
+            response=_safe_abstention_response(
+                language,
+                evasion_reason or "Regulatory evasion or circumvention request.",
+            ),
+            response_type="safe_abstention",
+            suggested_queries=[
+                "What standards apply to electric kettles?",
+                "What are the legitimate BIS certification steps for a product?",
+                "What requirements apply to stainless steel cookware?",
+            ],
+            citations=[],
+            safe_abstention=True,
+            abstention_reason=evasion_reason,
+            grounded_in_corpus=False,
+            disclaimer=DISCLAIMER,
+        )
+
+    # ---------------------------------------------------------------
+    # STEP 2: Known prohibited domains (military hardware, etc.)
+    #
+    # NOTE: This does NOT apply to ordinary unknown commercial products.
+    # An unknown product (e.g. "pressure vessel") that is NOT in this
+    # list proceeds to the evidence gate — it is NOT blocked here.
     # ---------------------------------------------------------------
 
     if _is_unknown_product_domain(
         message_lower
     ):
         reason = (
-            "This product domain is not sufficiently represented "
-            "in the indexed NiyamVeda knowledge corpus."
+            "This product domain falls outside the scope of civil/commercial "
+            "BIS regulation and is not represented in the NiyamVeda corpus."
         )
 
         return AssistantChatResponse(
-            response=_safe_abstention_response(
+            response=_insufficient_evidence_response(
                 language,
                 reason,
             ),
+            response_type="insufficient_evidence",
             suggested_queries=[
                 "What standards apply to electric kettles?",
                 "What requirements are indexed for RO purifiers?",
@@ -1399,7 +1813,8 @@ def assistant_chat(
         )
 
     # ---------------------------------------------------------------
-    # Hallmarking / laboratory
+    # STEP 3: Hallmarking / laboratory (INSUFFICIENT_EVIDENCE)
+    # These are legitimate questions — but the corpus lacks the data.
     # ---------------------------------------------------------------
 
     special_topic_reason = _get_special_topic_reason(
@@ -1408,10 +1823,11 @@ def assistant_chat(
 
     if special_topic_reason:
         return AssistantChatResponse(
-            response=_safe_abstention_response(
+            response=_insufficient_evidence_response(
                 language,
                 special_topic_reason,
             ),
+            response_type="insufficient_evidence",
             suggested_queries=[
                 "What standards apply to electric kettles?",
                 "What requirements are indexed for RO purifiers?",
@@ -1425,7 +1841,19 @@ def assistant_chat(
         )
 
     # ---------------------------------------------------------------
-    # Retrieve authoritative corpus evidence
+    # STEP 4: Extract user-provided authoritative evidence
+    #
+    # A user may paste an authoritative BIS document excerpt directly
+    # into their message. If so, treat it as evidence — this allows
+    # answering questions about products NOT in the predefined dataset
+    # (e.g. pressure vessels) when the user provides the authoritative
+    # source themselves.
+    # ---------------------------------------------------------------
+
+    user_evidence_chunks = _extract_user_provided_evidence(message)
+
+    # ---------------------------------------------------------------
+    # STEP 5: Retrieve authoritative corpus evidence
     # ---------------------------------------------------------------
 
     retrieved_results = _retrieve_evidence(
@@ -1442,8 +1870,13 @@ def assistant_chat(
         for chunk, score in retrieved_results
     ]
 
+    # Merge: corpus evidence + user-supplied evidence.
+    # User-supplied chunks are appended AFTER corpus chunks so corpus
+    # evidence always takes precedence in the LLM's grounding context.
+    all_evidence_chunks = retrieved_chunks + user_evidence_chunks
+
     # ---------------------------------------------------------------
-    # Product-specific deterministic abstention
+    # STEP 6: Product-specific deterministic abstention
     # ---------------------------------------------------------------
 
     if (
@@ -1486,10 +1919,10 @@ def assistant_chat(
                 f"- श्रेणी: {category}\n"
                 f"- ऑपरेटिंग वोल्टेज: {voltage}\n\n"
                 "लेकिन deterministic compliance engine ने इस "
-                "उत्पाद के लिए Safe Abstention सक्रिय किया है। "
-                "इसलिए मैं उपलब्ध साक्ष्य से आगे कोई compliance "
-                "conclusion या BIS requirement का अनुमान नहीं "
-                "लगाऊँगा।\n\n"
+                "उत्पाद के लिए पर्याप्त साक्ष्य न पाकर abstention "
+                "सक्रिय किया है। इसलिए मैं उपलब्ध साक्ष्य से आगे "
+                "कोई compliance conclusion या BIS requirement का "
+                "अनुमान नहीं लगाऊँगा।\n\n"
                 f"कारण: {reason}"
             )
 
@@ -1500,10 +1933,11 @@ def assistant_chat(
                 f"উপলব্ধ তথ্য:\n\n"
                 f"- বিভাগ: {category}\n"
                 f"- অপারেটিং ভোল্টেজ: {voltage}\n\n"
-                "তবে deterministic compliance engine এই "
-                "পণ্যের জন্য Safe Abstention সক্রিয় করেছে। "
-                "তাই উপলব্ধ প্রমাণের বাইরে কোনো compliance "
-                "conclusion বা BIS requirement অনুমান করা হবে না।\n\n"
+                "তবে deterministic compliance engine পর্যাপ্ত "
+                "প্রমাণের অভাবে এই পণ্যের জন্য abstention "
+                "সক্রিয় করেছে। তাই উপলব্ধ প্রমাণের বাইরে কোনো "
+                "compliance conclusion বা BIS requirement অনুমান "
+                "করা হবে না।\n\n"
                 f"কারণ: {reason}"
             )
 
@@ -1513,19 +1947,20 @@ def assistant_chat(
                 f"Your active product is **{product_name}**.\n\n"
                 f"- **Category:** {category}\n"
                 f"- **Operating Voltage:** {voltage}\n\n"
-                "However, the deterministic compliance engine "
-                "has activated Safe Abstention for this product. "
-                "Therefore, I will not make a compliance conclusion "
-                "or invent a BIS requirement beyond the available "
-                "evidence.\n\n"
+                "However, the deterministic compliance engine has "
+                "found insufficient evidence for a reliable "
+                "conclusion about this product. Therefore, I will "
+                "not make a compliance conclusion or invent a BIS "
+                "requirement beyond the available evidence.\n\n"
                 f"Reason: {reason}"
             )
 
         return AssistantChatResponse(
             response=response_text,
+            response_type="insufficient_evidence",
             suggested_queries=[
                 "What information is missing from my product profile?",
-                "Explain why safe abstention was activated.",
+                "Explain why abstention was activated.",
                 "What evidence was retrieved for my product?",
             ],
             citations=citations,
@@ -1538,21 +1973,32 @@ def assistant_chat(
         )
 
     # ---------------------------------------------------------------
-    # No authoritative evidence
+    # STEP 7: Multi-factor evidence sufficiency gate
+    #
+    # Evaluates whether combined corpus + user evidence is sufficient
+    # to answer the question.
+    #
+    # PHILOSOPHY:
+    # - An unknown product does NOT automatically trigger INSUFFICIENT.
+    # - Insufficient evidence occurs when NO authoritative evidence
+    #   (corpus OR user-supplied) addresses the question.
+    # - QuantumFlux X9 + no evidence → INSUFFICIENT.
+    # - Unknown product + user-supplied BIS document → potentially GROUNDED.
     # ---------------------------------------------------------------
 
-    if not retrieved_chunks:
+    is_sufficient, response_type, sufficiency_reason = _evaluate_evidence_sufficiency(
+        message,
+        all_evidence_chunks,
+        product_context,
+    )
 
-        reason = (
-            "No sufficiently relevant authoritative evidence "
-            "was retrieved for this question."
-        )
-
+    if not is_sufficient:
         return AssistantChatResponse(
-            response=_safe_abstention_response(
+            response=_insufficient_evidence_response(
                 language,
-                reason,
+                sufficiency_reason,
             ),
+            response_type="insufficient_evidence",
             suggested_queries=[
                 "What standards apply to electric kettles?",
                 "What requirements are indexed for RO purifiers?",
@@ -1560,13 +2006,13 @@ def assistant_chat(
             ],
             citations=[],
             safe_abstention=True,
-            abstention_reason=reason,
+            abstention_reason=sufficiency_reason,
             grounded_in_corpus=False,
             disclaimer=DISCLAIMER,
         )
 
     # ---------------------------------------------------------------
-    # Deterministic rule context
+    # STEP 8: Deterministic rule context
     # ---------------------------------------------------------------
 
     matched_rules: List[Dict[str, Any]] = []
@@ -1578,13 +2024,29 @@ def assistant_chat(
         ]
 
     # ---------------------------------------------------------------
-    # Gemini / evidence-only provider
+    # STEP 9: LLM generation — grounded strictly in evidence
+    #
+    # Pass all_evidence_chunks (corpus + user-supplied) to the LLM.
+    # The strict system instruction in GeminiProvider prevents the
+    # model from using general knowledge to fill any gaps.
     # ---------------------------------------------------------------
+
+    # Note: If only user-supplied evidence is present, add a note to
+    # the prompt so the model knows the source is user-provided.
+    user_evidence_note = ""
+    if user_evidence_chunks and not retrieved_chunks:
+        user_evidence_note = (
+            "\n\nNOTE: The only available evidence for this question "
+            "is the authoritative document excerpt provided by the "
+            "user in their message. Answer strictly from that "
+            "provided text."
+        )
 
     prompt = (
         f"User question: {message}\n\n"
         f"Product context:\n"
         f"{product_context or 'None'}"
+        f"{user_evidence_note}"
     )
 
     system_instruction = _language_instruction(
@@ -1594,9 +2056,33 @@ def assistant_chat(
     response_text = ai_provider.generate_explanation(
         prompt=prompt,
         system_instruction=system_instruction,
-        retrieved_evidence=retrieved_chunks,
+        retrieved_evidence=all_evidence_chunks,
         matched_rules=matched_rules,
     )
+
+    # Add disclosure note when answer is grounded in user-supplied evidence
+    # so the user understands the answer is based on their document, not
+    # NiyamVeda's indexed corpus.
+    if user_evidence_chunks and not retrieved_chunks:
+        if language == "hi":
+            response_text += (
+                "\n\n⚠️ यह उत्तर आपके द्वारा प्रदान किए गए "
+                "document के आधार पर दिया गया है, NiyamVeda के "
+                "indexed corpus से नहीं।"
+            )
+        elif language == "bn":
+            response_text += (
+                "\n\n⚠️ এই উত্তরটি আপনার সরবরাহ করা document-এর "
+                "ভিত্তিতে দেওয়া হয়েছে, NiyamVeda-এর indexed "
+                "corpus থেকে নয়।"
+            )
+        else:
+            response_text += (
+                "\n\n⚠️ This answer is based on the authoritative "
+                "document you provided, not NiyamVeda's indexed "
+                "corpus. Please verify the document's authenticity "
+                "independently."
+            )
 
     # Localized wrapper for Hindi/Bengali. Authoritative corpus evidence
     # remains unchanged and in its original form.
@@ -1668,6 +2154,7 @@ def assistant_chat(
 
     return AssistantChatResponse(
         response=response_text,
+        response_type="grounded_answer",
         suggested_queries=suggested_queries[:4],
         citations=citations,
         safe_abstention=False,

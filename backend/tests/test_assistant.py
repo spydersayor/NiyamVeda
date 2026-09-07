@@ -69,10 +69,20 @@ def test_assistant_unknown_product():
     assert res.status_code == 200
     data = res.json()
     assert data["safe_abstention"] is True
-    assert "abstention" in data["response"].lower() or "safe abstention" in data["response"].lower()
+    # The response must clearly indicate it cannot answer — either via the
+    # response_type field (preferred) or legacy text markers.
+    assert (
+        data.get("response_type") in ("insufficient_evidence", "safe_abstention")
+        or "abstention" in data["response"].lower()
+        or "safe abstention" in data["response"].lower()
+        or "not have sufficient" in data["response"].lower()
+        or "not indexed" in data["response"].lower()
+        or "cannot be supported" in data["response"].lower()
+    )
     assert data["grounded_in_corpus"] is False
     assert len(data["citations"]) == 0
     assert_no_false_guarantees(data["response"])
+
 
 def test_assistant_certification_question():
     res = client.post("/api/assistant/chat", json={
