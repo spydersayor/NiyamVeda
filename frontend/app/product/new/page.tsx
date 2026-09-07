@@ -136,16 +136,16 @@ export default function ProductInputPage() {
   };
 
   return (
-    <div className="min-h-screen portal-bg py-8 px-4 sm:px-8 font-sans">
+    <div className="min-h-screen portal-bg py-6 sm:py-8 px-3 sm:px-6 md:px-8 font-sans">
       <div className="max-w-5xl mx-auto space-y-6">
 
         {/* ─── Step Progress Bar (Screen 2 Top) ─── */}
-        <div className="flex items-center justify-between max-w-2xl mx-auto px-2 py-3 bg-[#0B1426]/70 backdrop-blur-md rounded-xl border border-slate-800/80 shadow-lg">
+        <div className="flex items-center justify-between max-w-2xl mx-auto px-3 py-2.5 bg-[#0B1426]/70 backdrop-blur-md rounded-xl border border-slate-800/80 shadow-lg overflow-x-auto no-scrollbar">
           {STEPS.map((step, idx) => (
-            <div key={step.num} className="flex items-center flex-1 last:flex-none">
+            <div key={step.num} className="flex items-center flex-1 last:flex-none flex-shrink-0">
               <div className="flex items-center gap-2">
                 <div 
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all flex-shrink-0 ${
                     step.num === currentStep
                       ? 'bg-[#FF7828] text-white shadow-md shadow-orange-500/30'
                       : step.num < currentStep
@@ -162,14 +162,14 @@ export default function ProductInputPage() {
                 </span>
               </div>
               {idx < STEPS.length - 1 && (
-                <div className="flex-1 h-[1px] bg-slate-800 mx-3" />
+                <div className="flex-1 min-w-[12px] h-[1px] bg-slate-800 mx-2 sm:mx-3" />
               )}
             </div>
           ))}
         </div>
 
         {/* ─── Main White Form Container (Screen 2 Exact White Card) ─── */}
-        <div className="bg-white/95 backdrop-blur-md rounded-xl shadow-2xl border border-white/60 p-6 sm:p-8 text-slate-800 animate-slide-up">
+        <div className="bg-white/95 backdrop-blur-md rounded-xl shadow-2xl border border-white/60 p-4 sm:p-6 md:p-8 text-slate-800 animate-slide-up">
           {extractedNotice && (
             <div className="mb-6 p-4 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs flex items-center justify-between gap-3 shadow-sm animate-slide-in">
               <div className="flex items-center gap-2">
@@ -189,7 +189,7 @@ export default function ProductInputPage() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               
               {/* Left Column: Product Definition (7 cols) */}
-              <div className="lg:col-span-7 space-y-4">
+              <div className="lg:col-span-7 space-y-4 min-w-0">
                 <h2 className="text-lg font-bold text-slate-900 border-b border-slate-200 pb-2">
                   {t('product_new_title')}
                 </h2>
@@ -261,7 +261,7 @@ export default function ProductInputPage() {
               </div>
 
               {/* Right Column: Supporting Documents (5 cols) */}
-              <div className="lg:col-span-5 space-y-4">
+              <div className="lg:col-span-5 space-y-4 min-w-0">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                     {t('product_new_docs_title')} <span className="text-slate-400 font-normal">({t('product_new_docs_optional')})</span>
@@ -461,11 +461,11 @@ export default function ProductInputPage() {
             )}
 
             {/* ─── Bottom Actions Bar (Screen 2 Bottom) ─── */}
-            <div className="flex items-center justify-between border-t border-slate-200 mt-8 pt-5">
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 border-t border-slate-200 mt-8 pt-5">
               <button
                 type="button"
                 onClick={() => router.push('/product/demo-purifier-001/confirm')}
-                className="bg-[#0B132B] hover:bg-[#1E293B] text-slate-200 text-xs font-semibold px-5 py-2.5 rounded-md transition-all"
+                className="bg-[#0B132B] hover:bg-[#1E293B] text-slate-200 text-xs font-semibold px-5 py-2.5 rounded-md transition-all text-center"
               >
                 {t('product_new_btn_save_draft')}
               </button>
@@ -473,11 +473,11 @@ export default function ProductInputPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-[#FF7828] hover:bg-[#E05E10] text-white text-xs font-bold px-6 py-2.5 rounded-md transition-all shadow-md shadow-orange-500/20 flex items-center gap-2"
+                className="bg-[#FF7828] hover:bg-[#E05E10] text-white text-xs font-bold px-6 py-2.5 rounded-md transition-all shadow-md shadow-orange-500/20 flex items-center justify-center gap-2"
               >
                 {loading ? 'Processing...' : (
                   <>
-                    {t('product_new_btn_continue')} <ArrowRight size={14} />
+                    <span>{t('product_new_btn_continue')}</span> <ArrowRight size={14} />
                   </>
                 )}
               </button>

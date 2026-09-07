@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import Nav from '@/components/Nav';
@@ -8,6 +8,12 @@ import { I18nProvider } from '@/lib/i18n-context';
 import Footer from '@/components/Footer';
 
 const inter = Inter({ subsets: ['latin'] });
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   title: 'NiyamVeda (नियमवेद) — From Product to Compliance Clarity',
@@ -48,12 +54,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className={`${inter.className} min-h-screen transition-colors duration-200`}>
+      <body className={`${inter.className} min-h-screen flex flex-col transition-colors duration-200`}>
         <ThemeProvider>
           <I18nProvider>
             <AuthProvider>
               <Nav />
-              <main>{children}</main>
+              <main className="flex-1 w-full min-w-0">{children}</main>
               <Footer />
             </AuthProvider>
           </I18nProvider>

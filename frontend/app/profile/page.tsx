@@ -73,44 +73,44 @@ export default function ProfilePage() {
     : t('profile_active_member');
 
   return (
-    <div className="min-h-screen py-10 px-4 sm:px-8 max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen py-6 sm:py-10 px-3 sm:px-6 md:px-8 max-w-7xl mx-auto space-y-6 sm:space-y-8">
       
       {/* Header Profile Summary */}
-      <div className="bg-[#0B132B]/85 border border-slate-800/90 rounded-2xl p-6 sm:p-8 backdrop-blur-xl shadow-xl flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-        <div className="flex items-start sm:items-center gap-5">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FF7828] to-[#FF9933] flex items-center justify-center text-white font-extrabold text-2xl shadow-lg shadow-orange-500/20 flex-shrink-0">
+      <div className="bg-[#0B132B]/85 border border-slate-800/90 rounded-2xl p-4 sm:p-6 md:p-8 backdrop-blur-xl shadow-xl flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#FF7828] to-[#FF9933] flex items-center justify-center text-white font-extrabold text-xl sm:text-2xl shadow-lg shadow-orange-500/20 flex-shrink-0">
             {user.full_name ? user.full_name.charAt(0).toUpperCase() : 'U'}
           </div>
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2.5">
-              <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight break-words">
                 {user.full_name}
               </h1>
               <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-[#1E355B] text-amber-300 border border-amber-500/30">
                 {user.role || 'MSME_MANUFACTURER'}
               </span>
             </div>
-            <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400">
-              <span className="flex items-center gap-1.5">
-                <Building size={13} className="text-[#FF7828]" />
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-slate-400">
+              <span className="flex items-center gap-1.5 break-words">
+                <Building size={13} className="text-[#FF7828] flex-shrink-0" />
                 {user.company_name}
               </span>
-              <span className="flex items-center gap-1.5">
-                <Mail size={13} className="text-slate-400" />
+              <span className="flex items-center gap-1.5 break-words">
+                <Mail size={13} className="text-slate-400 flex-shrink-0" />
                 {user.email}
               </span>
               <span className="flex items-center gap-1.5">
-                <Calendar size={13} className="text-slate-400" />
+                <Calendar size={13} className="text-slate-400 flex-shrink-0" />
                 {t('profile_joined')} {registeredDate}
               </span>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
           <Link
             href="/product/new"
-            className="flex items-center gap-2 bg-[#FF7828] hover:bg-[#E05E10] text-white text-xs font-bold px-4 py-2.5 rounded-lg transition-all shadow-md shadow-orange-500/20"
+            className="flex items-center gap-2 bg-[#FF7828] hover:bg-[#E05E10] text-white text-xs font-bold px-3.5 sm:px-4 py-2.5 rounded-lg transition-all shadow-md shadow-orange-500/20"
           >
             <PlusCircle size={15} />
             <span>{t('profile_btn_new_project')}</span>
@@ -121,7 +121,7 @@ export default function ProfilePage() {
             title={t('nav_sign_out')}
           >
             <LogOut size={14} />
-            <span className="hidden sm:inline">{t('nav_sign_out')}</span>
+            <span>{t('nav_sign_out')}</span>
           </button>
         </div>
       </div>
@@ -319,7 +319,7 @@ export default function ProfilePage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2 pt-2 sm:pt-0">
                       <Link
                         href={`/product/${prod.id}/analysis`}
                         className="text-xs font-bold px-3 py-1.5 rounded-md bg-[#1E355B] text-sky-300 hover:bg-[#2A487B] border border-sky-500/30 transition-colors flex items-center gap-1"
@@ -357,7 +357,7 @@ export default function ProfilePage() {
                     </span>
                     <Link
                       href={`/product/${prod.id}/confirm`}
-                      className="text-[11px] text-slate-400 hover:text-slate-200 underline ml-auto"
+                      className="text-[11px] text-slate-400 hover:text-slate-200 underline ml-0 sm:ml-auto"
                     >
                       {t('profile_inspect_facts')} ({prod.facts?.length || 0})
                     </Link>

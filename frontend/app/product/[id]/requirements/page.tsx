@@ -26,20 +26,20 @@ export default function RequirementsChecklistPage() {
   const completionPercent = result?.checklist_completion_percent ?? 0;
 
   return (
-    <div className="flex min-h-screen portal-bg font-sans text-slate-800">
+    <div className="flex flex-col lg:flex-row min-h-screen portal-bg font-sans text-slate-800">
       <ProductSidebar productId={productId} />
 
-      <div className="flex-1 ml-14 py-8 px-6 sm:px-12">
+      <div className="flex-1 ml-0 lg:ml-14 py-6 sm:py-8 px-4 sm:px-6 md:px-12 min-w-0">
         <div className="max-w-5xl mx-auto space-y-6">
 
           {/* ─── Header (Screen 8 Exact) ─── */}
-          <div className="flex items-center justify-between animate-slide-up">
-            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-slide-up">
+            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight break-words">
               {t('req_title')}
             </h1>
 
             {/* Dynamic % Completed Badge */}
-            <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-300 flex items-center gap-1.5 shadow-sm">
+            <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-300 flex items-center gap-1.5 shadow-sm w-fit">
               <span className="text-emerald-500 font-extrabold">+</span> {completionPercent}% {t('req_completed')}
             </span>
           </div>
@@ -47,7 +47,7 @@ export default function RequirementsChecklistPage() {
           {/* ─── Requirements Table (Screen 8 Exact) ─── */}
           <div className="bg-white/95 backdrop-blur-md border border-white/60 rounded-xl overflow-hidden shadow-2xl animate-slide-up">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
+              <table className="w-full text-left text-xs border-collapse min-w-[580px]">
                 <thead>
                   <tr className="bg-[#F8FAFC] border-b border-slate-200 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
                     <th className="py-3 px-4 w-1/4">{t('req_col_req')}</th>

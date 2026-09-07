@@ -10,15 +10,15 @@ export default function SafeAbstentionStatePage() {
   const { t } = useTranslation();
 
   return (
-    <div className="flex min-h-screen portal-bg font-sans text-slate-800">
+    <div className="flex flex-col lg:flex-row min-h-screen portal-bg font-sans text-slate-800">
       <ProductSidebar productId={productId} />
 
-      <div className="flex-1 ml-14 py-10 px-6 sm:px-12">
-        <div className="max-w-4xl mx-auto space-y-7">
+      <div className="flex-1 ml-0 lg:ml-14 py-6 sm:py-10 px-4 sm:px-6 md:px-12 min-w-0">
+        <div className="max-w-4xl mx-auto space-y-6 sm:space-y-7">
 
           {/* Header */}
           <div className="text-center max-w-2xl mx-auto space-y-2 animate-slide-up">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white tracking-tight break-words">
               {t('abstention_title')}
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
@@ -27,7 +27,7 @@ export default function SafeAbstentionStatePage() {
           </div>
 
           {/* Gold / Saffron Alert Banner */}
-          <div className="bg-[#FFF8E6]/95 backdrop-blur-sm border border-amber-300 rounded-2xl p-6 shadow-2xl space-y-5 animate-slide-up">
+          <div className="bg-[#FFF8E6]/95 backdrop-blur-sm border border-amber-300 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-5 animate-slide-up">
             {/* Banner Header */}
             <div className="flex items-center justify-center gap-2 bg-[#F6A609] text-white py-1.5 px-4 rounded-md w-fit mx-auto shadow-sm">
               <Shield size={16} fill="white" />

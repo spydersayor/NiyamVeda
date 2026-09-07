@@ -247,14 +247,14 @@ function AssistantPageContent() {
             PRODUCT CONTEXT DROPDOWN
         ================================================== */}
 
-        <div className="flex items-center gap-2 bg-[#070D1B] border border-slate-700/80 rounded-lg px-3 py-1.5 text-xs">
+        <div className="flex items-center gap-2 bg-[#070D1B] border border-slate-700/80 rounded-lg px-3 py-1.5 text-xs w-full sm:w-auto">
 
           <Layers
             size={14}
             className="text-[#FF7828] flex-shrink-0"
           />
 
-          <div className="flex flex-col">
+          <div className="flex flex-col flex-1 min-w-0">
 
             <span className="text-[10px] text-slate-400 font-medium">
               {t('assistant_select_product')}
@@ -267,7 +267,7 @@ function AssistantPageContent() {
                   e.target.value
                 )
               }
-              className="bg-transparent text-xs font-semibold text-slate-200 outline-none cursor-pointer pr-1"
+              className="bg-transparent text-xs font-semibold text-slate-200 outline-none cursor-pointer pr-1 w-full truncate"
             >
 
               <option
@@ -299,15 +299,15 @@ function AssistantPageContent() {
       ====================================================== */}
 
       {selectedProductObj && (
-        <div className="bg-[#1E355B]/40 border border-sky-500/30 rounded-lg px-4 py-2.5 flex items-center justify-between text-xs text-slate-300">
+        <div className="bg-[#1E355B]/40 border border-sky-500/30 rounded-lg px-4 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-300">
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
 
             <span className="font-semibold text-sky-400">
               {t('assistant_context_active')}
             </span>
 
-            <span>
+            <span className="break-words">
               {t('assistant_eval_against')}{' '}
               <strong>
                 {selectedProductObj.product_name}
@@ -327,7 +327,7 @@ function AssistantPageContent() {
             onClick={() =>
               setSelectedProductId('')
             }
-            className="text-[11px] text-slate-400 hover:text-slate-200 underline"
+            className="text-[11px] text-slate-400 hover:text-slate-200 underline flex-shrink-0"
           >
             {t('assistant_clear_context')}
           </button>
@@ -339,7 +339,7 @@ function AssistantPageContent() {
           CHAT MESSAGES
       ====================================================== */}
 
-      <div className="flex-1 bg-[#070D1B]/70 border border-slate-800 rounded-2xl p-4 sm:p-6 overflow-y-auto space-y-6 min-h-[450px] max-h-[580px] backdrop-blur-md">
+      <div className="flex-1 bg-[#070D1B]/70 border border-slate-800 rounded-2xl p-4 sm:p-6 overflow-y-auto space-y-6 min-h-[320px] sm:min-h-[450px] max-h-[60vh] sm:max-h-[580px] backdrop-blur-md">
 
         {messages.map((msg) => (
 
@@ -363,10 +363,10 @@ function AssistantPageContent() {
             {/* Message bubble */}
 
             <div
-              className={`max-w-2xl space-y-3 ${
+              className={`max-w-[92%] sm:max-w-2xl space-y-3 break-words ${
                 msg.sender === 'user'
                   ? 'bg-[#FF7828] text-white rounded-2xl rounded-tr-none px-4 py-3 text-xs font-medium shadow-md shadow-orange-500/10'
-                  : 'bg-[#0B132B] text-slate-200 border border-slate-800 rounded-2xl rounded-tl-none px-5 py-4 text-xs shadow-md'
+                  : 'bg-[#0B132B] text-slate-200 border border-slate-800 rounded-2xl rounded-tl-none px-4 sm:px-5 py-3 sm:py-4 text-xs shadow-md'
               }`}
             >
 

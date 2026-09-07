@@ -35,14 +35,14 @@ export default function LandingPage() {
       </div>
 
       {/* ─── Hero Section ─── */}
-      <section className="max-w-7xl mx-auto px-6 sm:px-10 pt-12 pb-12 relative z-10">
+      <section className="max-w-7xl mx-auto px-4 sm:px-8 md:px-10 pt-8 sm:pt-12 pb-12 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-center">
           
           {/* Left Hero Content (7 cols) */}
           <div className="lg:col-span-7 space-y-5 animate-slide-up">
             
             {/* Top Pill Tag */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0C1B36]/90 border border-[#1E355B] text-xs font-semibold text-slate-300 shadow-sm backdrop-blur-md">
+            <div className="inline-flex flex-wrap items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-[#0C1B36]/90 border border-[#1E355B] text-[11px] sm:text-xs font-semibold text-slate-300 shadow-sm backdrop-blur-md">
               <ShieldCheck size={14} className="text-blue-400 flex-shrink-0" />
               <span>{t('hero_badge_ai')}</span>
               <span className="text-slate-600 font-bold">•</span>
@@ -52,34 +52,34 @@ export default function LandingPage() {
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-extrabold leading-[1.12] tracking-tight text-white drop-shadow-sm">
-              {t('hero_title_prefix')}<br />
-              {t('hero_title_middle')}<br />
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-extrabold leading-[1.15] tracking-tight text-white drop-shadow-sm break-words">
+              {t('hero_title_prefix')}<br className="hidden sm:inline" />{' '}
+              {t('hero_title_middle')}<br className="hidden sm:inline" />{' '}
               <span className="text-[#FF7828]">BIS</span> {t('hero_title_suffix')}
             </h1>
 
             {/* Subtext */}
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-lg font-normal drop-shadow-sm">
+            <p className="text-slate-300 text-xs sm:text-sm md:text-base leading-relaxed max-w-lg font-normal drop-shadow-sm">
               {t('hero_subtext')}
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2">
               <Link 
                 href="/product/new"
-                className="bg-[#FF7828] hover:bg-[#E05E10] text-white font-bold text-sm px-6 py-3 rounded-lg transition-all duration-200 shadow-lg shadow-orange-500/25 flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
+                className="bg-[#FF7828] hover:bg-[#E05E10] text-white font-bold text-sm px-6 py-3 rounded-lg transition-all duration-200 shadow-lg shadow-orange-500/25 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
               >
-                {t('btn_analyse_product')} <ArrowRight size={16} />
+                <span>{t('btn_analyse_product')}</span> <ArrowRight size={16} />
               </Link>
               
               <Link 
                 href="/how-it-works"
-                className="border border-[#1E355B] hover:border-slate-500 bg-[#0C172E]/90 hover:bg-[#12203F] text-slate-200 font-semibold text-sm px-5 py-3 rounded-lg transition-all duration-200 flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] backdrop-blur-sm"
+                className="border border-[#1E355B] hover:border-slate-500 bg-[#0C172E]/90 hover:bg-[#12203F] text-slate-200 font-semibold text-sm px-5 py-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] backdrop-blur-sm"
               >
                 <div className="w-5 h-5 rounded-full bg-slate-800 flex items-center justify-center text-[#FF9933]">
                   <Play size={10} fill="#FF9933" />
                 </div>
-                {t('btn_explore_how_it_works')}
+                <span>{t('btn_explore_how_it_works')}</span>
               </Link>
             </div>
 
@@ -109,14 +109,14 @@ export default function LandingPage() {
         <div className="mt-12 pt-6">
           
           {/* Section Divider Line with Dots (Image 2) */}
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="h-[1px] bg-slate-800 w-16 sm:w-36" />
-            <div className="w-1.5 h-1.5 rounded-full bg-[#FF7828]" />
-            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-300 whitespace-nowrap">
+          <div className="flex items-center justify-center gap-2 sm:gap-3 mb-6">
+            <div className="h-[1px] bg-slate-800 w-8 sm:w-24 md:w-36 flex-1 max-w-[140px]" />
+            <div className="w-1.5 h-1.5 rounded-full bg-[#FF7828] flex-shrink-0" />
+            <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.18em] sm:tracking-[0.22em] text-slate-300 text-center">
               {t('steps_heading')}
             </p>
-            <div className="w-1.5 h-1.5 rounded-full bg-[#FF7828]" />
-            <div className="h-[1px] bg-slate-800 w-16 sm:w-36" />
+            <div className="w-1.5 h-1.5 rounded-full bg-[#FF7828] flex-shrink-0" />
+            <div className="h-[1px] bg-slate-800 w-8 sm:w-24 md:w-36 flex-1 max-w-[140px]" />
           </div>
 
           {/* 4 Connected Step Cards (Image 2) */}
@@ -218,38 +218,38 @@ export default function LandingPage() {
 
         {/* ─── Bottom Unified Bar: 4 Badges (Exact to Image 2) ─── */}
         <div className="mt-8">
-          <div className="bg-[#0A1224] border border-slate-800/90 rounded-xl px-6 py-4 grid grid-cols-2 md:grid-cols-4 gap-4 divide-y md:divide-y-0 md:divide-x divide-slate-800/80 shadow-md">
+          <div className="bg-[#0A1224] border border-slate-800/90 rounded-xl p-4 sm:px-6 sm:py-4 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:divide-x divide-slate-800/80 shadow-md">
             
             {/* Badge 1: Evidence Driven */}
-            <div className="flex items-center justify-center gap-2.5 pt-2 md:pt-0">
-              <div className="text-[#FF7828]">
+            <div className="flex items-center justify-center gap-2 sm:gap-2.5">
+              <div className="text-[#FF7828] flex-shrink-0">
                 <ShieldCheck size={18} />
               </div>
-              <span className="text-xs font-bold text-slate-200">{t('badge_evidence')}</span>
+              <span className="text-[11px] sm:text-xs font-bold text-slate-200 text-center sm:text-left">{t('badge_evidence')}</span>
             </div>
 
             {/* Badge 2: Source Traceable */}
-            <div className="flex items-center justify-center gap-2.5 pt-2 md:pt-0 md:pl-4">
-              <div className="text-[#FF7828]">
+            <div className="flex items-center justify-center gap-2 sm:gap-2.5 md:pl-4">
+              <div className="text-[#FF7828] flex-shrink-0">
                 <FileCheck2 size={18} />
               </div>
-              <span className="text-xs font-bold text-slate-200">{t('badge_source_traceable')}</span>
+              <span className="text-[11px] sm:text-xs font-bold text-slate-200 text-center sm:text-left">{t('badge_source_traceable')}</span>
             </div>
 
             {/* Badge 3: Rule Based */}
-            <div className="flex items-center justify-center gap-2.5 pt-2 md:pt-0 md:pl-4">
-              <div className="text-[#FF7828]">
+            <div className="flex items-center justify-center gap-2 sm:gap-2.5 md:pl-4">
+              <div className="text-[#FF7828] flex-shrink-0">
                 <Gavel size={18} />
               </div>
-              <span className="text-xs font-bold text-slate-200">{t('badge_rule_based')}</span>
+              <span className="text-[11px] sm:text-xs font-bold text-slate-200 text-center sm:text-left">{t('badge_rule_based')}</span>
             </div>
 
             {/* Badge 4: MSME Friendly */}
-            <div className="flex items-center justify-center gap-2.5 pt-2 md:pt-0 md:pl-4">
-              <div className="text-[#FF7828]">
+            <div className="flex items-center justify-center gap-2 sm:gap-2.5 md:pl-4">
+              <div className="text-[#FF7828] flex-shrink-0">
                 <Users size={18} />
               </div>
-              <span className="text-xs font-bold text-slate-200">{t('badge_msme_friendly')}</span>
+              <span className="text-[11px] sm:text-xs font-bold text-slate-200 text-center sm:text-left">{t('badge_msme_friendly')}</span>
             </div>
 
           </div>

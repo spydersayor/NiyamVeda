@@ -29,10 +29,10 @@ export default function VerifiedSourcesEvidenceTrailPage() {
   const isAbstaining = result?.safe_abstention?.activated || (result && rules.length === 0);
 
   return (
-    <div className="flex min-h-screen portal-bg font-sans text-slate-800">
+    <div className="flex flex-col lg:flex-row min-h-screen portal-bg font-sans text-slate-800">
       <ProductSidebar productId={productId} />
 
-      <div className="flex-1 ml-14 py-8 px-6 sm:px-12">
+      <div className="flex-1 ml-0 lg:ml-14 py-6 sm:py-8 px-4 sm:px-6 md:px-12 min-w-0">
         <div className="max-w-5xl mx-auto space-y-6">
 
           {/* ─── Header (Screen 11 Exact) ─── */}
@@ -47,12 +47,12 @@ export default function VerifiedSourcesEvidenceTrailPage() {
             </div>
 
             {rules.length > 1 && (
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-300 font-semibold">{t('evidence_rule_label')}:</span>
+              <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
+                <span className="text-xs text-slate-300 font-semibold whitespace-nowrap">{t('evidence_rule_label')}:</span>
                 <select
                   value={selectedRuleIndex}
                   onChange={(e) => setSelectedRuleIndex(Number(e.target.value))}
-                  className="bg-[#0B1426] border border-slate-700 text-white text-xs rounded px-2.5 py-1.5 focus:outline-none"
+                  className="bg-[#0B1426] border border-slate-700 text-white text-xs rounded px-2.5 py-1.5 focus:outline-none w-full sm:w-auto min-w-0 truncate"
                 >
                   {rules.map((r, i) => (
                     <option key={r.rule_id} value={i}>
@@ -98,7 +98,7 @@ export default function VerifiedSourcesEvidenceTrailPage() {
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
                       {t('why_rule_step_fact')}
                     </span>
-                    <p className="text-xs font-extrabold text-slate-900 mt-0.5">
+                    <p className="text-xs font-extrabold text-slate-900 mt-0.5 break-words">
                       {activeRule?.input_facts
                         ? Object.entries(activeRule.input_facts)
                             .map(([k, v]) => `${k.replace(/_/g, ' ')}: ${v}`)
@@ -110,7 +110,7 @@ export default function VerifiedSourcesEvidenceTrailPage() {
                   {/* 2. Triggered Rule */}
                   <div className="relative">
                     <div className="absolute -left-[23px] top-0.5 w-3.5 h-3.5 rounded-full bg-slate-800 border-2 border-white" />
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                         {t('why_rule_step_rule')}
                       </span>
@@ -118,10 +118,10 @@ export default function VerifiedSourcesEvidenceTrailPage() {
                         {activeRule?.origin_badge || t('analysis_deterministic_badge')}
                       </span>
                     </div>
-                    <p className="text-xs font-extrabold text-slate-900 mt-0.5">
+                    <p className="text-xs font-extrabold text-slate-900 mt-0.5 break-words">
                       {activeRule?.rule_id || 'RULE-BIS-014'}
                     </p>
-                    <p className="text-xs text-slate-600">
+                    <p className="text-xs text-slate-600 break-words">
                       {activeRule?.rule_name || 'Mandatory safety rule'}
                     </p>
                   </div>
@@ -129,7 +129,7 @@ export default function VerifiedSourcesEvidenceTrailPage() {
                   {/* 3. Supporting Evidence */}
                   <div className="relative">
                     <div className="absolute -left-[23px] top-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white" />
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                         {t('why_rule_step_evidence')}
                       </span>
@@ -137,10 +137,10 @@ export default function VerifiedSourcesEvidenceTrailPage() {
                         {t('inspector_authoritative_badge')}
                       </span>
                     </div>
-                    <p className="text-xs font-bold text-slate-900 mt-0.5">
+                    <p className="text-xs font-bold text-slate-900 mt-0.5 break-words">
                       {activeRule?.clause_reference || 'Clause reference'}
                     </p>
-                    <blockquote className="bg-white border-l-2 border-l-[#FF7828] border border-slate-200 rounded-md p-3 text-xs text-slate-600 italic leading-relaxed mt-1.5">
+                    <blockquote className="bg-white border-l-2 border-l-[#FF7828] border border-slate-200 rounded-md p-3 text-xs text-slate-600 italic leading-relaxed mt-1.5 break-words">
                       &ldquo;{activeRule?.supporting_evidence_excerpt || activeRule?.result_explanation}&rdquo;
                     </blockquote>
                   </div>
@@ -148,7 +148,7 @@ export default function VerifiedSourcesEvidenceTrailPage() {
                   {/* 4. Official Source */}
                   <div className="relative">
                     <div className="absolute -left-[23px] top-0.5 w-3.5 h-3.5 rounded-full bg-blue-500 border-2 border-white" />
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                         {t('why_rule_step_conclusion')}
                       </span>
@@ -156,10 +156,10 @@ export default function VerifiedSourcesEvidenceTrailPage() {
                         {activeRule?.verification_status || t('assistant_verified_badge')}
                       </span>
                     </div>
-                    <p className="text-xs font-extrabold text-slate-900 mt-0.5">
+                    <p className="text-xs font-extrabold text-slate-900 mt-0.5 break-words">
                       {activeRule?.source_id || 'Official Standard'}
                     </p>
-                    <p className="text-[11px] text-slate-500">{activeRule?.authority || 'Bureau of Indian Standards'}</p>
+                    <p className="text-[11px] text-slate-500 break-words">{activeRule?.authority || 'Bureau of Indian Standards'}</p>
                   </div>
 
                 </div>

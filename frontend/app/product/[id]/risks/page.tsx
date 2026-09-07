@@ -25,10 +25,10 @@ export default function PotentialComplianceRisksPage() {
   const risks: ComplianceRisk[] = result?.risks ?? [];
 
   return (
-    <div className="flex min-h-screen portal-bg font-sans text-slate-800">
+    <div className="flex flex-col lg:flex-row min-h-screen portal-bg font-sans text-slate-800">
       <ProductSidebar productId={productId} />
 
-      <div className="flex-1 ml-14 py-8 px-6 sm:px-12">
+      <div className="flex-1 ml-0 lg:ml-14 py-6 sm:py-8 px-4 sm:px-6 md:px-12 min-w-0">
         <div className="max-w-4xl mx-auto space-y-6">
 
           {/* ─── Header (Screen 9 Exact) ─── */}
@@ -58,8 +58,8 @@ export default function PotentialComplianceRisksPage() {
                 key={r.id}
                 className="bg-white/95 backdrop-blur-sm border border-white/60 rounded-xl p-5 shadow-lg card-interactive flex flex-col sm:flex-row sm:items-center justify-between gap-4"
               >
-                <div className="space-y-1.5 flex-1">
-                  <div className="flex items-center gap-2">
+                <div className="space-y-1.5 flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
                     {/* Severity Pill */}
                     {r.severity === 'HIGH' && (
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-red-50 text-red-600 border border-red-200 uppercase tracking-wide">
@@ -77,23 +77,23 @@ export default function PotentialComplianceRisksPage() {
                       </span>
                     )}
 
-                    <h2 className="text-sm font-extrabold text-slate-900">
+                    <h2 className="text-sm font-extrabold text-slate-900 break-words">
                       {r.risk}
                     </h2>
                   </div>
 
-                  <p className="text-xs text-slate-600">
+                  <p className="text-xs text-slate-600 break-words">
                     {r.why_it_matters}
                   </p>
 
-                  <p className="text-xs text-slate-800 font-semibold">
+                  <p className="text-xs text-slate-800 font-semibold break-words">
                     <span className="text-slate-500 font-normal">{t('risks_suggested_action')}: </span>
                     {r.suggested_action}
                   </p>
                 </div>
 
                 {/* Evidence Strength (Right Column of card) */}
-                <div className="text-right sm:text-right flex-shrink-0">
+                <div className="text-left sm:text-right flex-shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
                     {t('metric_evidence_confidence')}
                   </span>

@@ -39,7 +39,7 @@ export default function AssistantDrawer({ productId, productName }: AssistantDra
           : t('drawer_welcome_generic')
       }
     ]);
-  }, [productName, language]);
+  }, [productName, language, t]);
 
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -85,10 +85,10 @@ export default function AssistantDrawer({ productId, productName }: AssistantDra
   return (
     <>
       {/* Floating Toggle Trigger Button */}
-      <div className="fixed bottom-6 right-6 z-40">
+      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 bg-gradient-to-r from-[#FF7828] to-[#FF9933] hover:from-[#E05E10] hover:to-[#FF7828] text-white px-4 py-3 rounded-full shadow-2xl shadow-orange-500/30 transition-all transform hover:scale-105 font-bold text-xs"
+          className="flex items-center gap-2 bg-gradient-to-r from-[#FF7828] to-[#FF9933] hover:from-[#E05E10] hover:to-[#FF7828] text-white px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full shadow-2xl shadow-orange-500/30 transition-all transform hover:scale-105 font-bold text-xs"
           title={t('drawer_btn_ask')}
         >
           <Sparkles size={16} className="animate-pulse" />
@@ -98,7 +98,7 @@ export default function AssistantDrawer({ productId, productName }: AssistantDra
 
       {/* Slide-in Assistant Drawer / Modal */}
       {isOpen && (
-        <div className="fixed bottom-20 right-6 w-96 max-w-[calc(100vw-2rem)] h-[520px] z-50 bg-[#0B132B] border border-slate-700/80 rounded-2xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-2xl">
+        <div className="fixed bottom-16 sm:bottom-20 right-3 sm:right-6 left-3 sm:left-auto sm:w-96 max-h-[calc(100vh-5.5rem)] h-[520px] z-50 bg-[#0B132B] border border-slate-700/80 rounded-2xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-2xl">
           
           {/* Drawer Header */}
           <div className="bg-[#070D1B] border-b border-slate-800 px-4 py-3 flex items-center justify-between">

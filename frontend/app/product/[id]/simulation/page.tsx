@@ -49,10 +49,10 @@ export default function WhatIfSimulationPage() {
   };
 
   return (
-    <div className="flex min-h-screen portal-bg font-sans text-slate-800">
+    <div className="flex flex-col lg:flex-row min-h-screen portal-bg font-sans text-slate-800">
       <ProductSidebar productId={productId} />
 
-      <div className="flex-1 ml-14 py-8 px-6 sm:px-12">
+      <div className="flex-1 ml-0 lg:ml-14 py-6 sm:py-8 px-4 sm:px-6 md:px-12 min-w-0">
         <div className="max-w-5xl mx-auto space-y-6">
 
           {/* ─── Header (Screen 10 Exact) ─── */}
@@ -80,13 +80,15 @@ export default function WhatIfSimulationPage() {
                     <label className="block text-[11px] font-bold text-slate-600 mb-1">
                       {t('sim_attr_material')}
                     </label>
-                    <div className="flex items-center gap-2">
-                      <span className="text-slate-400 text-[11px] line-through">Polycarbonate</span>
-                      <span className="text-slate-400">&rarr;</span>
+                    <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <span className="text-slate-400 text-[11px] line-through">Polycarbonate</span>
+                        <span className="text-slate-400">&rarr;</span>
+                      </div>
                       <select
                         value={material}
                         onChange={(e) => setMaterial(e.target.value)}
-                        className="bg-white border border-slate-300 rounded px-2.5 py-1.5 font-semibold text-slate-800 text-xs flex-1"
+                        className="bg-white border border-slate-300 rounded px-2.5 py-1.5 font-semibold text-slate-800 text-xs w-full sm:w-auto flex-1 min-w-0"
                       >
                         <option value="Flame-Retardant ABS">Flame-Retardant ABS</option>
                         <option value="Polycarbonate">Polycarbonate (Standard)</option>
@@ -99,13 +101,15 @@ export default function WhatIfSimulationPage() {
                     <label className="block text-[11px] font-bold text-slate-600 mb-1">
                       {t('sim_attr_voltage')}
                     </label>
-                    <div className="flex items-center gap-2">
-                      <span className="text-slate-400 text-[11px] line-through">230V AC</span>
-                      <span className="text-slate-400">&rarr;</span>
+                    <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <span className="text-slate-400 text-[11px] line-through">230V AC</span>
+                        <span className="text-slate-400">&rarr;</span>
+                      </div>
                       <select
                         value={voltage}
                         onChange={(e) => setVoltage(e.target.value)}
-                        className="bg-white border border-slate-300 rounded px-2.5 py-1.5 font-semibold text-slate-800 text-xs flex-1"
+                        className="bg-white border border-slate-300 rounded px-2.5 py-1.5 font-semibold text-slate-800 text-xs w-full sm:w-auto flex-1 min-w-0"
                       >
                         <option value="110V AC">110V AC</option>
                         <option value="230V AC">230V AC</option>
@@ -118,13 +122,15 @@ export default function WhatIfSimulationPage() {
                     <label className="block text-[11px] font-bold text-slate-600 mb-1">
                       {t('sim_attr_use')}
                     </label>
-                    <div className="flex items-center gap-2">
-                      <span className="text-slate-400 text-[11px] line-through">Domestic Use</span>
-                      <span className="text-slate-400">&rarr;</span>
+                    <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <span className="text-slate-400 text-[11px] line-through">Domestic Use</span>
+                        <span className="text-slate-400">&rarr;</span>
+                      </div>
                       <select
                         value={intendedUse}
                         onChange={(e) => setIntendedUse(e.target.value)}
-                        className="bg-white border border-slate-300 rounded px-2.5 py-1.5 font-semibold text-slate-800 text-xs flex-1"
+                        className="bg-white border border-slate-300 rounded px-2.5 py-1.5 font-semibold text-slate-800 text-xs w-full sm:w-auto flex-1 min-w-0"
                       >
                         <option value="Commercial Use">Commercial Use</option>
                         <option value="Domestic Consumer Use">Domestic Use</option>
@@ -226,9 +232,9 @@ export default function WhatIfSimulationPage() {
                   
                   {/* Added Standards */}
                   {(simResult?.standards_diff?.added || []).map((s: string) => (
-                    <div key={s} className="bg-emerald-50 border border-emerald-200 text-emerald-900 rounded p-1.5 text-xs font-bold mb-1.5 flex items-center justify-between">
-                      <span className="truncate">{s}</span>
-                      <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.2 rounded bg-emerald-200 text-emerald-900 flex-shrink-0 ml-1">
+                    <div key={s} className="bg-emerald-50 border border-emerald-200 text-emerald-900 rounded p-1.5 text-xs font-bold mb-1.5 flex items-center justify-between gap-2">
+                      <span className="break-words min-w-0">{s}</span>
+                      <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.2 rounded bg-emerald-200 text-emerald-900 flex-shrink-0">
                         + {t('sim_added')}
                       </span>
                     </div>
@@ -236,9 +242,9 @@ export default function WhatIfSimulationPage() {
 
                   {/* Retained Standards */}
                   {(simResult?.standards_diff?.retained || []).map((s: string) => (
-                    <div key={s} className="bg-slate-50 border border-slate-200 text-slate-800 rounded p-1.5 text-xs font-semibold mb-1.5 flex items-center justify-between">
-                      <span className="truncate">{s}</span>
-                      <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded bg-slate-200 text-slate-700 flex-shrink-0 ml-1">
+                    <div key={s} className="bg-slate-50 border border-slate-200 text-slate-800 rounded p-1.5 text-xs font-semibold mb-1.5 flex items-center justify-between gap-2">
+                      <span className="break-words min-w-0">{s}</span>
+                      <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded bg-slate-200 text-slate-700 flex-shrink-0">
                         {t('sim_retained')}
                       </span>
                     </div>
@@ -246,9 +252,9 @@ export default function WhatIfSimulationPage() {
 
                   {/* Removed Standards */}
                   {(simResult?.standards_diff?.removed || []).map((s: string) => (
-                    <div key={s} className="bg-rose-50 border border-rose-200 text-rose-700 rounded p-1.5 text-[11px] mb-1.5 flex items-center justify-between line-through opacity-75">
-                      <span className="truncate">{s}</span>
-                      <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded bg-rose-200 text-rose-800 no-underline flex-shrink-0 ml-1">
+                    <div key={s} className="bg-rose-50 border border-rose-200 text-rose-700 rounded p-1.5 text-[11px] mb-1.5 flex items-center justify-between gap-2 line-through opacity-75">
+                      <span className="break-words min-w-0">{s}</span>
+                      <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded bg-rose-200 text-rose-800 no-underline flex-shrink-0">
                         - {t('sim_removed')}
                       </span>
                     </div>

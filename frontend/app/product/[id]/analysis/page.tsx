@@ -38,16 +38,16 @@ export default function CompliancePathwayDashboard() {
   const activeRule = selectedRule || result?.evaluated_rules?.[0];
 
   return (
-    <div className="flex min-h-screen portal-bg font-sans text-white">
-      {/* Left Icon Sidebar */}
+    <div className="flex flex-col lg:flex-row min-h-screen portal-bg font-sans text-white">
+      {/* Left Icon Sidebar / Mobile Subnav */}
       <ProductSidebar productId={productId} />
 
       {/* Main Screen 4 Content Area */}
-      <div className="flex-1 ml-14 py-8 px-6 sm:px-10">
+      <div className="flex-1 ml-0 lg:ml-14 py-6 sm:py-8 px-4 sm:px-6 md:px-10 min-w-0">
         <div className="max-w-5xl mx-auto space-y-6">
 
           {/* ─── 4 Metric Cards (Screen 4 Top) ─── */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5">
             <div className="bg-[#0B1426]/85 backdrop-blur-md border border-slate-800 rounded-xl p-4 text-center card-interactive">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                 {t('metric_relevant_standards')}
@@ -441,8 +441,8 @@ export default function CompliancePathwayDashboard() {
 
       {/* ─── Screen 5: WHY THIS RULE APPLIES? (White Modal Exact to Screen 5) ─── */}
       {showRuleModal && (
-        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-xl w-full p-6 text-slate-800 shadow-2xl relative space-y-5 animate-slide-in">
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-xl max-w-xl w-full p-4 sm:p-6 text-slate-800 shadow-2xl relative space-y-5 animate-slide-in max-h-[90vh] overflow-y-auto">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <h2 className="text-base font-extrabold text-slate-900">
@@ -466,7 +466,7 @@ export default function CompliancePathwayDashboard() {
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
                   {t('analysis_physical_facts')}
                 </span>
-                <p className="text-xs font-bold text-slate-900 mt-0.5">
+                <p className="text-xs font-bold text-slate-900 mt-0.5 break-words">
                   {activeRule?.input_facts
                     ? Object.entries(activeRule.input_facts)
                         .map(([k, v]) => `${k.replace(/_/g, ' ')}: ${v}`)
@@ -505,10 +505,10 @@ export default function CompliancePathwayDashboard() {
                     {activeRule?.verification_status || t('inspector_verified_badge')}
                   </span>
                 </div>
-                <p className="text-xs font-bold text-slate-900 mt-0.5">
+                <p className="text-xs font-bold text-slate-900 mt-0.5 break-words">
                   {activeRule?.clause_reference || 'Clause reference from Indian Standard'}
                 </p>
-                <p className="text-xs text-slate-600 mt-0.5 italic">
+                <p className="text-xs text-slate-600 mt-0.5 italic break-words">
                   {activeRule?.supporting_evidence_excerpt || activeRule?.rule_logic}
                 </p>
               </div>
@@ -524,7 +524,7 @@ export default function CompliancePathwayDashboard() {
                     {t('analysis_deterministic_badge')}
                   </span>
                 </div>
-                <p className="text-xs text-slate-700 mt-0.5 leading-relaxed">
+                <p className="text-xs text-slate-700 mt-0.5 leading-relaxed break-words">
                   {activeRule?.result_explanation || 'Rule condition satisfied based on structured product facts.'}
                 </p>
               </div>
@@ -532,7 +532,7 @@ export default function CompliancePathwayDashboard() {
             </div>
 
             {/* Bottom Actions */}
-            <div className="flex items-center justify-between pt-3 border-t border-slate-200">
+            <div className="flex items-center justify-between pt-3 border-t border-slate-200 gap-2">
               <button
                 onClick={() => {
                   setShowRuleModal(false);
@@ -556,16 +556,16 @@ export default function CompliancePathwayDashboard() {
 
       {/* ─── Screen 6: RULE INSPECTOR (White Modal Exact to Screen 6) ─── */}
       {showInspectorModal && activeRule && (
-        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-2xl w-full p-6 text-slate-800 shadow-2xl relative space-y-5 animate-slide-in">
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-xl max-w-2xl w-full p-4 sm:p-6 text-slate-800 shadow-2xl relative space-y-5 animate-slide-in max-h-[90vh] overflow-y-auto">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-              <h2 className="text-base font-extrabold text-slate-900">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3 gap-2">
+              <h2 className="text-sm sm:text-base font-extrabold text-slate-900 break-words">
                 {t('rule_inspector_heading')} – {activeRule.rule_id}
               </h2>
               <button 
                 onClick={() => setShowInspectorModal(false)}
-                className="w-7 h-7 rounded-md hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors"
+                className="w-7 h-7 rounded-md hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors flex-shrink-0"
                 title={t('analysis_modal_close')}
               >
                 <X size={18} />
@@ -608,7 +608,7 @@ export default function CompliancePathwayDashboard() {
               </div>
 
               {/* Right Column: Supporting Evidence */}
-              <div className="md:pl-6 space-y-3.5 text-xs">
+              <div className="pt-4 md:pt-0 md:pl-6 space-y-3.5 text-xs">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800">
                     {t('evidence_title')}
@@ -620,21 +620,21 @@ export default function CompliancePathwayDashboard() {
 
                 <div>
                   <span className="text-[10px] uppercase font-bold text-slate-400 block">{t('evidence_source_label')}</span>
-                  <p className="font-bold text-slate-900 text-xs mt-0.5">
+                  <p className="font-bold text-slate-900 text-xs mt-0.5 break-words">
                     {activeRule.clause_reference.split(' - ')[0] || 'IS 302 (Part 1): 2008'}
                   </p>
                 </div>
 
                 <div>
                   <span className="text-[10px] uppercase font-bold text-slate-400 block">{t('evidence_clause_label')}</span>
-                  <p className="font-semibold text-slate-800 text-xs mt-0.5">
+                  <p className="font-semibold text-slate-800 text-xs mt-0.5 break-words">
                     {activeRule.clause_reference}
                   </p>
                 </div>
 
                 <div>
                   <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">{t('evidence_excerpt_label')}</span>
-                  <blockquote className="bg-[#F8FAFC] border-l-2 border-l-[#FF7828] border border-slate-200 rounded-md p-3 text-xs text-slate-700 italic leading-relaxed">
+                  <blockquote className="bg-[#F8FAFC] border-l-2 border-l-[#FF7828] border border-slate-200 rounded-md p-3 text-xs text-slate-700 italic leading-relaxed break-words">
                     &ldquo;{activeRule.supporting_evidence_excerpt}&rdquo;
                   </blockquote>
                 </div>

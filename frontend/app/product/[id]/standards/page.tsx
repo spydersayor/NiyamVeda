@@ -27,15 +27,15 @@ export default function RelevantStandardsPage() {
   const isAbstaining = result?.safe_abstention?.activated || (result && standards.length === 0);
 
   return (
-    <div className="flex min-h-screen portal-bg font-sans text-slate-800">
+    <div className="flex flex-col lg:flex-row min-h-screen portal-bg font-sans text-slate-800">
       <ProductSidebar productId={productId} />
 
-      <div className="flex-1 ml-14 py-8 px-6 sm:px-12">
+      <div className="flex-1 ml-0 lg:ml-14 py-6 sm:py-8 px-4 sm:px-6 md:px-12 min-w-0">
         <div className="max-w-4xl mx-auto space-y-6">
 
           {/* ─── Header (Screen 7 Exact) ─── */}
           <div className="animate-slide-up">
-            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight break-words">
               {t('standards_title')}
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 mt-0.5">
@@ -130,7 +130,7 @@ export default function RelevantStandardsPage() {
       {/* Evidence Drawer/Modal */}
       {selectedStandard && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-lg w-full p-6 text-slate-800 shadow-2xl relative space-y-4 animate-slide-in">
+          <div className="bg-white rounded-xl max-w-lg w-full p-6 text-slate-800 shadow-2xl relative space-y-4 animate-slide-in max-h-[90vh] overflow-y-auto">
             <div className="flex items-start justify-between border-b border-slate-200 pb-3">
               <div>
                 <span className="text-[10px] uppercase font-bold text-emerald-600 tracking-wider">

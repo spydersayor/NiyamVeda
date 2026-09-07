@@ -116,7 +116,7 @@ export default function AuthPage() {
   if (user) {
     return (
       <div className="min-h-screen portal-bg py-16 px-4 font-sans text-white flex items-center justify-center relative overflow-hidden">
-        <div className="max-w-md w-full bg-[#0B1426]/90 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 shadow-2xl space-y-6 relative z-10 text-center animate-slide-up">
+        <div className="max-w-md w-full bg-[#0B1426]/90 backdrop-blur-xl border border-slate-800 rounded-2xl p-5 sm:p-8 shadow-2xl space-y-6 relative z-10 text-center animate-slide-up">
           <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-2 border border-emerald-500/30">
             <CheckCircle2 size={32} />
           </div>
@@ -166,11 +166,11 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen portal-bg py-12 px-4 sm:px-6 font-sans text-white flex items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen portal-bg py-8 sm:py-12 px-3 sm:px-6 font-sans text-white flex items-center justify-center relative overflow-hidden">
       
       {/* Background Mandala & Glow Motif */}
-      <div className="absolute top-0 right-0 w-80 h-80 bg-[#FF7828]/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-0 w-80 h-80 bg-[#FF7828]/10 rounded-full blur-3xl pointer-events-none max-w-full" />
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none max-w-full" />
 
       <div className="max-w-md w-full space-y-6 relative z-10 animate-slide-up">
         
@@ -179,7 +179,7 @@ export default function AuthPage() {
           <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#FF7828] to-[#E05E10] flex items-center justify-center text-white mx-auto shadow-lg shadow-orange-500/30">
             <ShieldCheck size={26} />
           </div>
-          <h1 className="text-2xl font-extrabold text-white tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
             NiyamVeda <span className="text-[#FF9933] font-normal">(नियमवेद)</span>
           </h1>
           <p className="text-xs text-slate-400 max-w-sm mx-auto">
@@ -188,7 +188,7 @@ export default function AuthPage() {
         </div>
 
         {/* 1-Click Demo Login Box (For Judges & Reviewers) */}
-        <div className="bg-gradient-to-r from-orange-950/40 via-amber-950/30 to-[#0B1426] border border-orange-500/30 rounded-xl p-4 shadow-lg text-center space-y-2 card-interactive">
+        <div className="bg-gradient-to-r from-orange-950/40 via-amber-950/30 to-[#0B1426] border border-orange-500/30 rounded-xl p-3.5 sm:p-4 shadow-lg text-center space-y-2 card-interactive">
           <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-[#FF9933]">
             <Sparkles size={14} />
             <span>{t('auth_demo_badge')}</span>
@@ -207,7 +207,7 @@ export default function AuthPage() {
         </div>
 
         {/* Main Auth Form Container */}
-        <div className="bg-[#0B1426]/90 backdrop-blur-xl border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6 card-interactive">
+        <div className="bg-[#0B1426]/90 backdrop-blur-xl border border-slate-800 rounded-2xl p-4 sm:p-6 md:p-8 shadow-2xl space-y-6 card-interactive">
           
           {/* Mode Switch Tabs */}
           <div className="flex items-center bg-[#070D1B] p-1 rounded-lg border border-slate-800">

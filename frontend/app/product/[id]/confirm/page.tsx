@@ -116,7 +116,7 @@ export default function ConfirmProductFactsPage() {
   };
 
   return (
-    <div className="min-h-screen portal-bg py-10 px-4 sm:px-8 font-sans">
+    <div className="min-h-screen portal-bg py-6 sm:py-10 px-3 sm:px-6 md:px-8 font-sans">
       <div className="max-w-4xl mx-auto space-y-6">
 
         {/* Header */}
@@ -125,7 +125,7 @@ export default function ConfirmProductFactsPage() {
             <CheckCircle2 size={13} className="text-emerald-400" />
             <span>{t('confirm_step_badge')}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight break-words">
             {t('confirm_title')}
           </h1>
           <p className="text-xs sm:text-sm text-slate-300">
@@ -142,15 +142,15 @@ export default function ConfirmProductFactsPage() {
             return (
               <div 
                 key={fact.key}
-                className="bg-[#0B132B]/90 backdrop-blur-md rounded-xl p-5 shadow-lg border border-slate-800 hover:border-slate-700 transition-all space-y-3"
+                className="bg-[#0B132B]/90 backdrop-blur-md rounded-xl p-4 sm:p-5 shadow-lg border border-slate-800 hover:border-slate-700 transition-all space-y-3"
               >
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <span className="text-[10px] font-bold tracking-wider uppercase text-slate-400">
                     {fact.label}
                   </span>
 
                   {/* Origin Badge */}
-                  <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap flex items-center gap-1 border ${
+                  <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap flex items-center gap-1 border flex-shrink-0 ${
                     isExtracted
                       ? 'bg-blue-500/10 text-blue-400 border-blue-500/30'
                       : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
@@ -176,19 +176,19 @@ export default function ConfirmProductFactsPage() {
                       type="text"
                       value={editValue}
                       onChange={(e) => setEditValue(e.target.value)}
-                      className="flex-1 bg-[#070D1B] border border-[#FF7828] text-white text-xs rounded-lg px-2.5 py-1.5 outline-none font-medium"
+                      className="flex-1 bg-[#070D1B] border border-[#FF7828] text-white text-xs rounded-lg px-2.5 py-1.5 outline-none font-medium min-w-0"
                       autoFocus
                     />
                     <button
                       onClick={() => handleSaveEdit(fact.key)}
-                      className="p-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors"
+                      className="p-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors flex-shrink-0"
                       title="Save"
                     >
                       <Save size={13} />
                     </button>
                     <button
                       onClick={() => setEditingKey(null)}
-                      className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors"
+                      className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors flex-shrink-0"
                       title="Cancel"
                     >
                       <X size={13} />
@@ -196,7 +196,7 @@ export default function ConfirmProductFactsPage() {
                   </div>
                 ) : (
                   <div className="flex items-start justify-between gap-2 pt-1">
-                    <p className="text-xs sm:text-sm font-bold text-white leading-snug">
+                    <p className="text-xs sm:text-sm font-bold text-white leading-snug break-words">
                       {fact.value}
                     </p>
                     <button
@@ -222,10 +222,10 @@ export default function ConfirmProductFactsPage() {
         </div>
 
         {/* Bottom Actions Bar */}
-        <div className="flex items-center justify-between pt-4 border-t border-slate-800">
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-slate-800">
           <Link
             href="/product/new"
-            className="bg-[#0B132B] hover:bg-[#1E293B] border border-slate-700 text-slate-300 text-xs font-semibold px-4 py-2.5 rounded-lg transition-all flex items-center gap-1.5"
+            className="bg-[#0B132B] hover:bg-[#1E293B] border border-slate-700 text-slate-300 text-xs font-semibold px-4 py-2.5 rounded-lg transition-all flex items-center justify-center gap-1.5"
           >
             <ArrowLeft size={13} />
             <span>{t('confirm_btn_upload_another')}</span>
@@ -234,7 +234,7 @@ export default function ConfirmProductFactsPage() {
           <button
             onClick={handleConfirm}
             disabled={loading}
-            className="bg-[#FF7828] hover:bg-[#E05E10] text-white text-xs font-bold px-6 py-2.5 rounded-lg transition-all shadow-md shadow-orange-500/20 flex items-center gap-2"
+            className="bg-[#FF7828] hover:bg-[#E05E10] text-white text-xs font-bold px-6 py-2.5 rounded-lg transition-all shadow-md shadow-orange-500/20 flex items-center justify-center gap-2"
           >
             {loading ? t('confirm_evaluating') : (
               <>

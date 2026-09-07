@@ -14,15 +14,15 @@ export default function RuleInspectorPage() {
   const { t } = useTranslation();
 
   return (
-    <div className="flex min-h-screen portal-bg font-sans text-slate-800">
+    <div className="flex flex-col lg:flex-row min-h-screen portal-bg font-sans text-slate-800">
       <ProductSidebar productId={productId} />
 
-      <div className="flex-1 ml-14 py-8 px-4 sm:px-8 flex items-center justify-center">
-        <div className="max-w-3xl w-full bg-white/95 backdrop-blur-md rounded-xl shadow-2xl border border-white/60 p-6 sm:p-8 relative space-y-6 animate-slide-up">
+      <div className="flex-1 ml-0 lg:ml-14 py-6 sm:py-8 px-3 sm:px-6 md:px-8 flex items-center justify-center min-w-0">
+        <div className="max-w-3xl w-full bg-white/95 backdrop-blur-md rounded-xl shadow-2xl border border-white/60 p-4 sm:p-6 md:p-8 relative space-y-6 animate-slide-up">
           
           {/* Header */}
           <div className="flex items-center justify-between border-b border-slate-200 pb-4">
-            <h1 className="text-lg font-bold text-slate-900 tracking-tight">
+            <h1 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight break-words">
               {t('rule_inspector_heading')} – {ruleId}
             </h1>
             <button
@@ -35,7 +35,7 @@ export default function RuleInspectorPage() {
           </div>
 
           {/* 2-Column Split */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start divide-y md:divide-y-0 md:divide-x divide-slate-200">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-start divide-y md:divide-y-0 md:divide-x divide-slate-200">
             
             {/* Left Column: Rule Logic */}
             <div className="space-y-4">
